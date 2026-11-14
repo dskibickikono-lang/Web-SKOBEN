@@ -4,7 +4,7 @@ import { site } from '../config/site';
 
 const year = new Date().getFullYear();
 const legalBits = [
-  site.legal.entity,
+  site.legal.entity === site.name ? '' : site.legal.entity,
   site.legal.nip ? `NIP ${site.legal.nip}` : '',
   site.legal.address,
 ].filter(Boolean);

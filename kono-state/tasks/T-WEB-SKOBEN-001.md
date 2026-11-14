@@ -34,8 +34,7 @@ wyłącznie z kodu (SVG/CSS/Canvas), bez zewnętrznych plików graficznych.
 Zebrane w `src/config/company.json`; pilnuje ich bramka `npm run check:release` (obecnie: nie przechodzi —
 brak danych rejestrowych i potwierdzenia właściciela).
 
-- Domena produkcyjna i adres kontaktowy (robocze: `skoben.pl`, `kontakt@skoben.pl`).
-- Dane rejestrowe spółki (administrator danych w polityce prywatności i stopce).
+- NIP i adres siedziby (administrator danych w polityce prywatności i stopce).
 - Akceptacja deklaracji: czasy etapów, model rozliczeń, zasady ze strony „Bezpieczeństwo”,
   treść polityki prywatności (projekt do przeglądu prawnego).
 - Opcjonalnie endpoint formularza (domyślnie: wiadomość w programie pocztowym użytkownika).
@@ -76,7 +75,12 @@ Usterki znalezione w przeglądzie i usunięte:
 
 Po poprawkach: brak otwartych usterek wizualnych ani funkcjonalnych znanych wykonawcy.
 
+## Decyzje właściciela z 2026-11-14 (w trakcie sesji)
+- Zgoda na utworzenie pustej gałęzi `main` i otwarcie PR z gałęzi roboczej.
+- Domena `skoben.pl` i adres `kontakt@skoben.pl` — potwierdzone.
+- Nazwa podmiotu: „SKOBEN”. NIP i adres siedziby nie zostały podane — pola pozostają puste,
+  bramka `npm run check:release` nadal ich wymaga.
+
 ## Stan PR
-Repozytorium zdalne było puste, więc gałąź robocza `skibiai/sharp-hamilton-he3v81` jest w nim jedyną
-gałęzią i nie ma bazy, do której można otworzyć pull request. Utworzenie gałęzi bazowej (np. `main`)
-wymaga decyzji właściciela — bez niej PR nie powstał. Merge i publikacja pozostają po stronie właściciela.
+Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em
+(bez force, bez rebase). PR: patrz pole `pr` w nagłówku. Merge i publikacja po stronie właściciela.
