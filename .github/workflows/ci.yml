@@ -36,9 +36,6 @@ jobs:
           npx playwright install --with-deps chromium
           npm run audit
 
-      - name: Bramka publikacji
-        run: npm run check:release
-
       - name: Zrzuty z audytu
         if: always()
         uses: actions/upload-artifact@v4

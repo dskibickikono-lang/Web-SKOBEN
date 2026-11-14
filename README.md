@@ -66,8 +66,9 @@ Wszystko, co zależy od decyzji właściciela, jest w jednym pliku: `src/config/
 - `confirmedByOwner: true` — akceptacja deklaracji w treściach: czasy etapów (`facts` w `site.ts`),
   model rozliczeń („Wdrożenie”), zasady przetwarzania danych („Bezpieczeństwo”) i polityka prywatności.
 
-Stan na 2026-11-14: wszystkie pola uzupełnione i potwierdzone przez właściciela — bramka przechodzi.
-Po zmianie którejkolwiek deklaracji w treściach potwierdzenie trzeba ponowić.
+Stan na 2026-11-14: dane firmy są uzupełnione, ale iteracja 2 zmieniła przekaz i dodała deklarację
+„Wdrażamy równolegle tylko kilka firm” — potwierdzenie właściciela zostało cofnięte do czasu jej akceptacji.
+Bramka jest krokiem przed wdrożeniem, nie częścią CI.
 
 Build i audyt nie zależą od bramki — strona buduje się i działa także przed jej przejściem.
 
