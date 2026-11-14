@@ -105,7 +105,7 @@ const dots = Array.from({ length: 32 }, (_, i) => ({
       ))
     }
     {dots.map((d, i) => <circle cx={d.x} cy={d.y} r="6" class:list={['case', { 'case--human': d.human }]} style={`--i:${i}`} />)}
-    <text x="90" y="520" class="cap">26 spraw domkniętych automatycznie</text>
+    <text x="90" y="520" class="cap">26 bez dotknięcia</text>
     <text x="390" y="520" text-anchor="end" class="cap cap--warn">6 do akceptacji</text>
   </svg>
 </div>

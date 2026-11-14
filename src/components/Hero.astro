@@ -71,6 +71,21 @@
 
   const card = document.querySelector<HTMLElement>('[data-hero-case]');
   if (card) mountHeroCase(card);
+
+  // Adres e-mail przekazujemy do formularza kontaktowego przez pamięć sesji,
+  // nie w adresie URL — nie trafia do historii ani logów serwera.
+  const heroForm = document.querySelector<HTMLFormElement>('.hero__form');
+  heroForm?.addEventListener('submit', (e) => {
+    const input = heroForm.querySelector<HTMLInputElement>('input[type="email"]');
+    if (!input || !heroForm.checkValidity()) return;
+    try {
+      window.sessionStorage.setItem('skoben:email', input.value.trim());
+    } catch {
+      return; // bez pamięci sesji zostaje zwykłe wysłanie formularza (GET)
+    }
+    e.preventDefault();
+    window.location.assign(heroForm.action);
+  });
 </script>
 
 <style>

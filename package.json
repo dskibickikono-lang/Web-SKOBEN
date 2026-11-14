@@ -12,7 +12,8 @@
     "check": "astro check",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "audit": "node scripts/audit.cjs"
+    "audit": "node scripts/audit.cjs",
+    "check:release": "node scripts/release-check.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.5",

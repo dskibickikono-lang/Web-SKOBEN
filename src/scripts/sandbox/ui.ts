@@ -145,7 +145,7 @@ export function mountSandbox(root: HTMLElement): void {
     touch(c);
     await delay(850);
     if (my !== epoch) return;
-    log('agent', c.def.id, `Zapisano w systemie (${scenario.system}): ${c.def.result.doc}`, 'ok');
+    log('agent', c.def.id, `Zapisano (${scenario.system}): ${c.def.result.doc}`, 'ok');
     log('agent', c.def.id, c.def.result.reply);
     c.status = 'closed';
     c.step = 5;

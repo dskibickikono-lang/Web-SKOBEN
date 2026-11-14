@@ -98,6 +98,7 @@ const volumes = ['do 500 spraw miesięcznie', '500–2 000', '2 000–10 000', '
             <button class="btn btn--primary btn--lg" type="submit">Wyślij zapytanie</button>
             <p class="micro">
               Dane z formularza wykorzystamy wyłącznie do odpowiedzi na to zapytanie.
+              <a class="link-inline" href="/polityka-prywatnosci/">Polityka prywatności</a>
             </p>
           </div>
 
@@ -126,8 +127,20 @@ const volumes = ['do 500 spraw miesięcznie', '500–2 000', '2 000–10 000', '
     const status = form.querySelector<HTMLElement>('[data-form-status]');
     const fields = Array.from(form.querySelectorAll<HTMLInputElement>('input[required]'));
 
-    // Adres przekazany z formularza w hero (?email=…)
-    const prefill = new URLSearchParams(window.location.search).get('email');
+    // Adres przekazany z formularza w hero: z pamięci sesji karty, a bez JS —
+    // z parametru ?email=, który od razu usuwamy z paska adresu.
+    let prefill: string | null = null;
+    try {
+      prefill = window.sessionStorage.getItem('skoben:email');
+      window.sessionStorage.removeItem('skoben:email');
+    } catch {
+      // pamięć sesji niedostępna — zostaje parametr z adresu
+    }
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('email')) {
+      prefill ??= params.get('email');
+      window.history.replaceState(null, '', window.location.pathname);
+    }
     const emailInput = form.querySelector<HTMLInputElement>('#f-email');
     if (prefill && emailInput) {
       emailInput.value = prefill;
@@ -283,13 +296,13 @@ const volumes = ['do 500 spraw miesięcznie', '500–2 000', '2 000–10 000', '
 
   .form {
     display: grid;
-    gap: 1.25rem;
+    gap: 1.625rem;
   }
 
   .form__row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.25rem 1rem;
+    gap: 1.625rem 1rem;
   }
 
   .form__field {
@@ -368,7 +381,7 @@ const volumes = ['do 500 spraw miesięcznie', '500–2 000', '2 000–10 000', '
     position: absolute;
     top: 100%;
     left: 0;
-    margin-top: 1px;
+    margin-top: 3px;
     font-size: 0.75rem;
     line-height: 1.35;
     color: var(--danger);

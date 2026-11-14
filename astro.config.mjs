@@ -14,8 +14,13 @@ function polishTypography() {
   const SKIP = /(<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>)/g;
   const ORPHAN = /(^|[\s\u00a0(„”"—–])([aiouwzAIOUWZ])[ \t\n]+(?=\S)/g;
   const DASH = / (—|–)(?=\s)/g;
+  const EMAIL = /\b([eE])-(mail)/g; // łącznik bez możliwości złamania wiersza
   const fix = (text) =>
-    text.replace(ORPHAN, '$1$2\u00a0').replace(ORPHAN, '$1$2\u00a0').replace(DASH, '\u00a0$1');
+    text
+      .replace(ORPHAN, '$1$2\u00a0')
+      .replace(ORPHAN, '$1$2\u00a0')
+      .replace(DASH, '\u00a0$1')
+      .replace(EMAIL, '$1-\u2060$2');
 
   const walk = async (dir) => {
     const out = [];
@@ -52,10 +57,11 @@ function polishTypography() {
   };
 }
 
-// UWAGA: `site` to docelowy adres produkcyjny — do potwierdzenia przez właściciela
-// (patrz src/config/site.ts). Wpływa na canonical, sitemap i robots.
+// Adres produkcyjny pochodzi z src/config/company.json (wpływa na canonical, sitemap i robots).
+const company = JSON.parse(await readFile(new URL('./src/config/company.json', import.meta.url), 'utf8'));
+
 export default defineConfig({
-  site: 'https://skoben.pl',
+  site: company.url,
   trailingSlash: 'always',
   integrations: [sitemap(), polishTypography()],
   build: { inlineStylesheets: 'auto' },

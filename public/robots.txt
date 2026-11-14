@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://skoben.pl/sitemap-index.xml

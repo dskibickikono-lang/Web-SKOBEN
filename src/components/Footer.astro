@@ -68,7 +68,8 @@ const columns = [
         © {year} {site.name}{legalBits.length > 0 && <> · {legalBits.join(' · ')}</>}
       </p>
       <p class="micro">
-        Makiety interfejsu i dane w sandboxie są przykładowe i służą wyłącznie ilustracji działania.
+        Makiety interfejsu i dane w sandboxie są przykładowe.
+        <a class="site-footer__legal" href="/polityka-prywatnosci/">Polityka prywatności</a>
       </p>
     </div>
   </div>
@@ -129,6 +130,19 @@ const columns = [
     gap: 0.5rem 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--line);
+  }
+
+  .site-footer__legal {
+    margin-left: 0.75rem;
+    color: var(--text-2);
+    text-decoration: underline;
+    text-decoration-color: var(--line-2);
+    text-underline-offset: 3px;
+    transition: color var(--dur-1) ease;
+  }
+
+  .site-footer__legal:hover {
+    color: var(--text);
   }
 
   @media (max-width: 860px) {

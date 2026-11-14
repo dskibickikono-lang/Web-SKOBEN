@@ -41,7 +41,7 @@ const fmt = (n: number) => new Intl.NumberFormat('pl-PL', { useGrouping: 'always
   <div class="calc__result" aria-live="polite">
     <div class="calc__main">
       <span class="label">Odzyskany czas zespołu</span>
-      <p class="calc__big"><span class="mono" data-res="hours">168</span> <small>h / miesiąc</small></p>
+      <p class="calc__big"><span class="tnum" data-res="hours">168</span> <small>h / miesiąc</small></p>
     </div>
     <dl class="calc__grid">
       <div>
@@ -217,14 +217,11 @@ const fmt = (n: number) => new Intl.NumberFormat('pl-PL', { useGrouping: 'always
 
   .calc__big {
     font-size: clamp(3rem, 2rem + 4vw, 4.75rem);
-    font-weight: 400;
+    font-weight: 380;
     line-height: 1;
-    letter-spacing: -0.045em;
+    letter-spacing: -0.035em;
   }
 
-  .calc__big .mono {
-    letter-spacing: -0.06em;
-  }
 
   .calc__big small {
     font-size: 1.0625rem;

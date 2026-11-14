@@ -12,6 +12,7 @@ npm run dev        # serwer deweloperski
 npm run build      # astro check (typy) + build do dist/
 npm run preview    # podgląd zbudowanej strony
 npm run audit      # audyt w headless Chromium (wymaga wcześniejszego build)
+npm run check:release  # bramka publikacji: komplet i potwierdzenie danych firmy
 ```
 
 Wymagany Node ≥ 20. Audyt korzysta z pakietu `playwright` z przeglądarką Chromium — nie jest on
@@ -21,7 +22,8 @@ zależnością projektu (lokalnie: `npm i --no-save playwright && npx playwright
 
 ```
 src/
-  config/site.ts          dane firmy, deklaracje czasu, nawigacja — jedno źródło prawdy
+  config/company.json     dane zależne od decyzji właściciela (domena, adres, dane rejestrowe)
+  config/site.ts          treści wspólne, deklaracje czasu, nawigacja
   styles/global.css       tokeny, motywy (jasny/ciemny), typografia, prymitywy
   layouts/Base.astro      <head>, SEO, nagłówek, stopka
   components/             sekcje i makiety interfejsu (HTML/CSS/SVG)
@@ -29,7 +31,7 @@ src/
   scripts/hero-case.ts    animowana karta sprawy w hero
   scripts/sandbox/        sandbox: dane (data), silnik reguł (engine), szablony (view), kontroler (ui)
   pages/                  /, /agenci/, /automatyzacje/, /sandbox/, /wdrozenie/,
-                          /bezpieczenstwo/, /kontakt/, 404
+                          /bezpieczenstwo/, /kontakt/, /polityka-prywatnosci/, 404, robots.txt
 scripts/audit.cjs         audyt wizualny/UX
 kono-state/tasks/         karta zadania
 ```
@@ -53,30 +55,41 @@ graficzne (ma ich nie być), cele dotyku, dostępność (axe-core, WCAG 2.1 AA),
 scenariusz sandboxa, formularze, menu mobilne, `prefers-reduced-motion` i praca bez JavaScriptu.
 Zrzuty ekranu trafiają do `audit-output/`.
 
-## Przed publikacją — do potwierdzenia przez właściciela
+## Przed publikacją — bramka `npm run check:release`
 
-Wartości przyjęte roboczo, zebrane w `src/config/site.ts` i `astro.config.mjs`:
+Wszystko, co zależy od decyzji właściciela, jest w jednym pliku: `src/config/company.json`
+(czytają go `site.ts`, `astro.config.mjs`, `robots.txt` i polityka prywatności). Bramka
+`npm run check:release` kończy się błędem, dopóki nie są uzupełnione i potwierdzone:
 
-- domena produkcyjna (`https://skoben.pl`) — wpływa na canonical, sitemap i `public/robots.txt`,
-- adres kontaktowy (`kontakt@skoben.pl`),
-- dane rejestrowe spółki (puste — stopka ich nie renderuje),
-- deklaracje czasu: rozmowa 30 minut, mapowanie 1–2 tygodnie, pilot 4–6 tygodni, odpowiedź w 1 dzień roboczy,
-- deklaracje ze strony „Bezpieczeństwo” (miejsce przetwarzania, trenowanie modeli, umowa powierzenia)
-  oraz model rozliczeń ze strony „Wdrożenie”.
+- `url` i `contactEmail` — przyjęte roboczo: `https://skoben.pl`, `kontakt@skoben.pl`,
+- `legal.entity`, `legal.nip`, `legal.address` — dane administratora do stopki i polityki prywatności,
+- `confirmedByOwner: true` — po akceptacji powyższych oraz deklaracji w treściach:
+  czasy etapów (`facts` w `site.ts`), model rozliczeń („Wdrożenie”), zasady przetwarzania danych
+  („Bezpieczeństwo”) i sama polityka prywatności, która jest projektem do przeglądu prawnego.
+
+Build i audyt nie zależą od bramki — strona buduje się i działa także przed jej przejściem.
 
 Formularz kontaktowy bez ustawionego `formEndpoint` otwiera przygotowaną wiadomość w programie
-pocztowym użytkownika. Strona nie zawiera jeszcze polityki prywatności — wymaga danych spółki.
+pocztowym użytkownika; po ustawieniu endpointu wysyła JSON metodą POST (polityka prywatności
+dopasowuje opis automatycznie).
+
+## Prywatność
+
+Strona nie ustawia cookies, nie zapisuje nic w `localStorage` i nie pobiera zasobów z zewnętrznych
+serwerów — audyt sprawdza to na każdej stronie. Adres e-mail z formularza w hero przechodzi do
+formularza kontaktowego przez `sessionStorage` (nie w adresie URL) i jest stamtąd od razu usuwany.
 
 ## Wyniki pomiarów (build lokalny, Linux)
 
 - `astro check`: 0 błędów, 0 ostrzeżeń, 0 wskazówek.
-- `npm run audit`: 8 stron × 3 szerokości bez zastrzeżeń.
+- `npm run audit`: 9 stron × 3 szerokości bez zastrzeżeń.
+- GitHub Actions: workflow `CI` (build + audyt) zakończony sukcesem na gałęzi roboczej.
 - Lighthouse (mobile, 5 stron): Performance 100, Accessibility 100, Best Practices 100, SEO 100;
   LCP 0,8–1,1 s, CLS 0.
-- Waga: JS + CSS łącznie ok. 106 kB bez kompresji dla całego serwisu.
+- Waga: JS + CSS łącznie ok. 112 kB bez kompresji dla całego serwisu.
 
 ## Typografia
 
 Kroje Hanken Grotesk i Geist Mono są hostowane lokalnie (pakiety `@fontsource-variable`).
 Po buildzie integracja `skoben:polish-typography` wstawia twarde spacje po jednoliterowych
-spójnikach i przyimkach, żeby nie zostawały na końcu wiersza.
+spójnikach i przyimkach, nie pozwala myślnikowi zaczynać wiersza i chroni „e-mail” przed złamaniem.

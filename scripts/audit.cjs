@@ -22,7 +22,7 @@ const DIST = path.join(ROOT, 'dist');
 const OUT = path.join(ROOT, 'audit-output');
 const AXE = require.resolve('axe-core/axe.min.js');
 
-const PAGES = ['/', '/agenci/', '/automatyzacje/', '/sandbox/', '/wdrozenie/', '/bezpieczenstwo/', '/kontakt/', '/404.html'];
+const PAGES = ['/', '/agenci/', '/automatyzacje/', '/sandbox/', '/wdrozenie/', '/bezpieczenstwo/', '/kontakt/', '/polityka-prywatnosci/', '/404.html'];
 const VIEWPORTS = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'tablet', width: 834, height: 1112 },
@@ -141,6 +141,13 @@ async function auditPage(browser, base, route, vp, problems) {
   if (facts.lang !== 'pl') fail(`lang="${facts.lang}"`);
   if (facts.unrevealed > 0) fail(`${facts.unrevealed} elementów [data-reveal] nie weszło`);
   if (vp.name === 'mobile' && facts.small.length) fail(`małe cele dotyku: ${facts.small.join(' | ')}`);
+
+  // Prywatność: strona deklaruje brak cookies i trwałych zapisów w przeglądarce
+  const cookies = await ctx.cookies();
+  if (cookies.length) fail(`ustawiono cookies: ${cookies.map((c) => c.name).join(', ')}`);
+  const stored = await page.evaluate(() => ({ local: window.localStorage.length, session: Object.keys(window.sessionStorage) }));
+  if (stored.local > 0) fail(`zapis w localStorage (${stored.local})`);
+  if (stored.session.length > 0) fail(`nieoczekiwany zapis w sessionStorage: ${stored.session.join(', ')}`);
 
   // Dostępność
   await page.addScriptTag({ path: AXE });
@@ -262,6 +269,8 @@ async function auditInteractions(browser, base, problems) {
   await page.fill('#hero-email', 'anna@firma.example');
   await Promise.all([page.waitForURL('**/kontakt/**'), page.click('.hero__form button')]);
   if ((await page.inputValue('#f-email')) !== 'anna@firma.example') fail('e-mail z hero nie trafił do formularza kontaktowego');
+  if (page.url().includes('anna')) fail('adres e-mail pozostał w adresie URL');
+  if (await page.evaluate(() => window.sessionStorage.length)) fail('adres e-mail pozostał w pamięci sesji po przeniesieniu');
 
   // Kontakt: walidacja
   await page.fill('#f-email', 'zly-adres');
