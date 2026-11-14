@@ -136,6 +136,44 @@ Pomiar stanu po iteracji 2 (Linux, lokalnie): `astro check` 0 błędów; `npm ru
 strona główna 99 / 100 / 100 / 100 (LCP 1,1 s, TBT 120 ms, CLS 0), Agenci, Sandbox i Bezpieczeństwo 100 × 4.
 Odbiór właściciela dla iteracji 2: oczekuje.
 
+## Odbiór iteracji 2 — odrzucona; brief właściciela na iterację 3 (2026-11-14)
+Ocena: „ta sama konsola HTML w różnych skalach — makieta w złotej jaskini, nie Mercury. Problem leży
+w założeniach”. Zmiana założeń:
+
+1. **Zniesiony zakaz obrazów, wideo i bibliotek.** Wolno: generatory obrazów/wideo AI, licencjonowane stocki
+   (Unsplash/Pexels), Blender/three.js do renderów, ffmpeg, GSAP + ScrollTrigger lub Motion, Lenis, Rive/Lottie.
+   Wydajność ma być dobra (lazy-load, AVIF/WebM, poster, prefers-reduced-motion), ale nie jest celem samym w sobie.
+2. **Mercury jako system** (zrzuty Playwrightem co ~300 px na 1440 i 390 + nagranie scrolla):
+   - hero = pełnoekranowa edytorska scena; scroll steruje wideo (najazd kamery), nagłówek gaśnie i się rozmywa;
+     to jedyny duży efekt strony,
+   - typografia: variable sans w wariantach display/text (wagi 360/420/480/530) + szeryf akcentowy + mono do drobnicy;
+     ciasny tracking nagłówków, dużo światła,
+   - paleta: atrament #1c1c23, panele #23232f, prawie biel #f2f2f7–#fbfcfd, szarość #535461, hairline #dddde5,
+     JEDEN akcent; rozdziały jasne i ciemne na przemian,
+   - produkt jako skomponowana grafika: UI w ramie, ostre, z kontrolowanym glow i ziarnem; różne fragmenty
+     produktu w różnych kartach,
+   - wiarygodność: marquee logotypów z maską, testimonial na zdjęciu, duże metryki z hairline'ami, karty prasowe,
+   - ruch selektywny: scrub w hero, pętle w mediach kart (z pauzą), marquee; subtelny hover; mega-menu 3 kolumny.
+3. **Nie kopiować 1:1** (treści, zdjęć, fontów). Równoważna jakość dla SKOBEN:
+   - font: para sans display/text + szeryf akcentowy z legalną licencją, prawdziwa skala (display / h1–h4 / body / ui / mono),
+   - scena hero: metafora „praca domyka się sama” (np. spokojne biuro o świcie, w którym dokumenty same się
+     porządkują, albo minimalistyczne wnętrze z ekranem, na którym kolejka maleje do zera); 2–3 warianty kadru,
+     wybór, klip 4–6 s z ruchem kamery do przodu pod scroll (scrub); mobile: osobny pionowy kadr,
+   - konsola TYLKO w dwóch miejscach: zbliżenie po najeździe w hero (czytelne) i pełny /sandbox; w sekcjach
+     funkcji osobne, wykadrowane fragmenty UI (karta faktury, okno decyzji, wiersz logu) w jasnych panelach,
+   - usunąć łuk/portal i złotą poświatę.
+4. **Proces:** a) moodboard + storyboard sekcji (zrzut Mercury | plan SKOBEN | assety i ruch) w `docs/art-direction.md`
+   z kadrami; b) tokeny w global.css (easing ~600–1000 ms ease-out); c) hero — dopiero gdy na 1440 i 390 wygląda
+   premium side-by-side z Mercury, reszta sekcji; d) po każdej sekcji zrzuty w tej samej pozycji scrolla co
+   referencja, krytyczna samoocena, poprawka; nagranie scrolla hero.
+5. **Kryteria odbioru:** pierwszy ekran jak marka premium, nie dashboard; scrub 60 fps na laptopie, statyczny
+   kadr przy prefers-reduced-motion; żaden ekran nie powtarza widoku konsoli; ≥ 2 jasne rozdziały na stronie
+   głównej; jedna rodzina sans w 2 wariantach optycznych + szeryf akcentowy, spójna skala; LCP < 2,5 s na 4G,
+   axe bez błędów krytycznych. Na koniec: zrzuty porównawcze Mercury vs SKOBEN (hero, funkcje, social proof)
+   i link do nagrania scrolla.
+
+Dodatkowo właściciel potwierdził deklarację „Wdrażamy równolegle tylko kilka firm”.
+
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em
 (bez force, bez rebase). PR #1 otwarty do `main`, gotowy do przeglądu. Merge i publikacja po stronie właściciela.
