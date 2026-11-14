@@ -115,7 +115,7 @@ export function mountSandbox(root: HTMLElement): void {
   };
 
   const renderRules = () => {
-    el.rules.innerHTML = rulesHtml(scenario, rules);
+    el.rules.innerHTML = rulesHtml(scenario, rules, root.dataset.idPrefix ?? 'sbx');
   };
 
   const paintRange = (input: HTMLInputElement) => {

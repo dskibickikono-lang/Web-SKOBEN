@@ -79,8 +79,14 @@ const { id, items, flip = false } = Astro.props;
         const body = item.querySelector<HTMLElement>('.fs__body');
         if (body) body.inert = !on;
       });
-      panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+      // pojedynczy panel (np. film) pozostaje widoczny dla każdej pozycji
+      panels.forEach((panel, i) => panel.classList.toggle('is-active', panels.length === 1 || i === index));
+      root.style.setProperty('--fs-progress', '0');
+      root.dispatchEvent(new CustomEvent('fs:change', { detail: index }));
     };
+
+    // sterowanie z zewnątrz: film po zakończeniu przełącza na kolejną pozycję
+    root.addEventListener('fs:goto', (e) => activate((e as CustomEvent<number>).detail));
 
     items.forEach((item, i) => {
       item.querySelector('[data-fs-trigger]')?.addEventListener('click', () => activate(i));
@@ -93,7 +99,7 @@ const { id, items, flip = false } = Astro.props;
 <style>
   .fs {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: clamp(2.5rem, 1rem + 6vw, 7rem);
     align-items: center;
   }
@@ -119,7 +125,24 @@ const { id, items, flip = false } = Astro.props;
   }
 
   .fs__item {
+    position: relative;
     border-bottom: 1px solid var(--line-2);
+  }
+
+  /* postęp filmu przypisanego do aktywnej pozycji */
+  .fs__item::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -1px 0;
+    height: 1px;
+    background: var(--text);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+
+  .fs__item.is-active::after {
+    transform: scaleX(var(--fs-progress, 0));
+    transition: transform 600ms linear;
   }
 
   .fs__heading button {

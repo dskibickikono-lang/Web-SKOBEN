@@ -1,76 +1,125 @@
 ---
+/**
+ * Hero filmowe: brama. Łuk ze znaku SKOBEN jest wejściem do świata, w którym
+ * pracują agenci. Scena jest przypięta na czas przewijania: pierwsze ruchy nie
+ * przesuwają strony, tylko prowadzą kamerę przez łuk, aż konsola w jego głębi
+ * wypełni widok. Dopiero potem strona rusza dalej. Wszystko to CSS (gradienty,
+ * transformacje) — na ekranie działa prawdziwa konsola sterowana skryptem.
+ */
+import Film from './Film.astro';
 ---
 
-<section class="hero theme-dark">
-  <canvas class="hero__canvas" data-ridge aria-hidden="true"></canvas>
-  <div class="hero__veil" aria-hidden="true"></div>
+<section class="cine theme-dark" data-cine>
+  <div class="cine__stage">
+    <div class="cine__air" aria-hidden="true"></div>
+    <div class="cine__shade" aria-hidden="true"></div>
 
-  <div class="container hero__content">
-    <h1 class="display" data-rise>Agenci AI, którzy domykają pracę</h1>
-    <p class="lede hero__lede" data-rise style="--reveal-i:1">
-      Wdrażamy agentów tam, gdzie Twój zespół dziś przepisuje dane między systemami.
-      Z&nbsp;człowiekiem przy wyjątkach i&nbsp;dziennikiem każdej decyzji.
-    </p>
-
-    <div class="hero__actions" data-rise style="--reveal-i:2">
-      <form class="hero__form" action="/kontakt/" method="get">
-        <label class="visually-hidden" for="hero-email">Służbowy adres e-mail</label>
-        <input
-          id="hero-email"
-          name="email"
-          type="email"
-          inputmode="email"
-          autocomplete="email"
-          placeholder="Służbowy e-mail"
-          required
-        />
-        <button class="btn btn--primary" type="submit">Umów rozmowę</button>
-      </form>
-      <a class="btn btn--ghost hero__demo" href="/sandbox/">Otwórz sandbox</a>
-    </div>
-  </div>
-
-  <div class="container hero__stage">
-    <div class="case-card" data-hero-case aria-hidden="true" data-rise style="--reveal-i:4">
-      <div class="case-card__head">
-        <span class="mono case-card__id" data-case-id>ZAM-2291</span>
-        <span class="case-card__title" data-case-title>Zamówienie · Hurtownia Bałtyk</span>
-        <span class="chip" data-case-chip>W toku</span>
-      </div>
-      <ol class="case-card__steps">
-        {
-          ['Odczyt wiadomości', 'Ceny i stany magazynowe', 'Decyzja według reguł', 'Zapis w ERP i odpowiedź'].map((s) => (
-            <li data-case-step>
-              <span class="case-card__tick">
-                <svg viewBox="0 0 16 16" width="16" height="16" fill="none">
-                  <circle class="ring" cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.25" />
-                  <path class="check" d="M5 8.2l2 2 4-4.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </span>
-              <span data-case-step-label>{s}</span>
-              <span class="mono case-card__meta" data-case-step-meta></span>
-            </li>
-          ))
-        }
-      </ol>
-      <div class="case-card__foot">
-        <span data-case-foot>Agent pracuje…</span>
-        <span class="mono" data-case-time>0 s</span>
+    <div class="container cine__copy" data-cine-copy>
+      <h1 class="display" data-rise>Wejdź do świata, w&nbsp;którym praca domyka się sama</h1>
+      <p class="lede cine__lede" data-rise style="--reveal-i:1">
+        SKOBEN wprowadza firmy w operacje prowadzone przez agentów AI. Zamówienia, faktury i&nbsp;zgłoszenia
+        domykają się bez przepisywania — z&nbsp;człowiekiem przy wyjątkach.
+      </p>
+      <div class="cine__actions" data-rise style="--reveal-i:2">
+        <form class="hero__form" action="/kontakt/" method="get">
+          <label class="visually-hidden" for="hero-email">Służbowy adres e-mail</label>
+          <input id="hero-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Służbowy e-mail" required />
+          <button class="btn btn--primary" type="submit">Poproś o dostęp</button>
+        </form>
+        <a class="btn btn--ghost cine__demo" href="/sandbox/">Otwórz sandbox</a>
       </div>
     </div>
-    <p class="micro hero__note">Symulacja · dane przykładowe</p>
+
+    <div class="cine__rig" data-cine-rig aria-hidden="true">
+      <div class="portal" data-cine-portal>
+        <div class="portal__light"></div>
+        <div class="portal__floor"></div>
+      </div>
+      <div class="cine__screen">
+        <Film id="hero" />
+      </div>
+    </div>
+
+    <div class="cine__hint" data-cine-hint aria-hidden="true">
+      <span>Przewiń, żeby wejść</span>
+      <i></i>
+    </div>
   </div>
 </section>
 
 <script>
-  import { mountRidge } from '../scripts/ridge';
-  import { mountHeroCase } from '../scripts/hero-case';
+  import { mountFilm } from '../scripts/sandbox/film';
 
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-ridge]');
-  if (canvas) mountRidge(canvas);
+  const section = document.querySelector<HTMLElement>('[data-cine]');
+  const rig = section?.querySelector<HTMLElement>('[data-cine-rig]');
+  const copy = section?.querySelector<HTMLElement>('[data-cine-copy]');
+  const portal = section?.querySelector<HTMLElement>('[data-cine-portal]');
+  const hint = section?.querySelector<HTMLElement>('[data-cine-hint]');
+  const filmEl = section?.querySelector<HTMLElement>('[data-film]');
 
-  const card = document.querySelector<HTMLElement>('[data-hero-case]');
-  if (card) mountHeroCase(card);
+  if (section && rig && copy && portal && hint && filmEl) {
+    const film = mountFilm(filmEl, { loop: true });
+    film.play('orders');
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const clamp = (v: number) => Math.min(1, Math.max(0, v));
+    const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const FILM_RATIO = 1180 / 652;
+
+    let vw = 0;
+    let vh = 0;
+    let wf = 0; // szerokość ekranu laptopa przy pełnym najeździe
+    let k0 = 0.3; // skala początkowa
+    let ty0 = 0;
+    let txEnd = 0;
+    let ticking = false;
+
+    const measure = () => {
+      vw = window.innerWidth;
+      vh = window.innerHeight;
+      const header = 72;
+      // przy pełnym najeździe ekran wypełnia szerokość okna; na wąskich ekranach
+      // jest szerszy od okna, żeby interfejs pozostał czytelny
+      const wide = vw < 760 ? vw * 2.5 : vw;
+      wf = Math.min(wide, (vh - header - 24) * FILM_RATIO);
+      // na starcie ekran stoi w głębi bramy; łuk jest ~1,46× szerszy od ekranu
+      const ws = Math.min(Math.max(vw * 0.24, 215), 360);
+      k0 = ws / wf;
+      // podłoga bramy przy dolnej krawędzi sceny: środek ekranu = podłoga − (16 + 27,5)% szerokości
+      ty0 = vh * 0.93 - 0.435 * ws - vh / 2;
+      txEnd = Math.max(0, (wf - vw) / 2);
+      rig.style.setProperty('--wf', `${wf}px`);
+      rig.classList.add('is-ready');
+      update();
+    };
+
+    const update = () => {
+      ticking = false;
+      const span = Math.max(1, section.offsetHeight - vh);
+      const p = reduce ? 0 : clamp(-section.getBoundingClientRect().top / span);
+      const e = ease(clamp(p / 0.78));
+      const k = k0 + (1 - k0) * e;
+      const ty = ty0 * (1 - e) + 36 * e;
+      rig.style.transform = `translate3d(calc(-50% + ${txEnd * e}px), calc(-50% + ${ty}px), 0) scale(${k})`;
+      copy.style.opacity = String(1 - clamp(p / 0.14));
+      copy.style.transform = `translate3d(0, ${-p * 160}px, 0)`;
+      copy.style.visibility = p > 0.16 ? 'hidden' : 'visible';
+      portal.style.opacity = String(1 - clamp((p - 0.42) / 0.3));
+      hint.style.opacity = String(1 - clamp(p / 0.05));
+      section.classList.toggle('is-inside', p > 0.62);
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
 
   // Adres e-mail przekazujemy do formularza kontaktowego przez pamięć sesji,
   // nie w adresie URL — nie trafia do historii ani logów serwera.
@@ -89,56 +138,91 @@
 </script>
 
 <style>
-  .hero {
+  .cine {
     position: relative;
-    isolation: isolate;
-    display: grid;
-    grid-template-rows: auto 1fr;
-    min-height: max(46rem, min(100svh, 62rem));
+    height: 100svh;
+    min-height: 40rem;
     background: var(--ink-900);
     color: var(--text);
-    overflow: clip;
   }
 
-  .hero__canvas {
+  /* Z JavaScriptem sekcja jest dłuższa: nadmiar wysokości to „tor” najazdu kamery */
+  :global(.js) .cine {
+    height: 330svh;
+  }
+
+  .cine__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 40rem;
+    overflow: clip;
+    isolation: isolate;
+    background: var(--ink-950);
+  }
+
+  /* Powietrze sali: dwa wolno dryfujące snopy ciepłego światła i prążek ściany */
+  .cine__air {
+    position: absolute;
+    inset: -20%;
+    z-index: -2;
+    background:
+      radial-gradient(38% 30% at 50% 78%, rgb(217 170 118 / 0.34), transparent 70%),
+      radial-gradient(60% 46% at 50% 100%, rgb(42 117 97 / 0.26), transparent 72%),
+      repeating-linear-gradient(to right, rgb(236 235 230 / 0.022) 0 1px, transparent 1px 84px);
+    animation: air-drift 18s var(--ease-in-out) infinite alternate;
+    will-change: transform;
+  }
+
+  @keyframes air-drift {
+    from {
+      transform: translate3d(-1.5%, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(1.5%, -1%, 0) scale(1.04);
+    }
+  }
+
+  /* przyciemnienie pod tekstem i zejście sceny w kolor strony */
+  .cine__shade {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -2;
-  }
-
-  /* Zejście krajobrazu w kolor następnej sekcji */
-  .hero__veil {
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 22%;
-    background: linear-gradient(to bottom, rgb(13 19 17 / 0), var(--ink-900));
     z-index: -1;
+    background:
+      linear-gradient(to bottom, rgb(13 19 17 / 0.5) 0%, rgb(13 19 17 / 0.12) 34%, transparent 52%),
+      linear-gradient(to top, var(--ink-900) 0%, rgb(13 19 17 / 0) 16%);
     pointer-events: none;
   }
 
-  .hero__content {
+  .cine__copy {
+    position: relative;
+    z-index: 2;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     text-align: center;
-    gap: 1.25rem;
-    padding-top: calc(var(--header-h) + clamp(3.5rem, 1rem + 8vh, 6.5rem));
+    gap: 1rem;
+    padding-top: calc(var(--header-h) + clamp(2rem, 0.5rem + 6vh, 5rem));
+    will-change: transform, opacity;
   }
 
-  .hero__lede {
-    max-width: 39rem;
-    color: #c5cbc5;
+  .cine__copy .display {
+    text-shadow: 0 1px 24px rgb(13 19 17 / 0.35);
   }
 
-  .hero__actions {
+  .cine__lede {
+    max-width: 36rem;
+    color: #e6e4de;
+    text-shadow: 0 1px 16px rgb(13 19 17 / 0.4);
+  }
+
+  .cine__actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 0.75rem;
-    margin-top: 1rem;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
   }
 
   .hero__form {
@@ -147,22 +231,22 @@
     height: 3.25rem;
     padding: 0.25rem;
     border-radius: var(--radius-pill);
-    background: rgb(236 235 230 / 0.09);
-    border: 1px solid rgb(236 235 230 / 0.16);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    background: rgb(236 235 230 / 0.16);
+    border: 1px solid rgb(236 235 230 / 0.22);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     transition:
       border-color var(--dur-1) ease,
       background-color var(--dur-1) ease;
   }
 
   .hero__form:focus-within {
-    border-color: rgb(236 235 230 / 0.5);
-    background: rgb(236 235 230 / 0.12);
+    border-color: rgb(236 235 230 / 0.6);
+    background: rgb(236 235 230 / 0.2);
   }
 
   .hero__form input {
-    width: 15.5rem;
+    width: 14.5rem;
     min-width: 0;
     height: 100%;
     padding-inline: 1.125rem 0.5rem;
@@ -174,7 +258,7 @@
   }
 
   .hero__form input::placeholder {
-    color: #aab2ac;
+    color: #d6d5cf;
     opacity: 1;
   }
 
@@ -182,160 +266,114 @@
     height: 100%;
   }
 
-  .hero__demo {
+  .cine__demo {
     height: 3.25rem;
     padding-inline: 1.375rem;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    background: rgb(236 235 230 / 0.12);
+    border-color: rgb(236 235 230 / 0.22);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
   }
 
-  .hero__stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    align-content: end;
-    gap: 0.875rem;
-    padding-block: 3rem 2.25rem;
-  }
-
-  .hero__note {
-    color: #8b958f;
-  }
-
-  /* Karta sprawy — szkło nad krajobrazem */
-  .case-card {
-    width: min(100%, 27.5rem);
-    border-radius: 16px;
-    background: rgb(17 24 21 / 0.72);
-    border: 1px solid rgb(236 235 230 / 0.12);
-    box-shadow:
-      0 30px 80px -30px rgb(0 0 0 / 0.75),
-      inset 0 1px 0 rgb(236 235 230 / 0.06);
-    -webkit-backdrop-filter: blur(18px) saturate(1.3);
-    backdrop-filter: blur(18px) saturate(1.3);
-    font-size: var(--text-sm);
-    text-align: left;
-  }
-
-  .case-card__head,
-  .case-card__steps,
-  .case-card__foot {
-    transition: opacity 300ms ease;
-  }
-
-  .case-card.is-swapping .case-card__head,
-  .case-card.is-swapping .case-card__steps,
-  .case-card.is-swapping .case-card__foot {
+  /* --- Brama i ekran -------------------------------------------------------
+     Zestaw jest układany w rozmiarze docelowym (ekran = --wf) i pomniejszany
+     transformacją, więc po najeździe interfejs jest ostry. 1em = 1% szerokości ekranu. */
+  .cine__rig {
+    --wf: 100vw;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--wf);
+    font-size: calc(var(--wf) / 100);
+    transform: translate3d(-50%, -20%, 0) scale(0.3);
+    transform-origin: 50% 50%;
     opacity: 0;
+    transition: opacity 700ms ease 200ms;
+    will-change: transform;
+    z-index: 1;
   }
 
-  .case-card__head {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.875rem 1rem;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .case-card__id {
-    font-size: var(--text-2xs);
-    color: var(--text-3);
-  }
-
-  .case-card__title {
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .case-card__steps {
-    display: grid;
-    padding: 0.5rem 1rem;
-  }
-
-  .case-card__steps li {
-    display: grid;
-    grid-template-columns: 1rem 1fr auto;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 2.125rem;
-    color: var(--text-3);
-    transition: color var(--dur-2) ease;
-  }
-
-  .case-card__meta {
-    font-size: var(--text-2xs);
-    color: var(--text-3);
-    opacity: 0;
-    transition: opacity var(--dur-2) ease;
-  }
-
-  .case-card__tick {
-    color: var(--ink-500);
-    transition: color var(--dur-2) ease;
-  }
-
-  .case-card__tick .check {
-    stroke-dasharray: 10;
-    stroke-dashoffset: 10;
-    transition: stroke-dashoffset var(--dur-3) var(--ease-out);
-  }
-
-  .case-card__steps li.is-active {
-    color: var(--text);
-  }
-
-  .case-card__steps li.is-active .case-card__tick {
-    color: var(--text-2);
-  }
-
-  .case-card__steps li.is-active .ring {
-    stroke-dasharray: 9 30.3;
-    transform-origin: 8px 8px;
-    animation: tick-spin 900ms linear infinite;
-  }
-
-  .case-card__steps li.is-done {
-    color: var(--text-2);
-  }
-
-  .case-card__steps li.is-done .case-card__tick {
-    color: var(--accent);
-  }
-
-  .case-card__steps li.is-done .check {
-    stroke-dashoffset: 0;
-  }
-
-  .case-card__steps li.is-done .case-card__meta,
-  .case-card__steps li.is-hold .case-card__meta {
+  .cine__rig:global(.is-ready) {
     opacity: 1;
   }
 
-  .case-card__steps li.is-hold {
-    color: var(--warn);
+  .portal {
+    position: absolute;
+    left: -23em;
+    right: -23em;
+    top: -79em;
+    bottom: -16em;
+    will-change: opacity;
   }
 
-  .case-card__steps li.is-hold .case-card__tick,
-  .case-card__steps li.is-hold .case-card__meta {
-    color: var(--warn);
+  /* łuk: światło bije od podłogi, obrys łapie mosiężny refleks */
+  .portal__light {
+    position: absolute;
+    inset: 0;
+    border-radius: 73em 73em 0 0;
+    background:
+      radial-gradient(70% 46% at 50% 100%, #f3cf9f 0%, #d49a63 20%, rgb(140 98 62 / 0.75) 42%, rgb(40 52 46 / 0.6) 68%, rgb(13 19 17 / 0.2) 100%),
+      linear-gradient(to top, #2a332e 0%, #121916 60%, #0b100e 100%);
+    box-shadow:
+      inset 0 0 0 0.16em rgb(217 187 128 / 0.5),
+      inset 0 0 9em rgb(13 19 17 / 0.55),
+      0 0 22em -2em rgb(217 170 118 / 0.42);
   }
 
-  .case-card__foot {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    border-top: 1px solid var(--line);
-    font-size: var(--text-xs);
-    color: var(--text-3);
+  /* odbicie światła na posadzce przed bramą */
+  .portal__floor {
+    position: absolute;
+    left: -30%;
+    right: -30%;
+    top: 100%;
+    height: 46em;
+    background: radial-gradient(50% 100% at 50% 0%, rgb(217 170 118 / 0.42), rgb(217 170 118 / 0.08) 48%, transparent 76%);
+    border-top: 0.12em solid rgb(217 187 128 / 0.3);
   }
 
-  @keyframes tick-spin {
-    to {
-      transform: rotate(360deg);
+  .cine__screen {
+    position: relative;
+    border-radius: 0.7em;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 0.1em rgb(236 235 230 / 0.16),
+      0 3em 8em -1em rgb(0 0 0 / 0.75);
+  }
+
+  .cine__hint {
+    position: absolute;
+    left: 50%;
+    bottom: 1.25rem;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c9cec8;
+  }
+
+  .cine__hint i {
+    width: 1px;
+    height: 2rem;
+    background: linear-gradient(to bottom, #c9cec8, transparent);
+    transform-origin: 50% 0;
+    animation: cine-hint 2.2s var(--ease-in-out) infinite;
+  }
+
+  @keyframes cine-hint {
+    0% {
+      transform: scaleY(0);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+    100% {
+      transform: scaleY(1);
+      opacity: 0;
     }
   }
 
@@ -349,12 +387,15 @@
       width: auto;
     }
 
-    .hero__actions {
+    .cine__actions,
+    .cine__demo {
       width: 100%;
     }
+  }
 
-    .hero__demo {
-      width: 100%;
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .cine {
+      height: 100svh;
     }
   }
 </style>

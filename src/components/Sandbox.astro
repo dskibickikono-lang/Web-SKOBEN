@@ -9,13 +9,28 @@ import { caseHtml, freshCase, metricsHtml, queueHtml, rulesHtml } from '../scrip
 
 // Stan początkowy renderowany w czasie builda — tymi samymi szablonami,
 // których używa kontroler w przeglądarce.
+interface Props {
+  /** Wariant „film”: nieinteraktywna konsola sterowana skryptem (film.ts). */
+  film?: boolean;
+  /** Prefiks identyfikatorów — wymagany, gdy na stronie jest więcej niż jedna konsola. */
+  idPrefix?: string;
+}
+const { film = false, idPrefix = 'sbx' } = Astro.props;
+
 const scenario = SCENARIOS[0] as Scenario;
 const rules = defaultRules(scenario);
 const cases = scenario.cases.map(freshCase);
 const first = cases[0];
 ---
 
-<div class="sbx theme-dark" data-sbx>
+<div
+  class:list={['sbx theme-dark', { 'sbx--film': film }]}
+  data-sbx={film ? undefined : ''}
+  data-sbx-film={film ? '' : undefined}
+  data-id-prefix={idPrefix}
+  inert={film}
+  aria-hidden={film ? 'true' : undefined}
+>
   <div class="sbx__top">
     <div class="sbx__brand">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
@@ -68,29 +83,34 @@ const first = cases[0];
 
     <section class="sbx__side" aria-label="Dziennik i reguły">
       <div class="sbx__tabs" role="tablist" aria-label="Widok">
-        <button type="button" role="tab" id="sbx-tab-log" aria-controls="sbx-panel-log" aria-selected="true" data-sbx-tab="log">
+        <button type="button" role="tab" id={`${idPrefix}-tab-log`} aria-controls={`${idPrefix}-panel-log`} aria-selected="true" data-sbx-tab="log">
           Dziennik <span class="sbx__count mono" data-sbx-logcount>0</span>
         </button>
-        <button type="button" role="tab" id="sbx-tab-rules" aria-controls="sbx-panel-rules" aria-selected="false" tabindex="-1" data-sbx-tab="rules">
+        <button type="button" role="tab" id={`${idPrefix}-tab-rules`} aria-controls={`${idPrefix}-panel-rules`} aria-selected="false" tabindex="-1" data-sbx-tab="rules">
           Reguły
         </button>
       </div>
-      <div class="sbx__tabpanel" role="tabpanel" id="sbx-panel-log" aria-labelledby="sbx-tab-log" data-sbx-panel="log">
+      <div class="sbx__tabpanel" role="tabpanel" id={`${idPrefix}-panel-log`} aria-labelledby={`${idPrefix}-tab-log`} data-sbx-panel="log">
         <div class="sbx-log" role="log" aria-label="Dziennik decyzji" data-sbx-log tabindex="0"></div>
         <p class="sbx-log__empty">Tu pojawi się każdy krok agenta i każda Twoja decyzja — z czasem i powodem.</p>
       </div>
-      <div class="sbx__tabpanel sbx__tabpanel--rules" role="tabpanel" id="sbx-panel-rules" aria-labelledby="sbx-tab-rules" data-sbx-panel="rules" data-sbx-rules hidden set:html={rulesHtml(scenario, rules)} />
+      <div class="sbx__tabpanel sbx__tabpanel--rules" role="tabpanel" id={`${idPrefix}-panel-rules`} aria-labelledby={`${idPrefix}-tab-rules`} data-sbx-panel="rules" data-sbx-rules hidden set:html={rulesHtml(scenario, rules, idPrefix)} />
     </section>
   </div>
 
-  <noscript>
-    <p class="sbx__noscript">Sandbox wymaga włączonej obsługi JavaScript.</p>
-  </noscript>
+  {
+    !film && (
+      <noscript>
+        <p class="sbx__noscript">Sandbox wymaga włączonej obsługi JavaScript.</p>
+      </noscript>
+    )
+  }
 </div>
 
 <script>
   import { mountSandbox } from '../scripts/sandbox/ui';
 
+  // Wariant „film” montuje film.ts — tutaj tylko interaktywna konsola.
   const root = document.querySelector<HTMLElement>('[data-sbx]');
   if (root) mountSandbox(root);
 </script>
@@ -224,7 +244,7 @@ const first = cases[0];
 
   .sbx-metric strong {
     font-size: 1.375rem;
-    font-weight: 460;
+    font-weight: 480;
     letter-spacing: -0.02em;
     line-height: 1.25;
   }
@@ -1086,6 +1106,46 @@ const first = cases[0];
     padding: 2rem;
     text-align: center;
     color: var(--text-2);
+  }
+
+  /* Wariant „film”: stały rozmiar projektowy, skalowany transformacją w Film.astro */
+  .sbx--film {
+    --sbx-h: 31rem;
+    width: 1180px;
+    pointer-events: none;
+    user-select: none;
+    box-shadow: none;
+  }
+
+  .sbx--film .sbx__grid {
+    grid-template-columns: 16rem minmax(0, 1fr) 19rem;
+    grid-template-rows: none;
+    height: var(--sbx-h);
+  }
+
+  .sbx--film .sbx__side {
+    grid-column: auto;
+    height: auto;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .sbx--film .sbx__top {
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .sbx--film .sbx__scenarios {
+    grid-column: auto;
+    grid-row: auto;
+    justify-self: auto;
+  }
+
+  .sbx--film .sbx__metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sbx--film .sbx__panel-head .btn.is-hint::after {
+    display: none;
   }
 
   /* Na ekranach dotykowych kontrolki konsoli mają co najmniej 40 px wysokości */

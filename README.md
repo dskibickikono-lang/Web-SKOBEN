@@ -27,9 +27,8 @@ src/
   styles/global.css       tokeny, motywy (jasny/ciemny), typografia, prymitywy
   layouts/Base.astro      <head>, SEO, nagłówek, stopka
   components/             sekcje i makiety interfejsu (HTML/CSS/SVG)
-  scripts/ridge.ts        krajobraz w hero (Canvas 2D)
-  scripts/hero-case.ts    animowana karta sprawy w hero
-  scripts/sandbox/        sandbox: dane (data), silnik reguł (engine), szablony (view), kontroler (ui)
+  scripts/sandbox/        sandbox: dane (data), silnik reguł (engine), szablony (view), kontroler (ui),
+                          filmy produktowe — konsola sterowana zaskryptowanym kursorem (film)
   pages/                  /, /agenci/, /automatyzacje/, /sandbox/, /wdrozenie/,
                           /bezpieczenstwo/, /kontakt/, /polityka-prywatnosci/, 404, robots.txt
 scripts/audit.cjs         audyt wizualny/UX

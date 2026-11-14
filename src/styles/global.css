@@ -38,12 +38,12 @@
     'Segoe UI', sans-serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  --text-display: clamp(2.25rem, 1.35rem + 3.9vw, 3.75rem);
-  --text-h2: clamp(2rem, 1.45rem + 2vw, 2.75rem);
-  --text-statement: clamp(1.5rem, 1.25rem + 0.9vw, 2rem);
+  --text-display: clamp(1.875rem, 1.3rem + 2.45vw, 3.125rem);
+  --text-h2: clamp(1.625rem, 1.25rem + 1.6vw, 2.625rem);
+  --text-statement: clamp(1.3125rem, 1.15rem + 0.6vw, 1.5rem);
   --text-h3: 1.25rem;
-  --text-lede: clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem);
-  --text-body: 1.0625rem;
+  --text-lede: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --text-body: 1rem;
   --text-sm: 0.9375rem;
   --text-xs: 0.8125rem;
   --text-2xs: 0.75rem;
@@ -238,25 +238,25 @@ canvas {
 
 .display {
   font-size: var(--text-display);
-  font-weight: 460;
-  line-height: 1.06;
-  letter-spacing: -0.022em;
+  font-weight: 480;
+  line-height: 1.1;
+  letter-spacing: -0.012em;
   text-wrap: balance;
 }
 
 .h2 {
   font-size: var(--text-h2);
-  font-weight: 460;
-  line-height: 1.1;
-  letter-spacing: -0.018em;
+  font-weight: 480;
+  line-height: 1.15;
+  letter-spacing: -0.008em;
   text-wrap: balance;
 }
 
 .statement {
   font-size: var(--text-statement);
-  font-weight: 460;
-  line-height: 1.18;
-  letter-spacing: -0.012em;
+  font-weight: 480;
+  line-height: 1.2;
+  letter-spacing: 0.004em;
   text-wrap: balance;
 }
 

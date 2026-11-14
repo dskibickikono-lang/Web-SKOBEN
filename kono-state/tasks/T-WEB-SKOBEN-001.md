@@ -3,7 +3,7 @@ id: T-WEB-SKOBEN-001
 title: Strona B2B SKOBEN — agenci AI i automatyzacja workflow
 channel: pm-local
 requested_by: owner
-status: in-review
+status: in-progress
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
 sha: patrz PR #1 — ostatni commit kodu „Pomiar precyzji w audycie…”
@@ -99,6 +99,30 @@ Odbiór przez właściciela: zapowiedziany po merge'u (uwagi w kolejnej iteracji
   bramka `npm run check:release` przechodzi.
 - Odbiór wizualny: właściciel obejrzy stronę po merge'u; ewentualne uwagi w kolejnej iteracji.
 - Merge PR #1: po stronie właściciela.
+
+## Odbiór właściciela z 2026-11-14 — odrzucony, iteracja 2
+Właściciel obejrzał stronę i nie zaakceptował jakości („dalekie od tego, o co prosiłem”); merge wstrzymany.
+Przysłał trzy nagrania mercury.com z telefonu i wskazał, czego brakuje:
+- pierwsze pociągnięcia po ekranie nie przewijają strony, tylko prowadzą kamerę w głąb sceny,
+- przy funkcjach lecą zapętlone filmy produktu z kursorem i pauzą,
+- jasne kafle z miękkimi, zapętlonymi winietami („prawie każda grafika to film CSS”), cichy luksus,
+- typografia i jakość ogólna poniżej wzorca.
+Doprecyzował: stosować techniki, nie kopiować laptopa i gór; strona ma sprzedawać ekskluzywny dostęp
+do agenckiego, zautomatyzowanego świata.
+
+Zrobione w iteracji 2 (wszystko z kodu, bez plików graficznych):
+- hero „brama”: łuk ze znaku SKOBEN jako wejście; przewijanie prowadzi kamerę przez łuk, aż działająca
+  konsola wypełni ekran (scena przypięta, transformacje GPU); usunięty krajobraz z linii,
+- filmy produktowe (`scripts/sandbox/film.ts`): prawdziwa konsola sterowana zaskryptowanym kursorem —
+  cztery filmy przy liście funkcji, automatyczne przejście do kolejnej pozycji, pasek postępu, pauza,
+- sekcja kafli-winiet (`Vignettes.astro`) w miejsce schematycznych rysunków SVG,
+- skala pisma przestawiona na wartości wzorca (h1 30–50 px, grubość 480, luźniejsze światła),
+- przekaz: „Wejdź do świata, w którym praca domyka się sama”, wezwanie „Poproś o dostęp”.
+  Nowa deklaracja w treści do potwierdzenia: „Wdrażamy równolegle tylko kilka firm” (strona Kontakt).
+- audyt rozszerzony o test najazdu kamery i odtwarzania filmu.
+
+Do zrobienia w kolejnych iteracjach, jeśli właściciel potwierdzi kierunek: winiety i filmy na podstronach,
+dalsze dopracowanie światła bramy, przejście konsoli z hero do sekcji funkcji.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em

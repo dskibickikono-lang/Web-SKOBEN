@@ -239,7 +239,7 @@ export function forecastHtml(scenario: Scenario, rules: Rules): string {
     <p><strong class="tnum">${auto} z ${f.length}</strong> spraw agent obsłuży sam. ${human === 0 ? 'Żadna nie trafi do Ciebie.' : `${human} ${human === 1 ? 'trafi' : 'trafią'} do Ciebie.`}</p>`;
 }
 
-export function rulesHtml(scenario: Scenario, rules: Rules): string {
+export function rulesHtml(scenario: Scenario, rules: Rules, prefix = 'sbx'): string {
   return `
     <p class="sbx-rules__intro">Zmieniaj progi i patrz, jak zmienia się podział pracy między agentem a człowiekiem.</p>
     ${scenario.rules
@@ -247,16 +247,16 @@ export function rulesHtml(scenario: Scenario, rules: Rules): string {
         if (r.kind === 'toggle') {
           return `<div class="sbx-rule sbx-rule--toggle">
             <div class="sbx-rule__head">
-              <label for="sbx-r-flag">${esc(r.label)}</label>
-              <input id="sbx-r-flag" class="sbx-switch" type="checkbox" role="switch" data-rule="flag"${rules.flag ? ' checked' : ''} />
+              <label for="${prefix}-r-flag">${esc(r.label)}</label>
+              <input id="${prefix}-r-flag" class="sbx-switch" type="checkbox" role="switch" data-rule="flag"${rules.flag ? ' checked' : ''} />
             </div>
             <p>${esc(r.hint)}</p>
           </div>`;
         }
         const fill = ((rules[r.key] - r.min) / (r.max - r.min)) * 100;
         return `<div class="sbx-rule">
-          <div class="sbx-rule__head"><label for="sbx-r-${r.key}">${esc(r.label)}</label><output class="tnum" for="sbx-r-${r.key}" data-out="${r.key}">${ruleValue(r, rules)}</output></div>
-          <input id="sbx-r-${r.key}" type="range" min="${r.min}" max="${r.max}" step="${r.step}" value="${rules[r.key]}" data-rule="${r.key}" style="--pct:${fill}%" />
+          <div class="sbx-rule__head"><label for="${prefix}-r-${r.key}">${esc(r.label)}</label><output class="tnum" for="${prefix}-r-${r.key}" data-out="${r.key}">${ruleValue(r, rules)}</output></div>
+          <input id="${prefix}-r-${r.key}" type="range" min="${r.min}" max="${r.max}" step="${r.step}" value="${rules[r.key]}" data-rule="${r.key}" style="--pct:${fill}%" />
           <p>${esc(r.hint)}</p>
         </div>`;
       })

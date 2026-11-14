@@ -2,8 +2,8 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import FeatureSwitcher from '../components/FeatureSwitcher.astro';
-import ProductPanels from '../components/ProductPanels.astro';
-import ControlArt from '../components/ControlArt.astro';
+import Film from '../components/Film.astro';
+import Vignettes from '../components/Vignettes.astro';
 import FlowDiagram from '../components/FlowDiagram.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
 import Calculator from '../components/Calculator.astro';
@@ -25,24 +25,8 @@ const work = [
     body: 'Klasyfikacja, komplet danych, odpowiedź albo przekazanie do właściwej osoby — w ramach SLA, które ustalasz Ty.',
   },
   {
-    title: 'Raporty i uzgodnienia',
-    body: 'Zestawienie, które ktoś składa w poniedziałek z trzech systemów. Agent składa je codziennie i pokazuje, co się nie zgadza.',
-  },
-];
-
-const control = [
-  {
-    title: 'Człowiek zatwierdza wyjątki',
-    body: 'Agent sam domyka sprawy zgodne z regułami. Resztę przekazuje właściwej osobie — z powodem, danymi źródłowymi i rekomendacją.',
-    link: { href: '/bezpieczenstwo/', label: 'Zobacz model kontroli' },
-  },
-  {
-    title: 'Każda decyzja ma ślad',
-    body: 'Co agent przeczytał, co sprawdził, co zapisał i dlaczego. Dziennik da się przeszukać, wyeksportować i pokazać audytorowi.',
-  },
-  {
-    title: 'Progi ustawiasz Ty',
-    body: 'Limit kwoty, tolerancja ceny, lista kontrahentów wymagających akceptacji. Zmiana reguły nie wymaga programisty ani nowego wdrożenia.',
+    title: 'Reguły i progi',
+    body: 'Limit kwoty, tolerancja ceny, lista kontrahentów wymagających akceptacji. Przesuwasz próg — i od razu widzisz, ile spraw agent domknie sam.',
   },
 ];
 
@@ -98,7 +82,15 @@ const faq = [
       <FeatureSwitcher id="work" items={work}>
         <h2 class="statement" slot="intro" data-reveal>Jedna kolejka pracy.<br />Każda sprawa domknięta.</h2>
         <a class="link" href="/sandbox/" slot="after">Otwórz sandbox</a>
-        <ProductPanels />
+        <div class="work-film">
+          <Film id="work" />
+          <button class="work-film__toggle" type="button" data-film-toggle aria-label="Wstrzymaj film" aria-pressed="false">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path class="i-pause" d="M4.5 3h2.5v10H4.5zM9 3h2.5v10H9z" fill="currentColor"></path>
+              <path class="i-play" d="M5 2.8l8 5.2-8 5.2z" fill="currentColor"></path>
+            </svg>
+          </button>
+        </div>
       </FeatureSwitcher>
     </div>
   </section>
@@ -128,10 +120,13 @@ const faq = [
   <!-- Kontrola -->
   <section class="section section--flush-top">
     <div class="container">
-      <FeatureSwitcher id="control" items={control} flip>
-        <h2 class="statement" slot="intro" data-reveal>Automatyzacja, którą da się skontrolować.</h2>
-        <ControlArt />
-      </FeatureSwitcher>
+      <div class="vg-head">
+        <h2 class="statement" data-reveal>Automatyzacja, którą da się skontrolować.</h2>
+      </div>
+      <Vignettes />
+      <p class="vg-more" data-reveal>
+        <a class="link" href="/bezpieczenstwo/">Zobacz model kontroli</a>
+      </p>
     </div>
   </section>
 
@@ -198,9 +193,87 @@ const faq = [
   <CtaBand />
 </Base>
 
+<script>
+  import { mountFilm, type FilmId } from '../scripts/sandbox/film';
+
+  // Film w sekcji „Jedna kolejka pracy”: każda pozycja listy ma swój film,
+  // a po jego zakończeniu lista przechodzi do następnej.
+  const fs = document.querySelector<HTMLElement>('.work [data-fs]');
+  const stage = fs?.querySelector<HTMLElement>('[data-film]');
+  const toggle = fs?.querySelector<HTMLButtonElement>('[data-film-toggle]');
+  if (fs && stage) {
+    const ids: FilmId[] = ['orders', 'invoices', 'tickets', 'rules'];
+    let index = 0;
+    const film = mountFilm(stage, {
+      onEnd: () => fs.dispatchEvent(new CustomEvent('fs:goto', { detail: (index + 1) % ids.length })),
+      onProgress: (v) => fs.style.setProperty('--fs-progress', String(v)),
+    });
+    fs.addEventListener('fs:change', (e) => {
+      index = (e as CustomEvent<number>).detail;
+      film.play(ids[index] ?? 'orders');
+    });
+    film.play('orders');
+    toggle?.addEventListener('click', () => {
+      film.setPaused(!film.paused);
+      toggle.setAttribute('aria-pressed', String(film.paused));
+      toggle.setAttribute('aria-label', film.paused ? 'Odtwórz film' : 'Wstrzymaj film');
+    });
+  }
+</script>
+
 <style>
+  .work-film {
+    position: relative;
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line-2);
+    box-shadow: var(--shadow-panel);
+  }
+
+  .work-film__toggle {
+    position: absolute;
+    left: 0.875rem;
+    bottom: 0.875rem;
+    z-index: 6;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgb(236 235 230 / 0.14);
+    border: 1px solid rgb(236 235 230 / 0.2);
+    color: #ecebe6;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: background-color var(--dur-1) ease;
+  }
+
+  .work-film__toggle:hover {
+    background: rgb(236 235 230 / 0.24);
+  }
+
+  .work-film__toggle .i-play,
+  .work-film__toggle[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+
+  .work-film__toggle[aria-pressed='true'] .i-play {
+    display: block;
+  }
+
   .work {
     padding-top: clamp(4rem, 2rem + 6vw, 7rem);
+  }
+
+  .vg-head {
+    padding-top: 1.5rem;
+    margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-top: 1px solid var(--line-2);
+  }
+
+  .vg-more {
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3.5rem);
   }
 
   .refusals__head {

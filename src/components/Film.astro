@@ -1,0 +1,71 @@
+---
+/**
+ * Scena filmu produktowego: konsola w stałym rozmiarze projektowym (1180 px),
+ * dopasowana do kontenera transformacją, z nałożonym kursorem.
+ * Uruchamia ją skrypt strony przez mountFilm() z scripts/sandbox/film.ts.
+ */
+import Sandbox from './Sandbox.astro';
+
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+---
+
+<div class="film" data-film={id} aria-hidden="true">
+  <div class="film__canvas" data-film-canvas>
+    <Sandbox film idPrefix={id} />
+    <div class="film__cursor" data-film-cursor>
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+        <path d="M5 3.5l13.5 7.6-6 1.5-2.6 5.8L5 3.5z" fill="#f4f3ee" stroke="#0d1311" stroke-width="1.4" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<style>
+  .film {
+    --film-scale: 0.5;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1180 / 652;
+    overflow: hidden;
+    background: var(--ink-850);
+  }
+
+  .film__canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1180px;
+    transform-origin: 0 0;
+    transform: scale(var(--film-scale));
+  }
+
+  .film__cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    transform: translate3d(708px, 456px, 0);
+    transition: transform 700ms cubic-bezier(0.3, 0.1, 0.2, 1);
+    filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.45));
+    will-change: transform;
+  }
+
+  .film__cursor svg {
+    display: block;
+    margin: -3px 0 0 -5px;
+    transition: transform 120ms ease;
+    transform-origin: 5px 3px;
+  }
+
+  .film__cursor:global(.is-down) svg {
+    transform: scale(0.84);
+  }
+
+  .film :global(.sbx) {
+    border-radius: 0;
+    border: 0;
+  }
+</style>
