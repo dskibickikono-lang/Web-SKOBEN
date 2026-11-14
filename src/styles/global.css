@@ -695,3 +695,22 @@ canvas {
     --film-aspect: 0.92;
   }
 }
+
+/* Film wjeżdża w kadr razem z przewijaniem (tam, gdzie przeglądarka wspiera oś widoku) */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .film-frame,
+    .work-film {
+      animation: frame-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 34%;
+    }
+
+    @keyframes frame-in {
+      from {
+        transform: translate3d(0, 36px, 0) scale(0.94);
+        opacity: 0.4;
+      }
+    }
+  }
+}

@@ -268,7 +268,15 @@ const faq = [
   }
 
   .work {
-    padding-top: clamp(2rem, 1rem + 3vw, 4rem);
+    padding-top: clamp(1.5rem, 1rem + 2vw, 3rem);
+  }
+
+  /* lista funkcji wsuwa się pod podpis osiadłej konsoli (patrz Hero.astro) */
+  :global(.js) .work {
+    position: relative;
+    z-index: 2;
+    margin-top: calc(var(--dock-overlap, 0px) * -1);
+    background: linear-gradient(to bottom, rgb(13 19 17 / 0), var(--ink-900) 5rem);
   }
 
   @media (max-width: 900px) {

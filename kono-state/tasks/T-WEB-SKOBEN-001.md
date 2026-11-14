@@ -126,6 +126,10 @@ Dopracowanie iteracji 2:
 - filmy z kamerą podążającą za kursorem — wycinek konsoli w czytelnej skali,
 - filmy na podstronach Agenci, Automatyzacje, Wdrożenie; kafle-winiety na stronie Bezpieczeństwo,
 - start filmów odroczony do bezczynności / zbliżenia do ekranu.
+- lista funkcji wsuwa się pod podpis osiadłej konsoli (bez pustego pola na telefonie),
+- brama: dwa cofnięte łuki i oddychające światło budują głębię,
+- podstrony: motyw trzech łuków rozsuwających się z przewijaniem oraz filmy wjeżdżające w kadr
+  (CSS scroll-driven animations, bez JS; w przeglądarkach bez wsparcia elementy są statyczne).
 
 Pomiar stanu po iteracji 2 (Linux, lokalnie): `astro check` 0 błędów; `npm run audit` bez zastrzeżeń
 (9 stron × 3 szerokości, w tym test najazdu, osiadania i odtwarzania filmu); Lighthouse mobile:
