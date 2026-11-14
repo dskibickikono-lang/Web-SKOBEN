@@ -100,17 +100,6 @@ const stages = ['Odczyt', 'Walidacja', 'Decyzja', 'Zapis'];
   </ul>
 </div>
 
-<script>
-  // SMIL nie respektuje prefers-reduced-motion ani widoczności — robimy to ręcznie.
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.querySelectorAll<HTMLElement>('[data-flow]').forEach((root) => {
-    const svgs = Array.from(root.querySelectorAll<SVGSVGElement>('svg'));
-    const set = (run: boolean) => svgs.forEach((s) => (run && !reduce ? s.unpauseAnimations() : s.pauseAnimations()));
-    set(false);
-    new IntersectionObserver(([e]) => set(e?.isIntersecting ?? false), { threshold: 0.1 }).observe(root);
-  });
-</script>
-
 <style>
   .flow {
     display: grid;

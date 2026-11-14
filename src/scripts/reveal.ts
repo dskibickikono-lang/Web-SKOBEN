@@ -25,4 +25,27 @@ if (targets.length > 0) {
   }
 }
 
+/**
+ * Animacje SMIL (ruch po ścieżce w diagramach) nie respektują
+ * prefers-reduced-motion ani widoczności — pauzujemy je ręcznie.
+ */
+const animated = Array.from(document.querySelectorAll<SVGSVGElement>('svg')).filter((svg) =>
+  svg.querySelector('animateMotion, animate, animateTransform'),
+);
+
+if (animated.length > 0) {
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  animated.forEach((svg) => svg.pauseAnimations());
+  if (!still && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const svg = entry.target as SVGSVGElement;
+        if (entry.isIntersecting) svg.unpauseAnimations();
+        else svg.pauseAnimations();
+      }
+    });
+    animated.forEach((svg) => io.observe(svg));
+  }
+}
+
 export {};

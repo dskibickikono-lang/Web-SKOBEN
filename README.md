@@ -27,7 +27,7 @@ src/
   components/             sekcje i makiety interfejsu (HTML/CSS/SVG)
   scripts/ridge.ts        krajobraz w hero (Canvas 2D)
   scripts/hero-case.ts    animowana karta sprawy w hero
-  scripts/sandbox/        sandbox: dane scenariuszy, silnik reguł, kontroler UI
+  scripts/sandbox/        sandbox: dane (data), silnik reguł (engine), szablony (view), kontroler (ui)
   pages/                  /, /agenci/, /automatyzacje/, /sandbox/, /wdrozenie/,
                           /bezpieczenstwo/, /kontakt/, 404
 scripts/audit.cjs         audyt wizualny/UX
@@ -39,7 +39,9 @@ kono-state/tasks/         karta zadania
 `/sandbox/` to klikalna symulacja konsoli operacyjnej. Trzy scenariusze (zamówienia, faktury,
 zgłoszenia) po sześć spraw. Agent przechodzi przez odczyt, ekstrakcję, walidację, decyzję i zapis;
 wyjątki trafiają do użytkownika, a zmiana progów w zakładce „Reguły” na żywo zmienia podział pracy
-i potrafi domknąć sprawy czekające na decyzję. Logika oceny (`engine.ts`) jest oddzielona od DOM.
+i potrafi domknąć sprawy czekające na decyzję. Logika oceny (`engine.ts`) i szablony HTML (`view.ts`)
+są oddzielone od DOM — stan początkowy konsoli renderuje się w czasie builda tymi samymi funkcjami,
+których używa przeglądarka, więc strona nie „skacze” po załadowaniu skryptów.
 
 Wszystkie firmy, dokumenty i kwoty w sandboxie oraz w makietach są fikcyjne.
 
@@ -64,6 +66,14 @@ Wartości przyjęte roboczo, zebrane w `src/config/site.ts` i `astro.config.mjs`
 
 Formularz kontaktowy bez ustawionego `formEndpoint` otwiera przygotowaną wiadomość w programie
 pocztowym użytkownika. Strona nie zawiera jeszcze polityki prywatności — wymaga danych spółki.
+
+## Wyniki pomiarów (build lokalny, Linux)
+
+- `astro check`: 0 błędów, 0 ostrzeżeń, 0 wskazówek.
+- `npm run audit`: 8 stron × 3 szerokości bez zastrzeżeń.
+- Lighthouse (mobile, 5 stron): Performance 100, Accessibility 100, Best Practices 100, SEO 100;
+  LCP 0,8–1,1 s, CLS 0.
+- Waga: JS + CSS łącznie ok. 106 kB bez kompresji dla całego serwisu.
 
 ## Typografia
 

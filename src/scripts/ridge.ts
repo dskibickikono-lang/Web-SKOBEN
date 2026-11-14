@@ -18,7 +18,8 @@ interface Glint {
 }
 
 const LINES = 30;
-const STEP = 7; // px między próbkami (w CSS px)
+const STEP = 8; // px między próbkami (w CSS px)
+const FRAME_MS = 1000 / 30; // teren płynie powoli — 30 kl./s wystarcza i oszczędza CPU
 const BG = [13, 19, 17] as const; // --ink-900
 const HAZE = [30, 44, 39] as const;
 
@@ -43,6 +44,9 @@ export function mountRidge(canvas: HTMLCanvasElement): () => void {
   let time = 0;
   let cols = 0;
   let heights = new Float32Array(0);
+  let sky: CanvasGradient | null = null;
+  let glow: CanvasGradient | null = null;
+  let glowR = 0;
 
   // deterministyczne rozmieszczenie sygnałów — bez „skakania” między odświeżeniami
   const glints: Glint[] = Array.from({ length: 7 }, (_, i) => ({
@@ -51,6 +55,9 @@ export function mountRidge(canvas: HTMLCanvasElement): () => void {
     speed: 0.018 + ((i * 13) % 7) * 0.004,
     len: 0.05 + ((i * 5) % 4) * 0.012,
   }));
+
+  const narrowness = () => Math.min(1, w / 1100);
+  const horizonY = () => h * lerp(0.6, 0.5, narrowness());
 
   const resize = () => {
     const rect = canvas.getBoundingClientRect();
@@ -61,6 +68,17 @@ export function mountRidge(canvas: HTMLCanvasElement): () => void {
     canvas.height = Math.round(h * dpr);
     cols = Math.ceil(w / STEP) + 2;
     heights = new Float32Array(LINES * cols);
+
+    // gradienty zależą tylko od rozmiaru — budujemy je raz, nie w każdej klatce
+    const horizon = horizonY();
+    sky = ctx.createLinearGradient(0, 0, 0, horizon + 40);
+    sky.addColorStop(0, '#090e0c');
+    sky.addColorStop(1, '#16221e');
+    glowR = Math.max(w * 0.46, 360);
+    glow = ctx.createRadialGradient(w * 0.5, horizon + 10, 0, w * 0.5, horizon + 10, glowR);
+    glow.addColorStop(0, 'rgba(217, 187, 128, 0.24)');
+    glow.addColorStop(0.35, 'rgba(143, 214, 187, 0.09)');
+    glow.addColorStop(1, 'rgba(143, 214, 187, 0)');
     draw();
   };
 
@@ -80,26 +98,18 @@ export function mountRidge(canvas: HTMLCanvasElement): () => void {
   };
 
   const draw = () => {
-    const narrow = Math.min(1, w / 1100);
-    const horizon = h * lerp(0.6, 0.5, narrow);
+    const narrow = narrowness();
+    const horizon = horizonY();
     const relief = lerp(0.42, 1, narrow);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // niebo
-    const sky = ctx.createLinearGradient(0, 0, 0, horizon + 40);
-    sky.addColorStop(0, '#090e0c');
-    sky.addColorStop(1, '#16221e');
-    ctx.fillStyle = sky;
+    // niebo i poświata nad horyzontem
+    ctx.fillStyle = sky ?? '#0d1311';
     ctx.fillRect(0, 0, w, h);
-
-    // poświata nad horyzontem
-    const glowR = Math.max(w * 0.46, 360);
-    const glow = ctx.createRadialGradient(w * 0.5, horizon + 10, 0, w * 0.5, horizon + 10, glowR);
-    glow.addColorStop(0, 'rgba(217, 187, 128, 0.24)');
-    glow.addColorStop(0.35, 'rgba(143, 214, 187, 0.09)');
-    glow.addColorStop(1, 'rgba(143, 214, 187, 0)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, horizon + glowR);
+    if (glow) {
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, horizon + glowR);
+    }
 
     ctx.lineWidth = 1;
     ctx.lineJoin = 'round';
@@ -174,7 +184,10 @@ export function mountRidge(canvas: HTMLCanvasElement): () => void {
 
   const frame = (now: number) => {
     if (!running) return;
-    const dt = Math.min(0.05, (now - last) / 1000);
+    raf = requestAnimationFrame(frame);
+    const elapsed = now - last;
+    if (elapsed < FRAME_MS - 1) return;
+    const dt = Math.min(0.1, elapsed / 1000);
     last = now;
     time += dt;
     for (const g of glints) {
@@ -182,7 +195,6 @@ export function mountRidge(canvas: HTMLCanvasElement): () => void {
       if (g.x > 1 + g.len) g.x = -0.02;
     }
     draw();
-    raf = requestAnimationFrame(frame);
   };
 
   const start = () => {

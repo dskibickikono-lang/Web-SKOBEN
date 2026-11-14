@@ -83,12 +83,14 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     const darkZones = Array.from(document.querySelectorAll<HTMLElement>('main > .theme-dark, body > .theme-dark'));
     let ticking = false;
     const update = () => {
-      header.classList.toggle('is-scrolled', window.scrollY > 12);
-      const probe = header.offsetHeight / 2;
+      // najpierw odczyty, potem zapisy — bez wymuszania przeliczenia layoutu
+      const scrolled = window.scrollY > 12;
+      const probe = 36;
       const overDark = darkZones.some((el) => {
         const r = el.getBoundingClientRect();
         return r.top <= probe && r.bottom > probe;
       });
+      header.classList.toggle('is-scrolled', scrolled);
       header.dataset.over = overDark ? 'dark' : 'light';
       ticking = false;
     };

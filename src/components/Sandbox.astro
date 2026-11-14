@@ -3,7 +3,16 @@
  * Powłoka konsoli sandboxa. Zawartość regionów renderuje src/scripts/sandbox/ui.ts,
  * dlatego style są globalne (prefiks .sbx) — dotyczą też DOM tworzonego w JS.
  */
-import { SCENARIOS } from '../scripts/sandbox/data';
+import { SCENARIOS, type Scenario } from '../scripts/sandbox/data';
+import { defaultRules } from '../scripts/sandbox/engine';
+import { caseHtml, freshCase, metricsHtml, queueHtml, rulesHtml } from '../scripts/sandbox/view';
+
+// Stan początkowy renderowany w czasie builda — tymi samymi szablonami,
+// których używa kontroler w przeglądarce.
+const scenario = SCENARIOS[0] as Scenario;
+const rules = defaultRules(scenario);
+const cases = scenario.cases.map(freshCase);
+const first = cases[0];
 ---
 
 <div class="sbx theme-dark" data-sbx>
@@ -43,19 +52,19 @@ import { SCENARIOS } from '../scripts/sandbox/data';
     </div>
   </div>
 
-  <div class="sbx__metrics" data-sbx-metrics aria-live="off"></div>
+  <div class="sbx__metrics" data-sbx-metrics aria-live="off" set:html={metricsHtml(cases)} />
 
   <div class="sbx__grid">
     <section class="sbx__queue" aria-label="Kolejka spraw">
       <header class="sbx__panel-head">
         <h2>Kolejka</h2>
-        <button type="button" class="btn btn--primary btn--sm" data-sbx-run>Uruchom kolejkę</button>
+        <button type="button" class="btn btn--primary btn--sm is-hint" data-sbx-run>Uruchom kolejkę</button>
       </header>
-      <ul class="sbx__queue-list" data-sbx-queue></ul>
-      <p class="sbx__intro" data-sbx-intro></p>
+      <ul class="sbx__queue-list" data-sbx-queue set:html={queueHtml(cases, first?.def.id ?? '')} />
+      <p class="sbx__intro" data-sbx-intro>{scenario.intro}</p>
     </section>
 
-    <section class="sbx__case" aria-label="Wybrana sprawa" data-sbx-case tabindex="-1"></section>
+    <section class="sbx__case" aria-label="Wybrana sprawa" data-sbx-case tabindex="-1" set:html={first ? caseHtml(scenario, first, false) : ''} />
 
     <section class="sbx__side" aria-label="Dziennik i reguły">
       <div class="sbx__tabs" role="tablist" aria-label="Widok">
@@ -70,8 +79,7 @@ import { SCENARIOS } from '../scripts/sandbox/data';
         <div class="sbx-log" role="log" aria-label="Dziennik decyzji" data-sbx-log tabindex="0"></div>
         <p class="sbx-log__empty">Tu pojawi się każdy krok agenta i każda Twoja decyzja — z czasem i powodem.</p>
       </div>
-      <div class="sbx__tabpanel sbx__tabpanel--rules" role="tabpanel" id="sbx-panel-rules" aria-labelledby="sbx-tab-rules" data-sbx-panel="rules" data-sbx-rules hidden>
-      </div>
+      <div class="sbx__tabpanel sbx__tabpanel--rules" role="tabpanel" id="sbx-panel-rules" aria-labelledby="sbx-tab-rules" data-sbx-panel="rules" data-sbx-rules hidden set:html={rulesHtml(scenario, rules)} />
     </section>
   </div>
 

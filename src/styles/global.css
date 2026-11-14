@@ -537,6 +537,20 @@ canvas {
   will-change: auto;
 }
 
+/* Treść nad zgięciem wchodzi czystym CSS — nie czeka na JavaScript,
+   więc nie opóźnia LCP i działa także bez skryptów. */
+[data-rise] {
+  animation: rise var(--dur-4) var(--ease-out) both;
+  animation-delay: calc(var(--reveal-i, 0) * 70ms + 40ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0.001;
+    transform: translate3d(0, 14px, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
