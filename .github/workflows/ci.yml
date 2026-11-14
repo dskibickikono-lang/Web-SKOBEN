@@ -1,9 +1,12 @@
 name: CI
 
+# Zmiany wyłącznie w dokumentacji, karcie zadania i materiałach źródłowych nie uruchamiają builda.
 on:
   pull_request:
+    paths-ignore: ['docs/**', 'kono-state/**', 'assets-src/**', 'README.md']
   push:
     branches: [main, 'skibiai/**']
+    paths-ignore: ['docs/**', 'kono-state/**', 'assets-src/**', 'README.md']
   workflow_dispatch:
 
 concurrency:
