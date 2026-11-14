@@ -32,9 +32,8 @@ wyłącznie z kodu (SVG/CSS/Canvas), bez zewnętrznych plików graficznych.
 
 ## Do decyzji właściciela przed publikacją
 Zebrane w `src/config/company.json`; pilnuje ich bramka `npm run check:release` (obecnie: nie przechodzi —
-brak danych rejestrowych i potwierdzenia właściciela).
+czeka na `confirmedByOwner: true`).
 
-- NIP i adres siedziby (administrator danych w polityce prywatności i stopce).
 - Akceptacja deklaracji: czasy etapów, model rozliczeń, zasady ze strony „Bezpieczeństwo”,
   treść polityki prywatności (projekt do przeglądu prawnego).
 - Opcjonalnie endpoint formularza (domyślnie: wiadomość w programie pocztowym użytkownika).
@@ -78,8 +77,10 @@ Po poprawkach: brak otwartych usterek wizualnych ani funkcjonalnych znanych wyko
 ## Decyzje właściciela z 2026-11-14 (w trakcie sesji)
 - Zgoda na utworzenie pustej gałęzi `main` i otwarcie PR z gałęzi roboczej.
 - Domena `skoben.pl` i adres `kontakt@skoben.pl` — potwierdzone.
-- Nazwa podmiotu: „SKOBEN”. NIP i adres siedziby nie zostały podane — pola pozostają puste,
-  bramka `npm run check:release` nadal ich wymaga.
+- Dane administratora podane przez właściciela: nazwa „SKOBEN”, NIP i adres siedziby — wpisane do
+  `src/config/company.json` (stopka, polityka prywatności).
+- Bramka `npm run check:release` wymaga już tylko `confirmedByOwner: true`, czyli akceptacji deklaracji
+  handlowych i treści polityki prywatności.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em
