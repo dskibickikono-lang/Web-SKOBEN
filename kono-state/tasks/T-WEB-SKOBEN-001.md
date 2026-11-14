@@ -30,18 +30,16 @@ wyłącznie z kodu (SVG/CSS/Canvas), bez zewnętrznych plików graficznych.
 - Sandbox: 3 scenariusze × 6 spraw, silnik reguł, akceptacja wyjątków, dziennik, metryki.
 - Audyt: `scripts/audit.cjs` (headless Chromium + axe-core).
 
-## Do decyzji właściciela przed publikacją
-Zebrane w `src/config/company.json`; pilnuje ich bramka `npm run check:release` (obecnie: nie przechodzi —
-czeka na `confirmedByOwner: true`).
-
-- Akceptacja deklaracji: czasy etapów, model rozliczeń, zasady ze strony „Bezpieczeństwo”,
-  treść polityki prywatności (projekt do przeglądu prawnego).
-- Opcjonalnie endpoint formularza (domyślnie: wiadomość w programie pocztowym użytkownika).
+## Bramka publikacji
+`npm run check:release` przechodzi: domena, adres kontaktowy, dane administratora i deklaracje są
+potwierdzone przez właściciela (plik `src/config/company.json`). Poza bramką zostaje decyzja o hostingu
+i wdrożeniu oraz opcjonalny endpoint formularza (domyślnie: wiadomość w programie pocztowym użytkownika).
 
 ## Wynik testów
 Przebieg lokalny w kontenerze Linux (Node 22.23, Chromium 1243) oraz GitHub Actions, 2026-11-14:
 
 - `npm run build` (`astro check` + `astro build`): 0 błędów, 0 ostrzeżeń, 0 wskazówek; 9 stron + robots.txt.
+- `npm run check:release`: przechodzi.
 - `npm run audit`: bez zastrzeżeń — 9 stron × 3 szerokości (1440 / 834 / 390 px), 8 linków wewnętrznych,
   axe-core (WCAG 2.1 AA) bez naruszeń, brak cookies / localStorage / zasobów zewnętrznych / plików graficznych,
   scenariusz sandboxa na desktopie i mobile (3 scenariusze, akceptacja, odrzucenie, zmiana reguł, reset,
@@ -79,8 +77,11 @@ Po poprawkach: brak otwartych usterek wizualnych ani funkcjonalnych znanych wyko
 - Domena `skoben.pl` i adres `kontakt@skoben.pl` — potwierdzone.
 - Dane administratora podane przez właściciela: nazwa „SKOBEN”, NIP i adres siedziby — wpisane do
   `src/config/company.json` (stopka, polityka prywatności).
-- Bramka `npm run check:release` wymaga już tylko `confirmedByOwner: true`, czyli akceptacji deklaracji
-  handlowych i treści polityki prywatności.
+- Właściciel potwierdził wszystkie deklaracje w treściach (czasy etapów, model rozliczeń, zasady
+  przetwarzania danych) i zaakceptował treść polityki prywatności → `confirmedByOwner: true`,
+  bramka `npm run check:release` przechodzi.
+- Odbiór wizualny: właściciel obejrzy stronę po merge'u; ewentualne uwagi w kolejnej iteracji.
+- Merge PR #1: po stronie właściciela.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em

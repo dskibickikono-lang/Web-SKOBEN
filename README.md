@@ -59,13 +59,15 @@ Zrzuty ekranu trafiają do `audit-output/`.
 
 Wszystko, co zależy od decyzji właściciela, jest w jednym pliku: `src/config/company.json`
 (czytają go `site.ts`, `astro.config.mjs`, `robots.txt` i polityka prywatności). Bramka
-`npm run check:release` kończy się błędem, dopóki nie są uzupełnione i potwierdzone:
+`npm run check:release` kończy się błędem, jeśli brakuje któregoś z pól:
 
-- `url` i `contactEmail` — przyjęte roboczo: `https://skoben.pl`, `kontakt@skoben.pl`,
+- `url` i `contactEmail` — domena produkcyjna i adres do zapytań,
 - `legal.entity`, `legal.nip`, `legal.address` — dane administratora do stopki i polityki prywatności,
-- `confirmedByOwner: true` — po akceptacji powyższych oraz deklaracji w treściach:
-  czasy etapów (`facts` w `site.ts`), model rozliczeń („Wdrożenie”), zasady przetwarzania danych
-  („Bezpieczeństwo”) i sama polityka prywatności, która jest projektem do przeglądu prawnego.
+- `confirmedByOwner: true` — akceptacja deklaracji w treściach: czasy etapów (`facts` w `site.ts`),
+  model rozliczeń („Wdrożenie”), zasady przetwarzania danych („Bezpieczeństwo”) i polityka prywatności.
+
+Stan na 2026-11-14: wszystkie pola uzupełnione i potwierdzone przez właściciela — bramka przechodzi.
+Po zmianie którejkolwiek deklaracji w treściach potwierdzenie trzeba ponowić.
 
 Build i audyt nie zależą od bramki — strona buduje się i działa także przed jej przejściem.
 
