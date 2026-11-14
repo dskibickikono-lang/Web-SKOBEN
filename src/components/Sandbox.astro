@@ -950,8 +950,8 @@ const first = cases[0];
     appearance: none;
     -webkit-appearance: none;
     width: 100%;
-    height: 1.5rem;
-    margin: 0;
+    height: 2.5rem;
+    margin: -0.5rem 0;
     background: transparent;
     cursor: pointer;
   }
@@ -1079,13 +1079,21 @@ const first = cases[0];
 
   .sbx-forecast strong {
     color: var(--text);
-    font-weight: 560;
+    font-weight: 540;
   }
 
   .sbx__noscript {
     padding: 2rem;
     text-align: center;
     color: var(--text-2);
+  }
+
+  /* Na ekranach dotykowych kontrolki konsoli mają co najmniej 40 px wysokości */
+  @media (pointer: coarse) {
+    .sbx__scenarios button,
+    .sbx-tool {
+      height: 2.5rem;
+    }
   }
 
   /* --- Responsywność -------------------------------------------------------- */

@@ -6,7 +6,7 @@ requested_by: owner
 status: in-review
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
-sha: 14c853a (kod i konfiguracja) — późniejsze commity zmieniają tylko tę kartę
+sha: patrz PR #1 — ostatni commit kodu „Pomiar precyzji w audycie…”
 created: 2026-11-14
 ---
 
@@ -70,7 +70,24 @@ Usterki znalezione w przeglądzie i usunięte:
 - sierotki, myślniki na początku wiersza i łamanie „e-mail” (reguły typograficzne w buildzie),
 - formy rodzajowe w treściach, adres e-mail w parametrze URL.
 
-Po poprawkach: brak otwartych usterek wizualnych ani funkcjonalnych znanych wykonawcy.
+- (pomiar precyzji) dziesięć grubości pisma sprowadzonych do sześciu; kontrolki dotykowe poniżej 40 px
+  powiększone; mniejszy stopień nagłówka na ekranach ≤ 420 px.
+
+### Pomiar precyzji (wpisany do `npm run audit`, pilnowany przez CI)
+- Siatka: wszystkie nagłówki h1/h2 stoją na krawędzi kontenera (120 px przy 1440, 20 px przy 390);
+  na żadnej stronie nie ma więcej niż dwóch pionów.
+- Typografia: 6 grubości pisma (400, 450, 460, 500, 540, 620), najwyżej 14 rozmiarów na stronie,
+  skala promieni 2 / 4 / 8 / 12 / 16 / 20 px + pigułka.
+- Dotyk: każda kontrolka na ekranie dotykowym ma co najmniej 40 px; linki tekstowe mają powiększony
+  obszar dotyku.
+- Odniesienie do benchmarku (pomiar mercury.com z tej sesji): nagłówek h1 49 px / grubość 480 / interlinia
+  1,1 — SKOBEN 60 px / 460 / 1,06; tekst 16 px — SKOBEN 17 px; ten sam układ „lista + panel produktu”,
+  nagłówek zmieniający ton nad sekcjami, przyciski-pigułki.
+
+### Wynik własnego audytu wykonawcy
+**Zaliczony.** Po poprawkach nie ma otwartych usterek wizualnych, funkcjonalnych ani dostępnościowych
+znanych wykonawcy; każda z powyższych kontroli jest powtarzalna poleceniem `npm run audit`.
+Odbiór przez właściciela: zapowiedziany po merge'u (uwagi w kolejnej iteracji).
 
 ## Decyzje właściciela z 2026-11-14 (w trakcie sesji)
 - Zgoda na utworzenie pustej gałęzi `main` i otwarcie PR z gałęzi roboczej.

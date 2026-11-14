@@ -6,7 +6,8 @@
  *
  * Sprawdza każdą stronę w trzech szerokościach: błędy konsoli i sieci,
  * poziome przewijanie, strukturę nagłówków, martwe linki wewnętrzne,
- * zewnętrzne zasoby i pliki graficzne (ma ich nie być), dostępność (axe-core)
+ * zewnętrzne zasoby i pliki graficzne (ma ich nie być), dostępność (axe-core),
+ * precyzję układu (piony siatki, skala i grubości pisma, cele dotyku ≥ 40 px)
  * oraz pełny scenariusz klikania sandboxa. Zrzuty trafiają do audit-output/.
  *
  * Wymaga pakietu `playwright` z przeglądarką Chromium (nie jest zależnością
@@ -28,6 +29,9 @@ const VIEWPORTS = [
   { name: 'tablet', width: 834, height: 1112 },
   { name: 'mobile', width: 390, height: 844 },
 ];
+
+/** Dozwolone grubości pisma (skala systemu projektowego). */
+const WEIGHTS = ['400', '450', '460', '500', '540', '620'];
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -60,7 +64,8 @@ function serve() {
 const slug = (p) => (p === '/' ? 'home' : p.replace(/\//g, '').replace('.html', ''));
 
 async function auditPage(browser, base, route, vp, problems) {
-  const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: 1 });
+  const touch = vp.name === 'mobile';
+  const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: 1, hasTouch: touch, isMobile: touch });
   const page = await ctx.newPage();
   const tag = `${route} @${vp.name}`;
   const fail = (msg) => problems.push(`${tag}: ${msg}`);
@@ -107,9 +112,28 @@ async function auditPage(browser, base, route, vp, problems) {
       if (!visible(el) || el.closest('[aria-hidden="true"], [inert]')) continue;
       const r = el.getBoundingClientRect();
       const inline = getComputedStyle(el).display === 'inline';
-      if (!inline && (r.height < 24 || r.width < 24)) small.push(`${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 24)}" ${Math.round(r.width)}×${Math.round(r.height)}`);
+      // .link ma obszar dotyku powiększony pseudoelementem (global.css)
+      if (!inline && !el.classList.contains('link') && (r.height < 40 || r.width < 40)) small.push(`${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 24)}" ${Math.round(r.width)}×${Math.round(r.height)}`);
+    }
+    // Precyzja: siatka, skala typograficzna, grubości pisma
+    const edges = new Set();
+    for (const el of document.querySelectorAll('main h1, main h2')) {
+      if (!visible(el) || el.closest('[aria-hidden="true"], [data-sbx]') || getComputedStyle(el).textAlign === 'center') continue;
+      edges.add(Math.round(el.getBoundingClientRect().left));
+    }
+    const sizes = new Set();
+    const weights = new Set();
+    for (const el of document.querySelectorAll('body *')) {
+      if (!visible(el) || el.closest('svg')) continue;
+      if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+      const cs = getComputedStyle(el);
+      sizes.add(cs.fontSize);
+      weights.add(cs.fontWeight);
     }
     return {
+      edges: [...edges],
+      sizes: [...sizes],
+      weights: [...weights],
       overflow: doc.scrollWidth - doc.clientWidth,
       wide: [...new Set(wide)].slice(0, 6),
       small: small.slice(0, 6),
@@ -141,6 +165,12 @@ async function auditPage(browser, base, route, vp, problems) {
   if (facts.lang !== 'pl') fail(`lang="${facts.lang}"`);
   if (facts.unrevealed > 0) fail(`${facts.unrevealed} elementów [data-reveal] nie weszło`);
   if (vp.name === 'mobile' && facts.small.length) fail(`małe cele dotyku: ${facts.small.join(' | ')}`);
+
+  // Precyzja: nagłówki stoją na najwyżej dwóch pionach siatki, pismo trzyma się skali
+  if (facts.edges.length > 2) fail(`nagłówki na ${facts.edges.length} różnych pionach: ${facts.edges.join(', ')} px`);
+  const offScale = facts.weights.filter((w) => !WEIGHTS.includes(w));
+  if (offScale.length) fail(`grubości pisma spoza skali: ${offScale.join(', ')}`);
+  if (facts.sizes.length > 14) fail(`zbyt wiele rozmiarów pisma na stronie: ${facts.sizes.length}`);
 
   // Prywatność: strona deklaruje brak cookies i trwałych zapisów w przeglądarce
   const cookies = await ctx.cookies();

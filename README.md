@@ -51,7 +51,8 @@ Wszystkie firmy, dokumenty i kwoty w sandboxie oraz w makietach są fikcyjne.
 
 Każda strona w trzech szerokościach (1440 / 834 / 390 px): błędy konsoli i sieci, poziome
 przewijanie, elementy poza ekranem, struktura nagłówków, martwe linki, zasoby zewnętrzne i pliki
-graficzne (ma ich nie być), cele dotyku, dostępność (axe-core, WCAG 2.1 AA), a do tego pełny
+graficzne (ma ich nie być), cookies i zapisy w przeglądarce, dostępność (axe-core, WCAG 2.1 AA),
+precyzja układu (piony siatki, skala i grubości pisma, cele dotyku ≥ 40 px), a do tego pełny
 scenariusz sandboxa, formularze, menu mobilne, `prefers-reduced-motion` i praca bez JavaScriptu.
 Zrzuty ekranu trafiają do `audit-output/`.
 
