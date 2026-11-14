@@ -8,3 +8,10 @@ audit-output/
 # pliki robocze narzędzi (stan sesji przeglądarki) — nigdy do repo
 /results.json
 /state.json
+
+# Surowe materiały źródłowe do sceny hero (stocki, generacje, klipy robocze) — setki MB.
+# W repo zostają: lista źródeł (SOURCES.md), podglądy w docs/art-direction/candidates/
+# oraz wybrane, zoptymalizowane pliki, które trafiają do src/assets lub public.
+/assets-src/**
+!/assets-src/**/
+!/assets-src/**/SOURCES.md
