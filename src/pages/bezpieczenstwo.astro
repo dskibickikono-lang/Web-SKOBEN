@@ -1,0 +1,184 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import FeatureSwitcher from '../components/FeatureSwitcher.astro';
+import LayersArt from '../components/LayersArt.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const layers = [
+  {
+    title: 'Uprawnienia',
+    body: 'Agent działa na koncie technicznym z dostępem tylko do tego, czego wymaga proces. Reszty systemu nie widzi i nie może zmienić. Dostęp odbierasz jednym ruchem.',
+  },
+  {
+    title: 'Reguły i progi',
+    body: 'Twarde warunki rozstrzygają, co agent robi sam. Są zapisane, wersjonowane i testowane na historycznych sprawach przed każdą zmianą.',
+  },
+  {
+    title: 'Akceptacja człowieka',
+    body: 'Wszystko, co wykracza poza reguły, trafia do wskazanej osoby. Agent przygotowuje sprawę i rekomendację — decyzję podejmuje człowiek.',
+  },
+  {
+    title: 'Dziennik',
+    body: 'Każdy odczyt, decyzja i zapis ma ślad z czasem i autorem. Dziennika nie da się wyłączyć ani edytować; można go przeszukać i wyeksportować.',
+  },
+];
+
+const data = [
+  ['Zakres danych', 'Agent przetwarza wyłącznie pola potrzebne w danym procesie. Zakres spisujemy przy mapowaniu i nie rozszerzamy go bez Twojej zgody.'],
+  ['Miejsce przetwarzania', 'Region i dostawców infrastruktury ustalamy przed pilotem i wpisujemy do umowy. Domyślnie proponujemy przetwarzanie w Europejskim Obszarze Gospodarczym.'],
+  ['Trenowanie modeli', 'Twoje dane nie służą do trenowania modeli. Korzystamy z usług, w których jest to wyłączone umownie, i konfigurujemy je odpowiednio.'],
+  ['Powierzenie przetwarzania', 'Umowę powierzenia zawieramy przed uruchomieniem pilota — zanim agent zobaczy pierwszą realną sprawę.'],
+  ['Retencja', 'Dziennik i dane spraw przechowujemy tak długo, jak wymaga tego Twoja polityka. Po zakończeniu współpracy przekazujemy je lub usuwamy.'],
+  ['Własność', 'Reguły, progi, instrukcje i dziennik należą do Ciebie. Możesz je zabrać w czytelnym formacie w dowolnym momencie.'],
+];
+
+const failure = [
+  {
+    title: 'Wyłącznik awaryjny',
+    body: 'Jedna czynność zatrzymuje agenta. Sprawy w toku wracają do kolejki dla ludzi — z tym, co agent zdążył ustalić.',
+  },
+  {
+    title: 'Oznaczone zapisy',
+    body: 'Każdy dokument utworzony przez agenta jest oznaczony w systemie docelowym. Wiadomo, co pochodzi od niego i co trzeba zweryfikować po incydencie.',
+  },
+  {
+    title: 'Test przed zmianą',
+    body: 'Zmiana reguły przechodzi najpierw przez zestaw historycznych spraw. Widzisz, które decyzje zmieniłyby się wstecz — zanim cokolwiek trafi na produkcję.',
+  },
+];
+---
+
+<Base
+  title="Bezpieczeństwo"
+  description="Model kontroli agentów SKOBEN: minimalne uprawnienia, jawne reguły, akceptacja człowieka przy wyjątkach i pełny dziennik decyzji. Zasady przetwarzania danych."
+  heroTone="dark"
+>
+  <PageHero
+    tone="dark"
+    title="Agent ma tyle władzy, ile mu dasz. I ani kroku więcej."
+    lede="Nie prosimy o zaufanie do modelu. Budujemy cztery warstwy kontroli wokół niego — tak, żeby każdą decyzję dało się przewidzieć, zatrzymać i odtworzyć."
+  />
+
+  <!-- Warstwy -->
+  <section class="section">
+    <div class="container">
+      <FeatureSwitcher id="layers" items={layers} flip>
+        <h2 class="statement" slot="intro" data-reveal>Cztery warstwy między modelem a Twoim systemem.</h2>
+        <LayersArt />
+      </FeatureSwitcher>
+    </div>
+  </section>
+
+  <!-- Dane -->
+  <section class="section section--flush-top">
+    <div class="container data-wrap">
+      <div class="data-wrap__head">
+        <h2 class="h2" data-reveal>Dane: co, gdzie i jak długo.</h2>
+        <p class="body-2" data-reveal style="--reveal-i:1">
+          Szczegóły zależą od procesu i systemów, dlatego ustalamy je na piśmie przed pilotem. Zasady są stałe.
+        </p>
+      </div>
+      <dl class="data" data-reveal style="--reveal-i:1">
+        {
+          data.map(([k, v]) => (
+            <div>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Awaria -->
+  <section class="section theme-dark">
+    <div class="container">
+      <div class="promise">
+        <p class="label" data-reveal>Czego nie obiecujemy</p>
+        <h2 class="h2" data-reveal style="--reveal-i:1">
+          Nie obiecujemy bezbłędności. Obiecujemy, że błąd będzie widoczny, ograniczony progami i&nbsp;możliwy do
+          naprawienia.
+        </h2>
+      </div>
+      <div class="grid-3">
+        {
+          failure.map((f, i) => (
+            <div class="item-rule" data-reveal style={`--reveal-i:${i}`}>
+              <h3 class="h3">{f.title}</h3>
+              <p class="body-2">{f.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Masz wymagania działu bezpieczeństwa?"
+    body="Przyślij je przed rozmową. Odpowiemy punkt po punkcie i powiemy wprost, czego nie spełniamy."
+  />
+</Base>
+
+<style>
+  .data-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .data-wrap__head {
+    display: grid;
+    gap: 1.25rem;
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  .data {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .data > div {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 0.5rem 2rem;
+    padding-block: 1.375rem;
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .data dt {
+    font-weight: 540;
+  }
+
+  .data dd {
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .promise {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 54rem;
+    margin-bottom: clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+
+  .promise .label {
+    color: var(--warn);
+  }
+
+  @media (max-width: 860px) {
+    .data-wrap {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .data-wrap__head {
+      position: static;
+    }
+
+    .data > div {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

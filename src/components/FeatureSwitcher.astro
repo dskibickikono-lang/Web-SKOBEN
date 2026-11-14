@@ -1,0 +1,270 @@
+---
+/**
+ * Lista-akordeon sprzężona z panelem wizualnym: wybór pozycji przełącza panel.
+ * Bez JS wszystkie opisy są rozwinięte, a widoczny jest pierwszy panel.
+ */
+interface Item {
+  title: string;
+  body: string;
+  link?: { href: string; label: string };
+}
+
+interface Props {
+  id: string;
+  items: Item[];
+  /** Panel po lewej stronie (domyślnie po prawej). */
+  flip?: boolean;
+}
+
+const { id, items, flip = false } = Astro.props;
+---
+
+<div class:list={['fs', { 'fs--flip': flip }]} data-fs>
+  <div class="fs__text">
+    <div class="fs__intro">
+      <slot name="intro" />
+    </div>
+
+    <div class="fs__list">
+      {
+        items.map((item, i) => (
+          <div class:list={['fs__item', { 'is-active': i === 0 }]} data-fs-item>
+            <h3 class="fs__heading">
+              <button
+                type="button"
+                id={`${id}-btn-${i}`}
+                aria-expanded={i === 0 ? 'true' : 'false'}
+                aria-controls={`${id}-body-${i}`}
+                data-fs-trigger
+              >
+                <span class="fs__dot" aria-hidden="true" />
+                {item.title}
+              </button>
+            </h3>
+            <div class="fs__body" id={`${id}-body-${i}`} role="region" aria-labelledby={`${id}-btn-${i}`}>
+              <div class="fs__body-inner">
+                <p>{item.body}</p>
+                {item.link && (
+                  <a class="link small" href={item.link.href}>
+                    {item.link.label}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="fs__after">
+      <slot name="after" />
+    </div>
+  </div>
+
+  <div class="fs__panels" aria-hidden="true" data-fs-panels>
+    <slot />
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-fs]').forEach((root) => {
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-fs-item]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-fs-panels] > *'));
+
+    const activate = (index: number) => {
+      items.forEach((item, i) => {
+        const on = i === index;
+        item.classList.toggle('is-active', on);
+        item.querySelector('[data-fs-trigger]')?.setAttribute('aria-expanded', String(on));
+        const body = item.querySelector<HTMLElement>('.fs__body');
+        if (body) body.inert = !on;
+      });
+      panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+    };
+
+    items.forEach((item, i) => {
+      item.querySelector('[data-fs-trigger]')?.addEventListener('click', () => activate(i));
+    });
+
+    activate(0);
+  });
+</script>
+
+<style>
+  .fs {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(2.5rem, 1rem + 6vw, 7rem);
+    align-items: center;
+  }
+
+  .fs--flip .fs__text {
+    order: 2;
+  }
+
+  .fs__text {
+    display: grid;
+    gap: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    align-content: center;
+    max-width: 30rem;
+  }
+
+  .fs--flip .fs__text {
+    justify-self: end;
+    width: 100%;
+  }
+
+  .fs__list {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .fs__item {
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .fs__heading button {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding-block: 0.8125rem;
+    text-align: left;
+    font-size: var(--text-body);
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--text-2);
+    transition: color var(--dur-1) ease;
+  }
+
+  .fs__heading button:hover {
+    color: var(--text);
+  }
+
+  .fs__item.is-active .fs__heading button {
+    color: var(--text);
+    cursor: default;
+  }
+
+  .fs__dot {
+    position: absolute;
+    left: -1.25rem;
+    top: 1.375rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .fs__item.is-active .fs__dot {
+    transform: scale(1);
+  }
+
+  .fs__body {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+
+  :global(.js) .fs__body {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur-3) var(--ease-out);
+  }
+
+  :global(.js) .fs__item.is-active .fs__body {
+    grid-template-rows: 1fr;
+  }
+
+  .fs__body-inner {
+    overflow: hidden;
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    color: var(--text-2);
+  }
+
+  .fs__body-inner > :last-child {
+    margin-bottom: 1.375rem;
+  }
+
+  .fs__body-inner p {
+    margin-top: -0.25rem;
+    text-wrap: pretty;
+  }
+
+  :global(.js) .fs__body-inner {
+    opacity: 0;
+    transition: opacity var(--dur-2) ease;
+  }
+
+  :global(.js) .fs__item.is-active .fs__body-inner {
+    opacity: 1;
+    transition-delay: 120ms;
+  }
+
+  .fs__after:empty {
+    display: none;
+  }
+
+  /* Panele: stos z przenikaniem */
+  .fs__panels {
+    display: grid;
+    min-width: 0;
+  }
+
+  .fs__panels > :global(*) {
+    grid-area: 1 / 1;
+    min-width: 0;
+    justify-self: end;
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.99);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .fs--flip .fs__panels > :global(*) {
+    justify-self: start;
+  }
+
+  .fs__panels > :global(:first-child) {
+    opacity: 1;
+    transform: none;
+  }
+
+  :global(.js) .fs__panels > :global(:first-child:not(.is-active)) {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.99);
+  }
+
+  .fs__panels > :global(.is-active) {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition-delay: 90ms;
+  }
+
+  @media (max-width: 900px) {
+    .fs {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+
+    .fs__text,
+    .fs--flip .fs__text {
+      order: 0;
+      max-width: none;
+      justify-self: stretch;
+    }
+
+    .fs__dot {
+      left: auto;
+      right: 0.25rem;
+    }
+
+    .fs__panels > :global(*),
+    .fs--flip .fs__panels > :global(*) {
+      justify-self: center;
+    }
+  }
+</style>

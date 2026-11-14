@@ -1,0 +1,237 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import FeatureSwitcher from '../components/FeatureSwitcher.astro';
+import ProductPanels from '../components/ProductPanels.astro';
+import ControlArt from '../components/ControlArt.astro';
+import FlowDiagram from '../components/FlowDiagram.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import Calculator from '../components/Calculator.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { facts } from '../config/site';
+
+const work = [
+  {
+    title: 'Zamówienia z e-maili i plików',
+    body: 'Agent czyta zamówienie w dowolnym formacie, sprawdza ceny i stany, zakłada dokument w ERP i odpisuje klientowi. Odchylenia trafiają do handlowca z gotową rekomendacją.',
+  },
+  {
+    title: 'Faktury kosztowe',
+    body: 'Odczyt, dopasowanie do zamówienia i przyjęcia, dekretacja według Twojego planu kont. Księgowość zatwierdza tylko to, co odbiega od reguł.',
+  },
+  {
+    title: 'Zgłoszenia i reklamacje',
+    body: 'Klasyfikacja, komplet danych, odpowiedź albo przekazanie do właściwej osoby — w ramach SLA, które ustalasz Ty.',
+  },
+  {
+    title: 'Raporty i uzgodnienia',
+    body: 'Zestawienie, które ktoś składa w poniedziałek z trzech systemów. Agent składa je codziennie i pokazuje, co się nie zgadza.',
+  },
+];
+
+const control = [
+  {
+    title: 'Człowiek zatwierdza wyjątki',
+    body: 'Agent sam domyka sprawy zgodne z regułami. Resztę przekazuje właściwej osobie — z powodem, danymi źródłowymi i rekomendacją.',
+    link: { href: '/bezpieczenstwo/', label: 'Zobacz model kontroli' },
+  },
+  {
+    title: 'Każda decyzja ma ślad',
+    body: 'Co agent przeczytał, co sprawdził, co zapisał i dlaczego. Dziennik da się przeszukać, wyeksportować i pokazać audytorowi.',
+  },
+  {
+    title: 'Progi ustawiasz Ty',
+    body: 'Limit kwoty, tolerancja ceny, lista kontrahentów wymagających akceptacji. Zmiana reguły nie wymaga programisty ani nowego wdrożenia.',
+  },
+];
+
+const refusals = [
+  {
+    title: 'Żadnych demo na pokaz',
+    body: 'Pilot działa na Twoich realnych sprawach i w Twoich systemach. Albo dowozi uzgodniony miernik, albo nie trafia na produkcję.',
+  },
+  {
+    title: 'Żadnych slajdów zamiast wdrożenia',
+    body: 'Nie piszemy strategii AI. Efektem naszej pracy jest działający agent, instrukcja operacyjna i liczba, którą można sprawdzić.',
+  },
+  {
+    title: 'Żadnej czarnej skrzynki',
+    body: 'Reguły, progi i uprawnienia są jawne i należą do Ciebie. Każdą decyzję agenta da się odtworzyć z dziennika.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Co się dzieje, gdy agent się pomyli?',
+    a: 'Zakładamy, że się pomyli — dlatego każda sprawa spoza reguł trafia do człowieka, a każdy zapis ma ślad w dzienniku i da się go cofnąć. W pilocie mierzymy odsetek błędów na Twoich danych i dopiero na tej podstawie ustalamy, co agent może domykać sam.',
+  },
+  {
+    q: 'Czy musimy wymieniać ERP albo CRM?',
+    a: 'Nie. Agent pracuje w systemach, które już masz: przez API, pliki wymiany, pocztę, a gdy nie ma innej drogi — przez interfejs użytkownika. Zakres integracji ustalamy na etapie mapowania.',
+  },
+  {
+    q: 'Ile to trwa?',
+    a: `Mapowanie jednego procesu zajmuje zwykle ${facts.mapping}, pilot na realnych sprawach ${facts.pilot}. Termin zależy głównie od dostępu do systemów i osób, które znają wyjątki — mówimy o tym wprost na pierwszej rozmowie.`,
+  },
+  {
+    q: 'Od jakiego wolumenu to ma sens?',
+    a: 'Od powtarzalności, nie od skali. Jeśli proces ma stałe kroki, mierzalny wolumen i ktoś dziś przepisuje w nim dane między systemami — warto policzyć. Kalkulator powyżej pokaże rząd wielkości, a rozmowa — czy założenia są realne.',
+  },
+  {
+    q: 'Kto jest właścicielem konfiguracji i danych?',
+    a: 'Ty. Reguły, progi, instrukcje i dziennik decyzji należą do Twojej organizacji. Agent działa na uprawnieniach, które nadajesz i w każdej chwili możesz odebrać.',
+  },
+  {
+    q: 'Co z danymi osobowymi i tajemnicą handlową?',
+    a: 'Agent dostaje dostęp tylko do danych potrzebnych w danym procesie. Zakres przetwarzania, lokalizację danych i umowę powierzenia ustalamy przed pilotem — szczegóły opisujemy na stronie Bezpieczeństwo.',
+  },
+];
+---
+
+<Base heroTone="dark">
+  <Hero />
+
+  <!-- Praca -->
+  <section class="section theme-dark work">
+    <div class="container">
+      <FeatureSwitcher id="work" items={work}>
+        <h2 class="statement" slot="intro" data-reveal>Jedna kolejka pracy.<br />Każda sprawa domknięta.</h2>
+        <a class="link" href="/sandbox/" slot="after">Otwórz sandbox</a>
+        <ProductPanels />
+      </FeatureSwitcher>
+    </div>
+  </section>
+
+  <!-- Zasady -->
+  <section class="section refusals">
+    <div class="container">
+      <div class="refusals__head">
+        <h2 class="h2" data-reveal>
+          Nie sprzedajemy „transformacji AI”. Bierzemy jeden proces i&nbsp;dowozimy go do końca.
+        </h2>
+      </div>
+      <div class="grid-3">
+        {
+          refusals.map((r, i) => (
+            <div class="item-rule" data-reveal style={`--reveal-i:${i}`}>
+              <span class="label">Zasada 0{i + 1}</span>
+              <h3 class="h3">{r.title}</h3>
+              <p class="body-2">{r.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Kontrola -->
+  <section class="section section--flush-top">
+    <div class="container">
+      <FeatureSwitcher id="control" items={control} flip>
+        <h2 class="statement" slot="intro" data-reveal>Automatyzacja, którą da się skontrolować.</h2>
+        <ControlArt />
+      </FeatureSwitcher>
+    </div>
+  </section>
+
+  <!-- Przepływ -->
+  <section class="section theme-dark flow-section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Agent pracuje w Twoich systemach, nie obok nich.</h2>
+        <p class="lede" data-reveal style="--reveal-i:1">
+          Nie wymieniamy ERP ani CRM. Podłączamy się tam, gdzie praca już dziś się odbywa — przez API, pliki
+          i&nbsp;pocztę.
+        </p>
+      </div>
+      <div data-reveal style="--reveal-i:2">
+        <FlowDiagram />
+      </div>
+      <p class="flow-section__more" data-reveal>
+        <a class="link" href="/automatyzacje/">Jak automatyzujemy przepływy</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Wdrożenie -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Od procesu do produkcji w czterech krokach.</h2>
+        <p class="lede" data-reveal style="--reveal-i:1">
+          Każdy etap ma stały zakres, właściciela po obu stronach i warunek przejścia dalej.
+        </p>
+      </div>
+      <ProcessSteps />
+      <p class="steps-more" data-reveal>
+        <a class="link" href="/wdrozenie/">Zobacz, co dostajesz na każdym etapie</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Kalkulator -->
+  <section class="section section--flush-top">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Policz to na swoich liczbach.</h2>
+        <p class="lede" data-reveal style="--reveal-i:1">
+          Cztery suwaki, jawne założenia. Wynik to rząd wielkości, z którym warto przyjść na rozmowę.
+        </p>
+      </div>
+      <div data-reveal>
+        <Calculator />
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section--flush-top">
+    <div class="container faq-wrap">
+      <h2 class="h2" data-reveal>Pytania, które padają na pierwszej rozmowie</h2>
+      <div data-reveal style="--reveal-i:1">
+        <Faq items={faq} />
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .work {
+    padding-top: clamp(4rem, 2rem + 6vw, 7rem);
+  }
+
+  .refusals__head {
+    max-width: 52rem;
+    margin-bottom: clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+
+  .flow-section__more,
+  .steps-more {
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+
+  .faq-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .faq-wrap > h2 {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  @media (max-width: 860px) {
+    .faq-wrap > h2 {
+      position: static;
+    }
+
+    .faq-wrap {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

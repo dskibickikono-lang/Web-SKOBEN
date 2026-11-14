@@ -1,0 +1,95 @@
+---
+interface Props {
+  items: { q: string; a: string }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="faq">
+  {
+    items.map((item) => (
+      <details class="faq__item">
+        <summary>
+          <span>{item.q}</span>
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+            <path d="M3 8h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            <path class="v" d="M8 3v10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>{item.a}</p>
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    border-top: 1px solid var(--line-strong);
+    interpolate-size: allow-keywords;
+  }
+
+  .faq__item {
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding-block: 1.125rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.35;
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--dur-1) ease;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:hover {
+    color: var(--accent);
+  }
+
+  summary svg {
+    flex: none;
+    color: var(--text-3);
+  }
+
+  summary .v {
+    transform-origin: 8px 8px;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  details[open] summary .v {
+    transform: rotate(90deg);
+  }
+
+  .faq__answer {
+    padding: 0 3rem 1.5rem 0;
+    max-width: 44rem;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  /* Płynne otwieranie tam, gdzie przeglądarka wspiera ::details-content */
+  .faq__item::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition:
+      block-size var(--dur-3) var(--ease-out),
+      opacity var(--dur-2) ease,
+      content-visibility var(--dur-3) allow-discrete;
+  }
+
+  .faq__item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+</style>

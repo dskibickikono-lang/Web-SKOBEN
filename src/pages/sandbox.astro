@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import Sandbox from '../components/Sandbox.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const notes = [
+  {
+    title: 'Agent domyka to, co mieści się w regułach',
+    body: 'Odczytuje źródło, wyodrębnia dane, sprawdza je względem progów i zapisuje wynik w systemie. Bez pytania — tylko wtedy, gdy wszystko się zgadza.',
+  },
+  {
+    title: 'Wyjątek trafia do Ciebie z powodem',
+    body: 'Widzisz, który próg został przekroczony, dane źródłowe i rekomendację. Zatwierdzasz, odrzucasz albo zmieniasz regułę — i sprawa domyka się sama.',
+  },
+  {
+    title: 'Wszystko zostaje w dzienniku',
+    body: 'Każdy krok agenta i każda Twoja decyzja ma czas, autora i uzasadnienie. Tak samo wygląda to w produkcji — z eksportem dla audytu.',
+  },
+];
+---
+
+<Base
+  title="Sandbox — konsola operacyjna"
+  description="Klikalna symulacja konsoli SKOBEN: uruchom agenta na przykładowej kolejce zamówień, faktur i zgłoszeń, zatwierdzaj wyjątki i zmieniaj progi reguł."
+  heroTone="dark"
+>
+  <section class="sandbox-page theme-dark">
+    <div class="container sandbox-page__head">
+      <h1 class="h2" data-reveal>Sprawdź, jak pracuje agent — zanim z nami porozmawiasz.</h1>
+      <p class="lede" data-reveal style="--reveal-i:1">
+        Uruchom kolejkę, zatwierdź wyjątek, przesuń próg. Dane są przykładowe, mechanika ta sama co na produkcji.
+      </p>
+    </div>
+    <div class="sandbox-page__stage" data-reveal style="--reveal-i:2">
+      <Sandbox />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Co się tu właśnie wydarzyło</h2>
+      </div>
+      <div class="grid-3">
+        {
+          notes.map((n, i) => (
+            <div class="item-rule" data-reveal style={`--reveal-i:${i}`}>
+              <span class="label">0{i + 1}</span>
+              <h3 class="h3">{n.title}</h3>
+              <p class="body-2">{n.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Teraz na Twoich sprawach."
+    body="Sandbox pokazuje mechanikę. W pilocie ten sam przebieg działa na Twoich dokumentach, w Twoich systemach i z Twoimi progami."
+  />
+</Base>
+
+<style>
+  .sandbox-page {
+    background: var(--ink-900);
+    color: var(--text);
+    padding-top: calc(var(--header-h) + clamp(2.5rem, 1rem + 4vw, 4.5rem));
+    padding-bottom: clamp(3rem, 2rem + 4vw, 6rem);
+  }
+
+  .sandbox-page__head {
+    display: grid;
+    gap: 1rem;
+    max-width: 52rem;
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  }
+
+  .sandbox-page__head .lede {
+    max-width: 38rem;
+  }
+
+  .sandbox-page__stage {
+    width: 100%;
+    max-width: 92rem;
+    margin-inline: auto;
+    padding-inline: clamp(0.75rem, 0.2rem + 2vw, 2.5rem);
+  }
+</style>

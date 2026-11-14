@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  lede: string;
+  tone?: 'light' | 'dark';
+  eyebrow?: string;
+}
+const { title, lede, tone = 'light', eyebrow } = Astro.props;
+---
+
+<section class:list={['page-hero', tone === 'dark' ? 'theme-dark' : 'theme-light']}>
+  <div class="container">
+    <div class="page-hero__inner">
+      {eyebrow && <p class="label" data-reveal>{eyebrow}</p>}
+      <h1 class="display" data-reveal>{title}</h1>
+      <p class="lede" data-reveal style="--reveal-i:1">{lede}</p>
+      {
+        Astro.slots.has('default') && (
+          <div class="page-hero__actions" data-reveal style="--reveal-i:2">
+            <slot />
+          </div>
+        )
+      }
+    </div>
+  </div>
+  <slot name="art" />
+</section>

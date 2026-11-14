@@ -1,0 +1,75 @@
+---
+import { facts } from '../config/site';
+
+interface Props {
+  title?: string;
+  body?: string;
+}
+const {
+  title = 'Pokaż nam jeden proces.',
+  body = `W ${facts.callLength} powiemy, czy agent ma w nim sens, co trzeba mieć gotowe i ile potrwa pilot. Bez prezentacji sprzedażowej.`,
+} = Astro.props;
+---
+
+<section class="cta-band theme-dark">
+  <svg class="cta-band__art" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none">
+    {
+      Array.from({ length: 9 }, (_, i) => (
+        <path
+          d={`M-40 ${250 + i * 22} C 240 ${170 + i * 26}, 420 ${330 + i * 14}, 640 ${250 + i * 20} S 1020 ${180 + i * 28}, 1240 ${260 + i * 18}`}
+          stroke="currentColor"
+          stroke-width="1"
+          opacity={0.05 + i * 0.022}
+        />
+      ))
+    }
+  </svg>
+  <div class="container cta-band__inner">
+    <h2 class="h2" data-reveal>{title}</h2>
+    <p class="lede" data-reveal style="--reveal-i:1">{body}</p>
+    <div class="cta-band__actions" data-reveal style="--reveal-i:2">
+      <a class="btn btn--primary btn--lg" href="/kontakt/">Umów rozmowę</a>
+      <a class="btn btn--ghost btn--lg" href="/sandbox/">Otwórz sandbox</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    position: relative;
+    overflow: clip;
+    background: var(--ink-900);
+    color: var(--text);
+    padding-block: clamp(5rem, 3rem + 7vw, 9rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cta-band__art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--mint-300);
+    pointer-events: none;
+  }
+
+  .cta-band__inner {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 1.25rem;
+  }
+
+  .cta-band .lede {
+    max-width: 36rem;
+  }
+
+  .cta-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+</style>

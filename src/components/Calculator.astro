@@ -1,0 +1,269 @@
+---
+/**
+ * Kalkulator na liczbach odwiedzającego. Wszystkie założenia są jawne
+ * i edytowalne — to model, nie obietnica wyniku.
+ */
+const fields = [
+  { id: 'cases', label: 'Sprawy miesięcznie', min: 100, max: 20000, step: 100, value: 2400, unit: '' },
+  { id: 'minutes', label: 'Minuty pracy na sprawę', min: 1, max: 30, step: 1, value: 6, unit: 'min' },
+  { id: 'rate', label: 'Koszt godziny pracy (pełny)', min: 30, max: 200, step: 5, value: 65, unit: 'zł' },
+  { id: 'auto', label: 'Założony udział spraw bez dotknięcia', min: 20, max: 95, step: 5, value: 70, unit: '%' },
+];
+const fmt = (n: number) => new Intl.NumberFormat('pl-PL', { useGrouping: 'always' }).format(n);
+---
+
+<div class="calc" data-calc>
+  <form class="calc__inputs" onsubmit="return false">
+    {
+      fields.map((f) => (
+        <div class="field">
+          <div class="field__head">
+            <label for={`calc-${f.id}`}>{f.label}</label>
+            <output class="tnum" for={`calc-${f.id}`} data-out={f.id}>
+              {fmt(f.value)} {f.unit}
+            </output>
+          </div>
+          <input
+            id={`calc-${f.id}`}
+            type="range"
+            min={f.min}
+            max={f.max}
+            step={f.step}
+            value={f.value}
+            data-in={f.id}
+            data-unit={f.unit}
+          />
+        </div>
+      ))
+    }
+  </form>
+
+  <div class="calc__result" aria-live="polite">
+    <div class="calc__main">
+      <span class="label">Odzyskany czas zespołu</span>
+      <p class="calc__big"><span class="mono" data-res="hours">168</span> <small>h / miesiąc</small></p>
+    </div>
+    <dl class="calc__grid">
+      <div>
+        <dt>Równowartość kosztu pracy</dt>
+        <dd><span class="tnum" data-res="cost">10 920</span> zł / mies.</dd>
+      </div>
+      <div>
+        <dt>W przeliczeniu na etaty</dt>
+        <dd><span class="tnum" data-res="fte">1,0</span> etatu</dd>
+      </div>
+      <div>
+        <dt>Sprawy, które zostają u ludzi</dt>
+        <dd><span class="tnum" data-res="human">720</span> / mies.</dd>
+      </div>
+    </dl>
+    <p class="micro">
+      Model: sprawy × minuty × udział bez dotknięcia. Etat = 168 h. Rzeczywisty udział ustalamy w pilocie
+      na Twoich danych — zanim cokolwiek trafi na produkcję.
+    </p>
+  </div>
+</div>
+
+<script>
+  const nf = new Intl.NumberFormat('pl-PL', { useGrouping: 'always' });
+  const nf1 = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach((root) => {
+    const inputs = Array.from(root.querySelectorAll<HTMLInputElement>('[data-in]'));
+    const val = (id: string) => Number(root.querySelector<HTMLInputElement>(`[data-in="${id}"]`)?.value ?? 0);
+    const setRes = (id: string, text: string) => {
+      const el = root.querySelector(`[data-res="${id}"]`);
+      if (el) el.textContent = text;
+    };
+
+    const update = () => {
+      for (const input of inputs) {
+        const min = Number(input.min);
+        const max = Number(input.max);
+        const pct = ((Number(input.value) - min) / (max - min)) * 100;
+        input.style.setProperty('--pct', `${pct}%`);
+        const out = root.querySelector(`[data-out="${input.dataset.in}"]`);
+        if (out) out.textContent = `${nf.format(Number(input.value))} ${input.dataset.unit ?? ''}`.trim();
+      }
+      const cases = val('cases');
+      const auto = val('auto') / 100;
+      const hours = (cases * val('minutes') * auto) / 60;
+      setRes('hours', nf.format(Math.round(hours)));
+      setRes('cost', nf.format(Math.round(hours * val('rate'))));
+      setRes('fte', nf1.format(hours / 168));
+      setRes('human', nf.format(Math.round(cases * (1 - auto))));
+    };
+
+    inputs.forEach((i) => i.addEventListener('input', update));
+    update();
+  });
+</script>
+
+<style>
+  .calc {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .calc__inputs {
+    display: grid;
+    gap: 1.75rem;
+    align-content: center;
+    padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+  }
+
+  .field {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .field__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    font-size: var(--text-sm);
+  }
+
+  .field__head label {
+    color: var(--text-2);
+  }
+
+  .field__head output {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  input[type='range'] {
+    --pct: 50%;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 1.5rem;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--accent) var(--pct), var(--line-2) var(--pct));
+  }
+
+  input[type='range']::-moz-range-track {
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--accent) var(--pct), var(--line-2) var(--pct));
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -8px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 1px 3px rgb(19 24 22 / 0.18);
+    transition: transform var(--dur-1) ease;
+  }
+
+  input[type='range']::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 1px 3px rgb(19 24 22 / 0.18);
+  }
+
+  input[type='range']:hover::-webkit-slider-thumb,
+  input[type='range']:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+  }
+
+  input[type='range']:focus-visible {
+    outline: none;
+  }
+
+  input[type='range']:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  input[type='range']:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .calc__result {
+    display: grid;
+    gap: 1.75rem;
+    align-content: center;
+    padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+    background: var(--surface-2);
+    border-left: 1px solid var(--line);
+  }
+
+  .calc__main {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .calc__big {
+    font-size: clamp(3rem, 2rem + 4vw, 4.75rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.045em;
+  }
+
+  .calc__big .mono {
+    letter-spacing: -0.06em;
+  }
+
+  .calc__big small {
+    font-size: 1.0625rem;
+    letter-spacing: 0;
+    color: var(--text-3);
+  }
+
+  .calc__grid {
+    display: grid;
+    border-top: 1px solid var(--line-2);
+  }
+
+  .calc__grid > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--text-sm);
+  }
+
+  .calc__grid dt {
+    color: var(--text-2);
+  }
+
+  .calc__grid dd {
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  @media (max-width: 860px) {
+    .calc {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .calc__result {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+</style>
