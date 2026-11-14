@@ -293,10 +293,16 @@ async function auditInteractions(browser, base, problems) {
   await page.waitForTimeout(400);
   const screenWidth = () => page.evaluate(() => document.querySelector('.cine__screen').getBoundingClientRect().width);
   const w0 = await screenWidth();
-  await page.evaluate(() => window.scrollTo(0, document.querySelector('[data-cine]').offsetHeight - window.innerHeight));
+  const span = await page.evaluate(() => document.querySelector('[data-cine]').offsetHeight - window.innerHeight);
+  await page.evaluate((y) => window.scrollTo(0, y), Math.round(span * 0.62));
   await page.waitForTimeout(500);
   const w1 = await screenWidth();
+  await page.evaluate((y) => window.scrollTo(0, y), span);
+  await page.waitForTimeout(500);
+  const w2 = await screenWidth();
+  const captionShown = await page.evaluate(() => Number(getComputedStyle(document.querySelector('[data-cine-caption]')).opacity) > 0.9);
   if (!(w0 < 520 && w1 > 1300)) fail(`najazd kamery w hero nie działa: ekran ${Math.round(w0)} → ${Math.round(w1)} px`);
+  if (!(w2 < 1000 && captionShown)) fail(`ekran nie osiada po najeździe: ${Math.round(w2)} px, podpis widoczny: ${captionShown}`);
   const filmRuns = await page.waitForFunction(() => document.querySelectorAll('[data-film="hero"] .sbx-log__item').length > 2, null, { timeout: 20000 }).then(() => true).catch(() => false);
   if (!filmRuns) fail('film w hero nie odtwarza się');
   await page.evaluate(() => window.scrollTo(0, 0));

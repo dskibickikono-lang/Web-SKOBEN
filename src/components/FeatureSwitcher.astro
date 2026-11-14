@@ -21,9 +21,13 @@ const { id, items, flip = false } = Astro.props;
 
 <div class:list={['fs', { 'fs--flip': flip }]} data-fs>
   <div class="fs__text">
-    <div class="fs__intro">
-      <slot name="intro" />
-    </div>
+    {
+      Astro.slots.has('intro') && (
+        <div class="fs__intro">
+          <slot name="intro" />
+        </div>
+      )
+    }
 
     <div class="fs__list">
       {

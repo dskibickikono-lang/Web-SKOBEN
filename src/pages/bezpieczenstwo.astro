@@ -4,6 +4,7 @@ import PageHero from '../components/PageHero.astro';
 import FeatureSwitcher from '../components/FeatureSwitcher.astro';
 import LayersArt from '../components/LayersArt.astro';
 import CtaBand from '../components/CtaBand.astro';
+import Vignettes from '../components/Vignettes.astro';
 
 const layers = [
   {
@@ -67,6 +68,16 @@ const failure = [
         <h2 class="statement" slot="intro" data-reveal>Cztery warstwy między modelem a Twoim systemem.</h2>
         <LayersArt />
       </FeatureSwitcher>
+    </div>
+  </section>
+
+  <!-- Kontrola w praktyce -->
+  <section class="section section--flush-top">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="statement" data-reveal>Tak te warstwy wyglądają w codziennej pracy.</h2>
+      </div>
+      <Vignettes />
     </div>
   </section>
 

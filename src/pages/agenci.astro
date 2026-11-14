@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import CtaBand from '../components/CtaBand.astro';
+import Film from '../components/Film.astro';
 
 const anatomy = [
   { title: 'Kolejka', body: 'Jedno miejsce, do którego trafia praca: skrzynka, folder, kanał EDI, formularz. Agent nie „szuka zajęcia” — obsługuje to, co przyszło.' },
@@ -108,8 +109,25 @@ const compare = {
     </div>
   </section>
 
-  <!-- Katalog -->
+  <!-- Film -->
   <section class="section">
+    <div class="container film-row">
+      <div class="film-row__text">
+        <h2 class="statement" data-reveal>Jedna zmiana agenta zamówień — bez montażu.</h2>
+        <p class="body-2" data-reveal style="--reveal-i:1">
+          To nie nagranie. Konsola działa na żywo: agent czyta zamówienia, sprawdza je względem reguł, a wyjątki
+          oddaje człowiekowi do decyzji.
+        </p>
+        <a class="link" href="/sandbox/" data-reveal style="--reveal-i:2">Przejmij stery w sandboxie</a>
+      </div>
+      <div class="film-frame" data-reveal style="--reveal-i:1">
+        <Film id="agent" pan autoplay="orders" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Katalog -->
+  <section class="section section--flush-top">
     <div class="container">
       <div class="section-head">
         <h2 class="h2" data-reveal>Cztery kolejki, od których zwykle zaczynamy.</h2>

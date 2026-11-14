@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import CtaBand from '../components/CtaBand.astro';
+import Film from '../components/Film.astro';
 import { facts } from '../config/site';
 
 const stages = [
@@ -146,8 +147,24 @@ const roles = [
     </div>
   </section>
 
-  <!-- Role -->
+  <!-- Film -->
   <section class="section">
+    <div class="container film-row">
+      <div class="film-row__text">
+        <h2 class="statement" data-reveal>W pilocie progi ustawiamy razem — i od razu widać skutek.</h2>
+        <p class="body-2" data-reveal style="--reveal-i:1">
+          Każde przesunięcie reguły pokazuje, ile spraw agent domknie sam, a ile trafi do ludzi. Tak dochodzimy
+          do progów, z którymi proces wchodzi na produkcję.
+        </p>
+      </div>
+      <div class="film-frame" data-reveal style="--reveal-i:1">
+        <Film id="pilot" pan autoplay="rules" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Role -->
+  <section class="section section--flush-top">
     <div class="container roles-wrap">
       <div class="roles-wrap__head">
         <h2 class="h2" data-reveal>Kogo potrzebujemy po Twojej stronie.</h2>

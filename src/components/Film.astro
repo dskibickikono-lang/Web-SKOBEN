@@ -8,11 +8,15 @@ import Sandbox from './Sandbox.astro';
 
 interface Props {
   id: string;
+  /** Kadr z przybliżeniem: wycinek konsoli w czytelnej skali, kamera podąża za kursorem. */
+  pan?: boolean;
+  /** Film odtwarzany samoczynnie w pętli (bez sterowania ze strony). */
+  autoplay?: 'orders' | 'invoices' | 'tickets' | 'rules';
 }
-const { id } = Astro.props;
+const { id, pan = false, autoplay } = Astro.props;
 ---
 
-<div class="film" data-film={id} aria-hidden="true">
+<div class="film" data-film={id} data-pan={pan ? '' : undefined} data-autoplay={autoplay} aria-hidden="true">
   <div class="film__canvas" data-film-canvas>
     <Sandbox film idPrefix={id} />
     <div class="film__cursor" data-film-cursor>
@@ -22,6 +26,15 @@ const { id } = Astro.props;
     </div>
   </div>
 </div>
+
+<script>
+  import { mountFilm, whenNear, type FilmId } from '../scripts/sandbox/film';
+
+  // Filmy z atrybutem data-autoplay grają same, w pętli, gdy są widoczne.
+  document.querySelectorAll<HTMLElement>('[data-film][data-autoplay]').forEach((stage) => {
+    whenNear(stage, () => mountFilm(stage, { loop: true }).play(stage.dataset.autoplay as FilmId));
+  });
+</script>
 
 <style>
   .film {
@@ -39,7 +52,16 @@ const { id } = Astro.props;
     left: 0;
     width: 1180px;
     transform-origin: 0 0;
-    transform: scale(var(--film-scale));
+    transform: scale(var(--film-scale)) translate3d(calc(var(--film-x, 0) * -1px), 0, 0);
+  }
+
+  /* kadr z przybliżeniem: proporcje ustala kontener, kamera jedzie płynnie */
+  .film[data-pan] {
+    aspect-ratio: var(--film-aspect, 1.12);
+  }
+
+  .film[data-pan] .film__canvas {
+    transition: transform 900ms cubic-bezier(0.3, 0.1, 0.2, 1);
   }
 
   .film__cursor {

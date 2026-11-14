@@ -121,8 +121,16 @@ Zrobione w iteracji 2 (wszystko z kodu, bez plików graficznych):
   Nowa deklaracja w treści do potwierdzenia: „Wdrażamy równolegle tylko kilka firm” (strona Kontakt).
 - audyt rozszerzony o test najazdu kamery i odtwarzania filmu.
 
-Do zrobienia w kolejnych iteracjach, jeśli właściciel potwierdzi kierunek: winiety i filmy na podstronach,
-dalsze dopracowanie światła bramy, przejście konsoli z hero do sekcji funkcji.
+Dopracowanie iteracji 2:
+- konsola po najeździe osiada jako kafel z podpisem sekcji (przejście hero → funkcje),
+- filmy z kamerą podążającą za kursorem — wycinek konsoli w czytelnej skali,
+- filmy na podstronach Agenci, Automatyzacje, Wdrożenie; kafle-winiety na stronie Bezpieczeństwo,
+- start filmów odroczony do bezczynności / zbliżenia do ekranu.
+
+Pomiar stanu po iteracji 2 (Linux, lokalnie): `astro check` 0 błędów; `npm run audit` bez zastrzeżeń
+(9 stron × 3 szerokości, w tym test najazdu, osiadania i odtwarzania filmu); Lighthouse mobile:
+strona główna 99 / 100 / 100 / 100 (LCP 1,1 s, TBT 120 ms, CLS 0), Agenci, Sandbox i Bezpieczeństwo 100 × 4.
+Odbiór właściciela dla iteracji 2: oczekuje.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em

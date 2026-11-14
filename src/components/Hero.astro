@@ -40,6 +40,10 @@ import Film from './Film.astro';
       </div>
     </div>
 
+    <div class="container cine__caption" data-cine-caption>
+      <h2 class="statement">Jedna kolejka pracy.<br />Każda sprawa domknięta.</h2>
+    </div>
+
     <div class="cine__hint" data-cine-hint aria-hidden="true">
       <span>Przewiń, żeby wejść</span>
       <i></i>
@@ -48,7 +52,7 @@ import Film from './Film.astro';
 </section>
 
 <script>
-  import { mountFilm } from '../scripts/sandbox/film';
+  import { mountFilm, whenIdle } from '../scripts/sandbox/film';
 
   const section = document.querySelector<HTMLElement>('[data-cine]');
   const rig = section?.querySelector<HTMLElement>('[data-cine-rig]');
@@ -56,10 +60,11 @@ import Film from './Film.astro';
   const portal = section?.querySelector<HTMLElement>('[data-cine-portal]');
   const hint = section?.querySelector<HTMLElement>('[data-cine-hint]');
   const filmEl = section?.querySelector<HTMLElement>('[data-film]');
+  const caption = section?.querySelector<HTMLElement>('[data-cine-caption]');
 
-  if (section && rig && copy && portal && hint && filmEl) {
-    const film = mountFilm(filmEl, { loop: true });
-    film.play('orders');
+  if (section && rig && copy && portal && hint && filmEl && caption) {
+    // film startuje w wolnej chwili — nie konkuruje z pierwszym renderem strony
+    whenIdle(() => mountFilm(filmEl, { loop: true }).play('orders'));
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const clamp = (v: number) => Math.min(1, Math.max(0, v));
@@ -72,6 +77,8 @@ import Film from './Film.astro';
     let k0 = 0.3; // skala początkowa
     let ty0 = 0;
     let txEnd = 0;
+    let kDock = 0.6; // skala po osiądnięciu ekranu nad kolejną sekcją
+    let tyDock = 0;
     let ticking = false;
 
     const measure = () => {
@@ -88,6 +95,13 @@ import Film from './Film.astro';
       // podłoga bramy przy dolnej krawędzi sceny: środek ekranu = podłoga − (16 + 27,5)% szerokości
       ty0 = vh * 0.93 - 0.435 * ws - vh / 2;
       txEnd = Math.max(0, (wf - vw) / 2);
+      // osiadanie: ekran zmniejsza się do kafla pod nagłówkiem, pod nim pojawia się podpis
+      const dockW = vw < 760 ? vw - 40 : Math.min(vw * 0.62, (vh - header - 230) * FILM_RATIO);
+      const dockH = dockW / FILM_RATIO;
+      kDock = dockW / wf;
+      tyDock = header + 24 + dockH / 2 - vh / 2;
+      section.style.setProperty('--cap-top', `${header + 24 + dockH + (vw < 760 ? 28 : 40)}px`);
+      section.style.setProperty('--dock-radius', `${14 / ((wf / 100) * kDock)}em`);
       rig.style.setProperty('--wf', `${wf}px`);
       rig.classList.add('is-ready');
       update();
@@ -97,16 +111,22 @@ import Film from './Film.astro';
       ticking = false;
       const span = Math.max(1, section.offsetHeight - vh);
       const p = reduce ? 0 : clamp(-section.getBoundingClientRect().top / span);
-      const e = ease(clamp(p / 0.78));
-      const k = k0 + (1 - k0) * e;
-      const ty = ty0 * (1 - e) + 36 * e;
-      rig.style.transform = `translate3d(calc(-50% + ${txEnd * e}px), calc(-50% + ${ty}px), 0) scale(${k})`;
-      copy.style.opacity = String(1 - clamp(p / 0.14));
+      const e = ease(clamp(p / 0.56)); // najazd przez bramę
+      const d = ease(clamp((p - 0.68) / 0.3)); // osiadanie nad kolejną sekcją
+      const k = (k0 + (1 - k0) * e) * (1 - d) + kDock * d;
+      const ty = (ty0 * (1 - e) + 36 * e) * (1 - d) + tyDock * d;
+      rig.style.transform = `translate3d(calc(-50% + ${txEnd * e * (1 - d)}px), calc(-50% + ${ty}px), 0) scale(${k})`;
+      // podpis wchodzi dopiero, gdy ekran zwolni mu miejsce
+      const c = clamp((d - 0.72) / 0.28);
+      caption.style.opacity = String(c);
+      caption.style.transform = `translate3d(0, ${(1 - c) * 24}px, 0)`;
+      section.classList.toggle('is-docked', d > 0.35);
+      copy.style.opacity = String(1 - clamp(p / 0.1));
       copy.style.transform = `translate3d(0, ${-p * 160}px, 0)`;
-      copy.style.visibility = p > 0.16 ? 'hidden' : 'visible';
-      portal.style.opacity = String(1 - clamp((p - 0.42) / 0.3));
+      copy.style.visibility = p > 0.12 ? 'hidden' : 'visible';
+      portal.style.opacity = String(1 - clamp((p - 0.3) / 0.22));
       hint.style.opacity = String(1 - clamp(p / 0.05));
-      section.classList.toggle('is-inside', p > 0.62);
+      section.classList.toggle('is-inside', p > 0.45);
     };
 
     const onScroll = () => {
@@ -148,7 +168,7 @@ import Film from './Film.astro';
 
   /* Z JavaScriptem sekcja jest dłuższa: nadmiar wysokości to „tor” najazdu kamery */
   :global(.js) .cine {
-    height: 330svh;
+    height: 420svh;
   }
 
   .cine__stage {
@@ -335,9 +355,25 @@ import Film from './Film.astro';
     position: relative;
     border-radius: 0.7em;
     overflow: hidden;
+    transition: border-radius 400ms ease;
     box-shadow:
       0 0 0 0.1em rgb(236 235 230 / 0.16),
       0 3em 8em -1em rgb(0 0 0 / 0.75);
+  }
+
+  :global(.is-docked) .cine__screen {
+    border-radius: var(--dock-radius, 1.4em);
+  }
+
+  /* podpis pod osiadłym ekranem — początek kolejnej sekcji */
+  .cine__caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--cap-top, 70%);
+    z-index: 2;
+    opacity: 0;
+    will-change: transform, opacity;
   }
 
   .cine__hint {
@@ -393,9 +429,18 @@ import Film from './Film.astro';
     }
   }
 
+  /* bez JS i przy ograniczonym ruchu scena jest statyczna, podpis trafia pod nią */
+  :global(html:not(.js)) .cine__caption {
+    display: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     :global(.js) .cine {
       height: 100svh;
+    }
+
+    .cine__caption {
+      display: none;
     }
   }
 </style>

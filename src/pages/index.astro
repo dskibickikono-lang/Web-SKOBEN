@@ -80,10 +80,9 @@ const faq = [
   <section class="section theme-dark work">
     <div class="container">
       <FeatureSwitcher id="work" items={work}>
-        <h2 class="statement" slot="intro" data-reveal>Jedna kolejka pracy.<br />Każda sprawa domknięta.</h2>
         <a class="link" href="/sandbox/" slot="after">Otwórz sandbox</a>
         <div class="work-film">
-          <Film id="work" />
+          <Film id="work" pan />
           <button class="work-film__toggle" type="button" data-film-toggle aria-label="Wstrzymaj film" aria-pressed="false">
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
               <path class="i-pause" d="M4.5 3h2.5v10H4.5zM9 3h2.5v10H9z" fill="currentColor"></path>
@@ -194,7 +193,7 @@ const faq = [
 </Base>
 
 <script>
-  import { mountFilm, type FilmId } from '../scripts/sandbox/film';
+  import { mountFilm, whenNear, type FilmHandle, type FilmId } from '../scripts/sandbox/film';
 
   // Film w sekcji „Jedna kolejka pracy”: każda pozycja listy ma swój film,
   // a po jego zakończeniu lista przechodzi do następnej.
@@ -204,16 +203,21 @@ const faq = [
   if (fs && stage) {
     const ids: FilmId[] = ['orders', 'invoices', 'tickets', 'rules'];
     let index = 0;
-    const film = mountFilm(stage, {
-      onEnd: () => fs.dispatchEvent(new CustomEvent('fs:goto', { detail: (index + 1) % ids.length })),
-      onProgress: (v) => fs.style.setProperty('--fs-progress', String(v)),
-    });
+    let film: FilmHandle | undefined;
     fs.addEventListener('fs:change', (e) => {
       index = (e as CustomEvent<number>).detail;
+      film?.play(ids[index] ?? 'orders');
+    });
+    // konsola filmu powstaje dopiero, gdy sekcja zbliża się do ekranu
+    whenNear(stage, () => {
+      film = mountFilm(stage, {
+        onEnd: () => fs.dispatchEvent(new CustomEvent('fs:goto', { detail: (index + 1) % ids.length })),
+        onProgress: (v) => fs.style.setProperty('--fs-progress', String(v)),
+      });
       film.play(ids[index] ?? 'orders');
     });
-    film.play('orders');
     toggle?.addEventListener('click', () => {
+      if (!film) return;
       film.setPaused(!film.paused);
       toggle.setAttribute('aria-pressed', String(film.paused));
       toggle.setAttribute('aria-label', film.paused ? 'Odtwórz film' : 'Wstrzymaj film');
@@ -225,6 +229,7 @@ const faq = [
   .work-film {
     position: relative;
     width: 100%;
+    background: var(--ink-850);
     border-radius: 14px;
     overflow: hidden;
     border: 1px solid var(--line-2);
@@ -263,7 +268,13 @@ const faq = [
   }
 
   .work {
-    padding-top: clamp(4rem, 2rem + 6vw, 7rem);
+    padding-top: clamp(2rem, 1rem + 3vw, 4rem);
+  }
+
+  @media (max-width: 900px) {
+    .work-film {
+      --film-aspect: 0.92;
+    }
   }
 
   .vg-head {

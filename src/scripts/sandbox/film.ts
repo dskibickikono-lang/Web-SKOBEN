@@ -39,9 +39,26 @@ export function mountFilm(stage: HTMLElement, options: Options = {}): FilmHandle
   let visible = false;
 
   // Skalowanie: konsola ma stały rozmiar projektowy i jest dopasowywana transformacją.
+  // Tryb „pan”: kadr pokazuje wycinek konsoli w czytelnej skali, a kamera
+  // przesuwa się za kursorem — jak w nagraniu ekranu z przybliżeniem.
+  const pan = stage.hasAttribute('data-pan');
+  let viewW = 0;
+  let camX = 236;
+  const setCam = (x: number) => {
+    camX = Math.min(Math.max(0, x), Math.max(0, canvas.offsetWidth - viewW));
+    stage.style.setProperty('--film-x', String(Math.round(camX)));
+  };
   const fit = () => {
     const design = canvas.offsetWidth;
-    if (design > 0) stage.style.setProperty('--film-scale', String(stage.clientWidth / design));
+    if (design <= 0) return;
+    if (pan && canvas.offsetHeight > 0) {
+      const s = stage.clientHeight / canvas.offsetHeight;
+      viewW = stage.clientWidth / s;
+      stage.style.setProperty('--film-scale', String(s));
+      setCam(camX);
+    } else {
+      stage.style.setProperty('--film-scale', String(stage.clientWidth / design));
+    }
   };
   new ResizeObserver(fit).observe(stage);
   fit();
@@ -74,6 +91,7 @@ export function mountFilm(stage: HTMLElement, options: Options = {}): FilmHandle
     const b = el.getBoundingClientRect();
     const x = (b.left + b.width * 0.5 - a.left) / scale;
     const y = (b.top + b.height * 0.55 - a.top) / scale;
+    if (pan && (x < camX + 70 || x > camX + viewW - 70)) setCam(x - viewW / 2);
     cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     await wait(720, my);
   };
@@ -166,6 +184,7 @@ export function mountFilm(stage: HTMLElement, options: Options = {}): FilmHandle
     const scenario = id === 'rules' ? 'orders' : id;
     options.onProgress?.(0);
     cursor.style.transform = 'translate3d(60%, 70%, 0)';
+    if (pan) setCam(236);
     q(`[data-sbx-scenario="${scenario}"]`)?.click();
     q('[data-sbx-tab="log"]')?.click();
     if (q('[data-sbx-speed]')?.getAttribute('aria-pressed') !== 'true') q('[data-sbx-speed]')?.click();
@@ -197,4 +216,24 @@ export function mountFilm(stage: HTMLElement, options: Options = {}): FilmHandle
       return paused;
     },
   };
+}
+
+/** Uruchamia `fn`, gdy element zbliża się do ekranu — filmy poza kadrem nie obciążają startu strony. */
+export function whenNear(el: Element, fn: () => void): void {
+  const io = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        io.disconnect();
+        fn();
+      }
+    },
+    { rootMargin: '600px 0px' },
+  );
+  io.observe(el);
+}
+
+/** Uruchamia `fn` w wolnej chwili przeglądarki, najpóźniej po `timeout` ms. */
+export function whenIdle(fn: () => void, timeout = 2500): void {
+  if ('requestIdleCallback' in window) window.requestIdleCallback(fn, { timeout });
+  else setTimeout(fn, 1200);
 }
