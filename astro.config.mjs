@@ -6,13 +6,16 @@ import { fileURLToPath } from 'node:url';
 
 /**
  * Polska typografia: jednoliterowe spójniki i przyimki (a, i, o, u, w, z)
- * nie mogą zostawać na końcu wiersza. Po zbudowaniu strony zamieniamy spację
- * po nich na twardą — w węzłach tekstowych, z pominięciem skryptów i stylów.
+ * nie mogą zostawać na końcu wiersza, a myślnik nie może wiersza zaczynać.
+ * Po zbudowaniu strony zamieniamy odpowiednie spacje na twarde — w węzłach
+ * tekstowych, z pominięciem skryptów i stylów.
  */
 function polishTypography() {
   const SKIP = /(<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>)/g;
   const ORPHAN = /(^|[\s\u00a0(„”"—–])([aiouwzAIOUWZ])[ \t\n]+(?=\S)/g;
-  const fix = (text) => text.replace(ORPHAN, '$1$2\u00a0').replace(ORPHAN, '$1$2\u00a0');
+  const DASH = / (—|–)(?=\s)/g;
+  const fix = (text) =>
+    text.replace(ORPHAN, '$1$2\u00a0').replace(ORPHAN, '$1$2\u00a0').replace(DASH, '\u00a0$1');
 
   const walk = async (dir) => {
     const out = [];

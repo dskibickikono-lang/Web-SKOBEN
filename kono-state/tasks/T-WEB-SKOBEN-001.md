@@ -5,8 +5,8 @@ channel: pm-local
 requested_by: owner
 status: in-review
 branch: skibiai/sharp-hamilton-he3v81
-pr: (uzupełniane po utworzeniu)
-sha: (uzupełniane po pushu)
+pr: brak — repozytorium nie ma gałęzi bazowej (patrz „Stan PR”)
+sha: aebf9a2 (kod) + commit aktualizujący tę kartę
 created: 2026-11-14
 ---
 
@@ -36,4 +36,19 @@ wyłącznie z kodu (SVG/CSS/Canvas), bez zewnętrznych plików graficznych.
 - Endpoint formularza kontaktowego (obecnie: wiadomość w programie pocztowym użytkownika).
 
 ## Wynik testów
-(uzupełniane na koniec)
+Przebieg lokalny w kontenerze Linux (Node 22.23, Chromium 1243), 2026-11-14:
+
+- `npm run build` (`astro check` + `astro build`): 0 błędów, 0 ostrzeżeń, 0 wskazówek; 8 stron.
+- `npm run audit`: bez zastrzeżeń — 8 stron × 3 szerokości (1440 / 834 / 390 px), 7 linków
+  wewnętrznych, scenariusz sandboxa na desktopie i mobile (3 scenariusze, akceptacja, odrzucenie,
+  zmiana reguł, reset, klawiatura), formularze, menu mobilne, `prefers-reduced-motion`, praca bez JS,
+  axe-core (WCAG 2.1 AA) bez naruszeń.
+- Lighthouse (mobile) dla `/`, `/sandbox/`, `/automatyzacje/`, `/wdrozenie/`, `/bezpieczenstwo/`:
+  Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 0,8–1,1 s; CLS 0.
+- Projekt nie zawiera testów pytest — repozytorium to statyczna strona bez kodu Pythona.
+- Workflow `.github/workflows/ci.yml` (build + audyt) nie był jeszcze uruchomiony na GitHub Actions.
+
+## Stan PR
+Repozytorium zdalne było puste, więc gałąź robocza `skibiai/sharp-hamilton-he3v81` jest w nim jedyną
+gałęzią i nie ma bazy, do której można otworzyć pull request. Utworzenie gałęzi bazowej (np. `main`)
+wymaga decyzji właściciela — bez niej PR nie powstał.
