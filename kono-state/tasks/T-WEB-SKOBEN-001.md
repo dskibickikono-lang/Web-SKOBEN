@@ -6,7 +6,7 @@ requested_by: owner
 status: in-review
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
-sha: a18afb1 (kod) — kolejny commit aktualizuje tylko tę kartę
+sha: 14c853a (kod i konfiguracja) — późniejsze commity zmieniają tylko tę kartę
 created: 2026-11-14
 ---
 
@@ -44,8 +44,8 @@ Przebieg lokalny w kontenerze Linux (Node 22.23, Chromium 1243) oraz GitHub Acti
   axe-core (WCAG 2.1 AA) bez naruszeń, brak cookies / localStorage / zasobów zewnętrznych / plików graficznych,
   scenariusz sandboxa na desktopie i mobile (3 scenariusze, akceptacja, odrzucenie, zmiana reguł, reset,
   klawiatura), formularze, menu mobilne, `prefers-reduced-motion`, praca bez JS.
-- GitHub Actions, workflow `CI` (build + audyt na ubuntu-latest): sukces —
-  https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43632399815 (kolejne przebiegi przy każdym pushu).
+- GitHub Actions, workflow `CI` (build + audyt + bramka publikacji, ubuntu-latest): sukces na `14c853a`
+  w przebiegu dla PR #1 — https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43640589447
 - Lighthouse (mobile) dla `/`, `/sandbox/`, `/automatyzacje/`, `/wdrozenie/`, `/bezpieczenstwo/`:
   Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 0,8–1,1 s; CLS 0.
 - Projekt nie zawiera testów pytest — repozytorium to statyczna strona bez kodu Pythona.
