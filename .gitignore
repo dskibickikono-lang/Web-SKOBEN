@@ -4,3 +4,7 @@ dist/
 .DS_Store
 audit-output/
 *.log
+
+# pliki robocze narzędzi (stan sesji przeglądarki) — nigdy do repo
+/results.json
+/state.json
