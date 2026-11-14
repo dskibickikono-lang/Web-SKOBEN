@@ -5,8 +5,8 @@ channel: pm-local
 requested_by: owner
 status: in-review
 branch: skibiai/sharp-hamilton-he3v81
-pr: brak — repozytorium nie ma gałęzi bazowej (patrz „Stan PR”)
-sha: patrz historia gałęzi — ostatni commit „Polityka prywatności, bramka publikacji…”
+pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
+sha: a18afb1 (kod) — kolejny commit aktualizuje tylko tę kartę
 created: 2026-11-14
 ---
 
@@ -84,4 +84,4 @@ Po poprawkach: brak otwartych usterek wizualnych ani funkcjonalnych znanych wyko
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em
-(bez force, bez rebase). PR: patrz pole `pr` w nagłówku. Merge i publikacja po stronie właściciela.
+(bez force, bez rebase). PR #1 otwarty do `main`, gotowy do przeglądu. Merge i publikacja po stronie właściciela.
