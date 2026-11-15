@@ -11,6 +11,7 @@ import UiFragments from '../components/UiFragments.astro';
 import Marquee from '../components/Marquee.astro';
 import Vignettes from '../components/Vignettes.astro';
 import SplitFeature from '../components/SplitFeature.astro';
+import Art from '../components/Art.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { facts } from '../config/site';
 
@@ -110,10 +111,10 @@ const guards = [
 ];
 
 const next = [
-  { href: '/agenci/', image: '/media/sections/card-agents.webp', kicker: 'Produkt', title: 'Z czego składa się agent i jakie kolejki obsługuje' },
-  { href: '/wdrozenie/', image: '/media/sections/card-rollout.webp', kicker: 'Współpraca', title: 'Cztery etapy, stały zakres i warunek przejścia dalej' },
-  { href: '/bezpieczenstwo/', image: '/media/sections/card-security.webp', kicker: 'Kontrola', title: 'Cztery warstwy między modelem a Twoim systemem' },
-];
+  { href: '/agenci/', art: 'queue', kicker: 'Produkt', title: 'Z czego składa się agent i jakie kolejki obsługuje' },
+  { href: '/wdrozenie/', art: 'stages', kicker: 'Współpraca', title: 'Cztery etapy, stały zakres i warunek przejścia dalej' },
+  { href: '/bezpieczenstwo/', art: 'layers', kicker: 'Kontrola', title: 'Cztery warstwy między modelem a Twoim systemem' },
+] as const;
 ---
 
 <Base heroTone="dark">
@@ -123,7 +124,7 @@ const next = [
   <section class="section" data-theme="dark">
     <div class="container">
       <FeatureSwitcher id="work" items={work}>
-        <h2 class="statement" slot="intro" data-reveal>Jedna kolejka pracy.<br />Każda sprawa <em>domknięta</em>.</h2>
+        <h2 class="statement" slot="intro" data-reveal>Jedna kolejka pracy.<br />Każda sprawa domknięta.</h2>
         <a class="link" href="/sandbox/" slot="after">Otwórz sandbox</a>
         <UiFragments />
       </FeatureSwitcher>
@@ -134,7 +135,7 @@ const next = [
   <section class="section proof" data-theme="dark">
     <div class="container">
       <h2 class="h2 proof__title" data-reveal>
-        To, co dziś ktoś przepisuje między systemami, agent <em>zamyka</em> sam
+        To, co dziś ktoś przepisuje między systemami, agent zamyka sam
       </h2>
     </div>
     <Marquee items={closes} />
@@ -145,7 +146,7 @@ const next = [
           <source media="(max-width: 640px)" srcset="/media/sections/principle-tall.webp" width="1152" height="1440" />
           <img
             src="/media/sections/principle-wide.webp"
-            alt="Puste krzesło przy oknie o świcie — praca skończona, nikt nie musi zostawać po godzinach"
+            alt="Jezioro z zalesionymi wyspami we mgle, nad nim niebo o świcie"
             width="2048"
             height="1078"
             loading="lazy"
@@ -171,7 +172,7 @@ const next = [
   <section class="section" data-theme="warm">
     <div class="container" data-reveal>
       <div class="rule-head">
-        <h2 class="title">Automatyzacja, którą da się <em>skontrolować</em>.</h2>
+        <h2 class="title">Automatyzacja, którą da się skontrolować.</h2>
       </div>
       <Vignettes />
     </div>
@@ -200,8 +201,7 @@ const next = [
         id="steps"
         title="Od procesu do produkcji w czterech krokach."
         items={steps}
-        image="/media/sections/steps.webp"
-        alt="Jasne biuro o świcie z długim dębowym stołem i monitorem na tle okna"
+        art="beam"
         link={{ href: '/wdrozenie/', label: 'Zobacz, co dostajesz na każdym etapie' }}
       />
     </div>
@@ -214,8 +214,8 @@ const next = [
         id="systems"
         title="Agent pracuje w Twoich systemach, nie obok nich."
         items={systems}
-        image="/media/sections/systems.webp"
-        alt="Równy plik dokumentów na orzechowym blacie, za oknem wschód słońca"
+        art="orbit"
+        tone="light"
         link={{ href: '/automatyzacje/', label: 'Jak automatyzujemy przepływy' }}
         flip
       />
@@ -225,7 +225,7 @@ const next = [
   <!-- 8. Liczby -->
   <section class="section section--numbers" data-theme="dark">
     <div class="container" data-reveal>
-      <h2 class="h2 numbers__title">Wchodzimy jednym procesem. Zostajemy, gdy liczby się <em>zgadzają</em>.</h2>
+      <h2 class="h2 numbers__title">Wchodzimy jednym procesem. Zostajemy, gdy liczby się zgadzają.</h2>
       <dl class="numbers">
         {
           numbers.map((n) => (
@@ -301,7 +301,7 @@ const next = [
           next.map((n) => (
             <li>
               <a class="next__card" href={n.href}>
-                <img src={n.image} alt="" width="768" height="512" loading="lazy" decoding="async" />
+                <Art kind={n.art} class="next__art" />
                 <span class="label">{n.kicker}</span>
                 <span class="next__title">{n.title}</span>
                 <span class="next__arrow" aria-hidden="true">
@@ -405,7 +405,7 @@ const next = [
   }
 
   .principle figcaption strong {
-    font-weight: 500;
+    font-weight: 480;
   }
 
   .principle figcaption span {
@@ -465,7 +465,7 @@ const next = [
   }
 
   .quote figcaption strong {
-    font-weight: 500;
+    font-weight: 480;
   }
 
   .quote figcaption span {
@@ -533,7 +533,7 @@ const next = [
 
   .tile-title {
     font-size: 1.125rem;
-    font-weight: 500;
+    font-weight: 480;
     line-height: 1.35;
   }
 
@@ -610,7 +610,7 @@ const next = [
 
   .guard__switch span {
     color: #ededf2;
-    font-weight: 500;
+    font-weight: 480;
   }
 
   .guard__switch b {
@@ -647,7 +647,7 @@ const next = [
   }
 
   .guard__test b {
-    font-weight: 500;
+    font-weight: 480;
     color: #ededf2;
   }
 
@@ -668,13 +668,12 @@ const next = [
     background: var(--surface);
   }
 
-  .next__card img {
+  .next__card :global(.next__art) {
     width: 100%;
-    height: auto;
     aspect-ratio: 3 / 2;
     margin-bottom: 0.75rem;
     border-radius: var(--radius-sm);
-    object-fit: cover;
+    background: linear-gradient(180deg, #2b2b38, #23232f);
   }
 
   .next__title {

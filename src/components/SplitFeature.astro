@@ -1,19 +1,21 @@
 ---
 /**
- * Tytuł u góry kolumny, akordeon dosunięty do dołu, obok obraz 4:5.
+ * Tytuł u góry kolumny, akordeon dosunięty do dołu, obok grafika 4:5.
  * Akordeon to natywne <details name>: jedna pozycja otwarta naraz, bez JS.
  */
+import Art from './Art.astro';
+
 interface Props {
   id: string;
   title: string;
   items: { title: string; body: string }[];
-  image: string;
-  alt: string;
+  art: 'beam' | 'orbit' | 'queue' | 'stages' | 'layers' | 'flow';
+  tone?: 'dark' | 'light';
   link?: { href: string; label: string };
   /** Obraz po lewej stronie. */
   flip?: boolean;
 }
-const { id, title, items, image, alt, link, flip = false } = Astro.props;
+const { id, title, items, art, tone = 'dark', link, flip = false } = Astro.props;
 ---
 
 <div class:list={['split', { 'split--flip': flip }]}>
@@ -37,7 +39,7 @@ const { id, title, items, image, alt, link, flip = false } = Astro.props;
       }
     </div>
   </div>
-  <img class="split__image" src={image} alt={alt} width="992" height="1240" loading="lazy" decoding="async" />
+  <Art kind={art} tone={tone} class="split__image" />
 </div>
 
 <style>
@@ -79,7 +81,7 @@ const { id, title, items, image, alt, link, flip = false } = Astro.props;
     position: relative;
     display: block;
     padding-block: 0.875rem;
-    font-weight: 500;
+    font-weight: 480;
     line-height: 1.35;
     color: var(--text-2);
     cursor: pointer;
@@ -137,12 +139,9 @@ const { id, title, items, image, alt, link, flip = false } = Astro.props;
     margin-top: 1.5rem;
   }
 
-  .split__image {
+  .split :global(.split__image) {
     width: 100%;
-    height: auto;
     aspect-ratio: 4 / 5;
-    border-radius: var(--radius);
-    object-fit: cover;
   }
 
   @media (max-width: 860px) {

@@ -40,7 +40,13 @@
   --frost-200: #e9e9f0;
   --frost-300: #dddde5;
 
-  /* Jedyny akcent */
+  /* Jedyny akcent marki: chłodny błękit — przycisk główny, kropka aktywnej pozycji, obrys fokusu */
+  --blue-700: #3a47b8;
+  --blue-600: #4a5bdc;
+  --blue-500: #5b6cf0;
+  --blue-200: #cdd6ff;
+
+  /* Zieleń zostaje wyłącznie w interfejsie produktu (statusy „domknięte”, „zgodne”) */
   --green-700: #235a4e;
   --green-600: #2a6b5c;
   --green-500: #2f7a69;
@@ -55,12 +61,10 @@
   --red-600: #a4452f;
   --red-300: #e59c8a;
 
-  /* Typografia: jedna rodzina sans w dwóch odmianach, szeryf akcentowy, mono do drobnicy */
-  --font-display: 'Wix Madefor Display Variable', 'Sans Fallback', ui-sans-serif, system-ui, -apple-system,
-    'Segoe UI', sans-serif;
-  --font-sans: 'Wix Madefor Text Variable', 'Sans Fallback', ui-sans-serif, system-ui, -apple-system,
-    'Segoe UI', sans-serif;
-  --font-serif: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  /* Typografia: jedna rodzina sans z osią rozmiaru optycznego — odmiana display w nagłówkach,
+     text w treści (font-optical-sizing: auto); mono tylko w interfejsie produktu */
+  --font-display: 'Inter Variable', 'Sans Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Inter Variable', 'Sans Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   --text-number: clamp(2.25rem, 1.6rem + 2.667vw, 4rem);
@@ -124,15 +128,15 @@ body[data-theme='light'] {
   --accent: var(--green-600);
   --accent-strong: var(--green-700);
   --accent-soft: var(--mint-100);
-  --dot: var(--green-600);
+  --dot: var(--blue-600);
   --warn: var(--brass-700);
   --warn-soft: var(--brass-100);
   --danger: var(--red-600);
   --danger-soft: #f6e4de;
-  --btn-bg: var(--green-600);
-  --btn-bg-hover: var(--green-700);
+  --btn-bg: var(--blue-600);
+  --btn-bg-hover: var(--blue-700);
   --btn-fg: #ffffff;
-  --focus: var(--green-500);
+  --focus: var(--blue-500);
   --shadow-panel: 0 24px 60px -28px rgb(28 28 35 / 0.28);
 }
 
@@ -154,15 +158,15 @@ body[data-theme='warm'] {
   --accent: var(--green-600);
   --accent-strong: var(--green-700);
   --accent-soft: #dfe7dd;
-  --dot: var(--green-600);
+  --dot: var(--blue-600);
   --warn: var(--brass-700);
   --warn-soft: var(--brass-100);
   --danger: var(--red-600);
   --danger-soft: #f3e2da;
-  --btn-bg: var(--green-600);
-  --btn-bg-hover: var(--green-700);
+  --btn-bg: var(--blue-600);
+  --btn-bg-hover: var(--blue-700);
   --btn-fg: #ffffff;
-  --focus: var(--green-500);
+  --focus: var(--blue-500);
   --shadow-panel: 0 24px 60px -28px rgb(36 35 31 / 0.28);
 }
 
@@ -184,15 +188,15 @@ body[data-theme='dark'] {
   --accent: var(--mint-300);
   --accent-strong: #b4e6d2;
   --accent-soft: rgb(143 214 187 / 0.12);
-  --dot: var(--mint-300);
+  --dot: var(--blue-200);
   --warn: var(--brass-300);
   --warn-soft: rgb(217 187 128 / 0.13);
   --danger: var(--red-300);
   --danger-soft: rgb(229 156 138 / 0.13);
-  --btn-bg: var(--green-500);
-  --btn-bg-hover: #358a77;
+  --btn-bg: var(--blue-600);
+  --btn-bg-hover: var(--blue-500);
   --btn-fg: #ffffff;
-  --focus: var(--mint-300);
+  --focus: var(--blue-200);
   --shadow-panel: 0 30px 80px -30px rgb(0 0 0 / 0.7);
 }
 
@@ -222,8 +226,8 @@ html:not(.js) [data-theme='dark'] {
   --text: #ededf2;
   --text-2: #b9bac6;
   --text-3: #9899a8;
-  --btn-bg: var(--green-500);
-  --dot: var(--mint-300);
+  --btn-bg: var(--blue-600);
+  --dot: var(--blue-200);
   background: var(--bg);
   color: var(--text);
 }
@@ -324,7 +328,7 @@ canvas {
 }
 
 ::selection {
-  background: var(--green-600);
+  background: var(--blue-600);
   color: #fff;
 }
 
@@ -335,9 +339,9 @@ canvas {
 @font-face {
   font-family: 'Sans Fallback';
   src: local('Arial'), local('Helvetica Neue'), local('Helvetica');
-  size-adjust: 104%;
-  ascent-override: 96%;
-  descent-override: 26%;
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
   line-gap-override: 0%;
 }
 
@@ -389,27 +393,24 @@ canvas {
   letter-spacing: -0.02em;
 }
 
-/* Akcent szeryfowy: jedno–dwa słowa w nagłówku */
+/* Nagłówki są jednolite — bez wyróżnień krojem czy kursywą */
 .display em,
 .h2 em,
 .title em,
 .statement em {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  font-size: 1.04em;
+  font-style: normal;
 }
 
 .h3 {
   font-size: var(--text-h3);
-  font-weight: 500;
+  font-weight: 480;
   line-height: 1.35;
   text-wrap: balance;
 }
 
 .lede {
   font-size: var(--text-lede);
+  font-weight: 360;
   line-height: 1.35;
   color: var(--text-2);
   text-wrap: pretty;
@@ -433,11 +434,11 @@ canvas {
 }
 
 .label {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-2xs);
-  font-weight: 400;
+  font-weight: 450;
   line-height: 1.4;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--text-3);
 }
@@ -528,7 +529,7 @@ main > :last-child:not(.cta-band) {
   padding-inline: 1.25rem;
   border-radius: var(--radius-pill);
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 450;
   line-height: 1;
   white-space: nowrap;
   user-select: none;
@@ -599,7 +600,7 @@ main > :last-child:not(.cta-band) {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-weight: 500;
+  font-weight: 480;
   color: var(--text);
   background-image: linear-gradient(currentColor, currentColor);
   background-size: 100% 1px;
@@ -649,7 +650,7 @@ main > :last-child:not(.cta-band) {
   padding-inline: 0.55rem;
   border-radius: var(--radius-pill);
   font-size: var(--text-2xs);
-  font-weight: 500;
+  font-weight: 480;
   line-height: 1;
   white-space: nowrap;
   color: var(--text-2);
@@ -759,7 +760,7 @@ main > :last-child:not(.cta-band) {
 
 .prose strong {
   color: var(--text);
-  font-weight: 500;
+  font-weight: 480;
 }
 
 /* --- Wspólne siatki --------------------------------------------------------- */
@@ -815,22 +816,12 @@ main > :last-child:not(.cta-band) {
 }
 
 .page-hero__media {
-  display: block;
   margin-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.page-hero__media img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 2048 / 853;
-  object-fit: cover;
+  aspect-ratio: 2.4 / 1;
 }
 
 @media (max-width: 640px) {
-  .page-hero__media img {
+  .page-hero__media {
     aspect-ratio: 4 / 3;
   }
 }

@@ -33,7 +33,7 @@ const VIEWPORTS = [
 ];
 
 /** Dozwolone grubości pisma (skala systemu projektowego). */
-const WEIGHTS = ['400', '480', '500', '600'];
+const WEIGHTS = ['360', '400', '450', '480', '600'];
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
