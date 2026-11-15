@@ -19,7 +19,9 @@ if (targets.length > 0) {
           }
         }
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+      // górny margines „bez końca”: element, który znalazł się nad oknem bez przecięcia
+      // (szybki skok, rozdział z content-visibility), też zostaje odsłonięty
+      { rootMargin: '100000px 0px -8% 0px', threshold: 0.08 },
     );
     targets.forEach((el) => io.observe(el));
   }

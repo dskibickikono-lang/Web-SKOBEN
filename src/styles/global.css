@@ -478,6 +478,14 @@ canvas {
   padding-top: var(--pad-md);
 }
 
+/* Rozdziały poniżej pierwszego ekranu renderują się dopiero przy zbliżeniu:
+   krótsze pierwsze malowanie i tańsze przenikanie motywu. */
+main > .section,
+main > .cta-band {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 46rem;
+}
+
 main > :last-child:not(.cta-band) {
   padding-bottom: var(--pad-xl);
 }

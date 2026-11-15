@@ -102,8 +102,9 @@ async function auditPage(browser, base, route, vp, problems) {
   if (route !== '/404.html' && res.status() !== 200) fail(`status ${res.status()}`);
 
   // Przewinięcie całej strony uruchamia animacje wejścia.
-  const total = await page.evaluate(() => document.documentElement.scrollHeight);
-  for (let y = 0; y < total; y += Math.round(vp.height * 0.7)) {
+  // wysokość strony rośnie w trakcie: rozdziały renderują się dopiero przy zbliżeniu
+  const height = () => page.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y < (await height()); y += Math.round(vp.height * 0.7)) {
     await page.evaluate((top) => window.scrollTo(0, top), y);
     await page.waitForTimeout(140);
   }
@@ -205,7 +206,10 @@ async function auditPage(browser, base, route, vp, problems) {
   if (stored.local > 0) fail(`zapis w localStorage (${stored.local})`);
   if (stored.session.length > 0) fail(`nieoczekiwany zapis w sessionStorage: ${stored.session.join(', ')}`);
 
-  // Dostępność
+  // Dostępność — axe ocenia kontrast tylko wyrenderowanej treści, więc na czas badania
+  // wyłączamy leniwe renderowanie rozdziałów (content-visibility)
+  await page.addStyleTag({ content: 'main > * { content-visibility: visible !important; }' });
+  await page.waitForTimeout(700);
   await page.addScriptTag({ path: AXE });
   const axe = await page.evaluate(async () => {
     const r = await window.axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'] });
@@ -345,8 +349,7 @@ async function auditInteractions(browser, base, problems) {
 
   // Motyw strony przenika razem z rozdziałem: atrament → ciepła biel → chłodna biel
   const themes = new Set([h2.theme]);
-  const total = await page.evaluate(() => document.documentElement.scrollHeight);
-  for (let y = span; y < total; y += 450) {
+  for (let y = span; y < (await page.evaluate(() => document.documentElement.scrollHeight)); y += 450) {
     await page.evaluate((top) => window.scrollTo(0, top), y);
     await page.waitForTimeout(60);
     themes.add(await page.evaluate(() => document.body.dataset.theme));

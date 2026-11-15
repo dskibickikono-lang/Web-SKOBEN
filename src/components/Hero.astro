@@ -63,7 +63,7 @@ import Film from './Film.astro';
 </section>
 
 <script>
-  import { mountFilm, whenIdle } from '../scripts/sandbox/film';
+  import { mountFilm } from '../scripts/sandbox/film';
 
   const section = document.querySelector<HTMLElement>('[data-hero]');
   const stage = section?.querySelector<HTMLElement>('.hero__stage');
@@ -103,6 +103,7 @@ import Film from './Film.astro';
     let shown = 0;
     let raf = 0;
     let ticking = false;
+    let filmStarted = false;
 
     const measure = () => {
       W = stage.clientWidth;
@@ -145,6 +146,12 @@ import Film from './Film.astro';
       const a = clamp(p / 0.5);
       const b = ease(clamp((p - 0.5) / 0.32));
       const c = clamp((p - 0.84) / 0.12);
+
+      // konsola rusza dopiero przed zbliżeniem — nie obciąża pierwszego ekranu
+      if (!filmStarted && p > 0.25) {
+        filmStarted = true;
+        mountFilm(filmEl, { loop: true }).play('orders');
+      }
 
       // A: film
       const duration = Number.isFinite(video.duration) ? video.duration : 5;
@@ -224,7 +231,6 @@ import Film from './Film.astro';
       filmEl.style.setProperty('--film-aspect', '0.74');
     }
     measure();
-    whenIdle(() => mountFilm(filmEl, { loop: true }).play('orders'));
   }
 
   // Adres e-mail przekazujemy do formularza kontaktowego przez pamięć sesji,
