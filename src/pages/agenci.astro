@@ -117,8 +117,8 @@ const compare = {
 
       <div class="catalog">
         {
-          agents.map((a) => (
-            <article class="agent-row" data-reveal>
+          agents.map((a, i) => (
+            <article class="agent-row" id={['zamowienia', 'faktury', 'zgloszenia', 'uzgodnienia'][i]} data-reveal>
               <header>
                 <h3 class="statement">{a.name}</h3>
                 <p class="body-2">{a.line}</p>

@@ -84,16 +84,16 @@ Kolumna „Wzorzec” wskazuje zrzuty z `art-direction/ref/` (desktop / mobile).
 
 | # | Wzorzec | Plan SKOBEN | Zasoby | Ruch |
 |---|---|---|---|---|
-| 1 | Hero — `desktop-00000`…`-01200` / `mobile-00000`…`-01125` | Pełnoekranowa scena biura. Na górze wyśrodkowany nagłówek „Praca, która *domyka się* sama”, lead, pole e-mail + „Poproś o dostęp”, „Otwórz sandbox”. U dołu pastylka: „Wdrażamy równolegle tylko kilka firm”. | Klip 5 s (poziomy 1920×1080 i 1280×720, pionowy 1080×1920 i 720×1280), plakat WebP/JPEG | Scena przypięta na 250vh. 0–60% drogi: film sterowany przewijaniem. Nagłówek gaśnie w miejscu między 15% a 35%. 60–85%: kadr powiększa się w oś ekranu monitora, maska zwęża go do ekranu. 80–100%: na ekranie pojawia się żywa konsola i rośnie do czytelnego panelu z podpisem. Przy ograniczonym ruchu: statyczny plakat. |
+| 1 | Hero — `desktop-00000`…`-01200` / `mobile-00000`…`-01125` | Pełnoekranowa scena biura. Na górze wyśrodkowany nagłówek „Praca, która *domyka się* sama”, lead, pole e-mail + „Poproś o dostęp”, „Otwórz sandbox”. U dołu pastylka: „Wdrażamy równolegle tylko kilka firm”. | Klip 5 s (poziomy 1920×1080 i 1280×720, pionowy 1080×1920 i 720×1280), plakat WebP/JPEG | Scena przypięta na 340svh (ok. 2,4 ekranu drogi). 0–50% drogi: film sterowany przewijaniem. Nagłówek gaśnie w miejscu między 5% a 15%. 50–82%: kadr powiększa się w oś ekranu monitora, a z ekranu wychodzi żywa konsola i rośnie do czytelnego panelu. 84–96%: podpis pod konsolą. Przy ograniczonym ruchu i bez JS: statyczny kadr, jeden ekran. |
 | 2 | Zakładki produktu — `desktop-01500`…`-02400` / `mobile-01500`…`-02250` | „Jedna kolejka pracy. Każda sprawa domknięta.” Akordeon 4 pozycji po lewej; po prawej **osobne fragmenty interfejsu**, nie konsola: wiadomość z wyodrębnionymi polami, dopasowanie faktury, lista zgłoszeń, progi z prognozą. | Fragmenty UI w HTML na kaflu z miękkim światłem i ziarnem | Zmiana fragmentu: przenikanie z rozmyciem 500 ms. Bez automatycznego przełączania. |
-| 3 | Taśma logotypów — `desktop-03000` / `mobile-03000` | Taśma tego, co agenci domykają: „Zamówienia · Faktury kosztowe · Reklamacje · Uzgodnienia · KSeF · EDI · Zgłoszenia serwisowe…” krojem display, w jednym kolorze. Nie udajemy logotypów klientów. | Tekst | Marquee 45 s, krawędzie wygaszone maską 20% |
+| 3 | Taśma logotypów + cytat na zdjęciu — `desktop-03000`, `-03300` / `mobile-03000` | Taśma tego, co agenci domykają: „Zamówienia · Faktury kosztowe · Reklamacje · Uzgodnienia · KSeF · EDI · Zgłoszenia serwisowe…” krojem display, w jednym kolorze. Pod nią duża karta z **zasadą pracy na kadrze** („Nie sprzedajemy transformacji AI…”, podpis SKOBEN) — w miejscu, gdzie wzorzec ma cytat klienta. Nie udajemy logotypów ani referencji. | Tekst; kadr `d02` (puste krzesło przy oknie) 1,9:1, na telefonie 4:5 | Marquee 45 s, krawędzie wygaszone maską 20% |
 | 4 | Siatka funkcji 2×2 — `desktop-04200` / `mobile-04125` | „Automatyzacja, którą da się skontrolować.” Cztery kafle 3:2 z winietami: odczyt dokumentu, decyzja człowieka, progi, dziennik. Tło strony przechodzi w ciepłą biel. | Winiety CSS (istniejące, spłaszczone do stylu kafla) | Pętle w kaflach; przycisk pauzy 40 px |
-| 5 | Cytat — `desktop-04800` / `mobile-05250` | Zasada firmy zamiast cytatu klienta: „Nie sprzedajemy transformacji AI. Bierzemy jeden proces i dowozimy go do końca.” Podpis: SKOBEN. Tło: chłodna biel. | Tylko typografia | Wejście sekcji |
+| 5 | Cytat — `desktop-04800` / `mobile-05250` | Druga zasada firmy zamiast cytatu klienta: „Agent nie dostaje zaufania na kredyt. Dostaje uprawnienia do jednego procesu, progi i dziennik — a Ty wyłącznik.” Podpis: SKOBEN. Tło: chłodna biel. | Tylko typografia | Wejście sekcji |
 | 6 | Akordeon + obraz — `desktop-05700` / `mobile-05625` | „Od procesu do produkcji w czterech krokach.” Akordeon: mapowanie, pilot, produkcja, utrzymanie; obraz 4:5 po prawej. | Kadr `s08` (jasne biuro) przycięty 4:5 | Obraz bez zmian; akordeon ręczny |
-| 7 | Lustro — `desktop-06300` / `mobile-06375` | „Agent pracuje w Twoich systemach, nie obok nich.” Obraz po lewej, akordeon po prawej: API, pliki i EDI, poczta, interfejs. | Kadr `s06` przycięty 4:5 | Jak wyżej |
+| 7 | Lustro — `desktop-06300` / `mobile-06375` | „Agent pracuje w Twoich systemach, nie obok nich.” Obraz po lewej, akordeon po prawej: API, pliki i EDI, poczta, interfejs. | Kadr `d01` (plik dokumentów o świcie) przycięty 4:5 | Jak wyżej |
 | 8 | Liczby — `desktop-08100` / `mobile-08625` | Cztery liczby z potwierdzonych deklaracji: 1 proces na start · 30 minut pierwszej rozmowy · 4–6 tygodni pilota · 100% decyzji w dzienniku. Tło wraca do atramentu. | Tylko typografia | Bez licznika |
 | 9 | Karty bezpieczeństwa — `desktop-08400` / `mobile-09375` | „Agent ma tyle władzy, ile mu dasz.” Trzy kafle 4:5: uprawnienia, wyłącznik awaryjny, test przed zmianą. | Ciemne kafle z jednym świecącym elementem UI | Wejście sekcji |
-| 10 | Karty prasowe — `desktop-09300` / `mobile-11250` | Trzy karty „Dalej”: Agenci, Wdrożenie, Bezpieczeństwo — w formacie karty prasowej (kafel, tytuł, okrągła strzałka). | Kadry z pozostałych generacji | Cała karta jest linkiem |
+| 10 | Karty prasowe — `desktop-09300` / `mobile-11250` | Trzy karty „Dalej”: Agenci, Wdrożenie, Bezpieczeństwo — w formacie karty prasowej (kafel, tytuł, okrągła strzałka). | Trzy różne kadry: biuro z monitorem, pusta sala (`d04`), krawędź biurka z notesem (`d03`) | Cała karta jest linkiem |
 | 11 | Końcowe wezwanie — `desktop-09900` / `mobile-12375` | „Pokaż nam jeden proces.” + dwa przyciski + dwie karty (sandbox, kontakt). Kalkulator i FAQ zostają na podstronie „Wdrożenie”. | Tylko typografia | Wejście sekcji |
 | 12 | Stopka — `desktop-10500` / `mobile-13500` | Grupy linków w kolumnach, dane spółki, polityka prywatności. | — | — |
 
@@ -119,3 +119,51 @@ z iteracji 2 zastępują fragmenty interfejsu i kadry.
 - hover, który podnosi karty; liczniki; kaskadowe wejścia; paralaksa;
 - zdjęcie hero rozciągnięte albo z widocznymi artefaktami generacji;
 - poświata „dla efektu” — światło ma wynikać ze sceny, nie z gradientu CSS.
+
+## 8. Wynik iteracji 3 — zestawienia ze wzorcem i samoocena
+
+Zrzuty w tej samej pozycji przewijania co referencja, 1440 i 390 px. Lewa kolumna: mercury.com, prawa: SKOBEN.
+
+| Obszar | Zestawienie |
+|---|---|
+| Hero (pierwszy ekran, 1440 i 390) | [`art-direction/compare/hero.jpg`](art-direction/compare/hero.jpg) |
+| Sekcje funkcji (lista + fragment produktu, jasne kafle, akordeon + kadr) | [`art-direction/compare/features.jpg`](art-direction/compare/features.jpg) |
+| Wiarygodność (taśma + zasada na kadrze, cytat, liczby, karty „dalej”) | [`art-direction/compare/proof.jpg`](art-direction/compare/proof.jpg) |
+
+Nagranie przewijania hero (30 kl./s, składane klatka po klatce w headless Chromium — pokazuje przebieg sceny,
+nie płynność na konkretnym sprzęcie):
+
+- desktop 1440×900: [`art-direction/video/skoben-hero-scroll-desktop.mp4`](art-direction/video/skoben-hero-scroll-desktop.mp4)
+- telefon 390×844: [`art-direction/video/skoben-hero-scroll-mobile.mp4`](art-direction/video/skoben-hero-scroll-mobile.mp4)
+
+### Kryteria odbioru — stan
+
+| Kryterium | Stan | Dowód |
+|---|---|---|
+| Pierwszy ekran jak marka premium, nie dashboard | spełnione w ocenie wykonawcy | `compare/hero.jpg`; konsola pojawia się dopiero po najeździe |
+| Scroll hero = płynny najazd kamery; statyczny kadr przy `prefers-reduced-motion` | mechanika spełniona; 60 kl./s na laptopie do potwierdzenia przez właściciela | pomiar w headless (render programowy, bez GPU): mediana klatki 16,7 ms, 18 z 275 klatek > 20 ms na 1440; na 390 wszystkie 16,7 ms. Test statycznego kadru w `npm run audit` |
+| Żaden ekran nie powtarza widoku konsoli | spełnione | audyt liczy konsole: 1 na `/` (zbliżenie w hero), 1 na `/sandbox/`, 0 gdzie indziej |
+| Co najmniej 2 jasne rozdziały na stronie głównej | spełnione | ciepła biel (kafle kontroli) + chłodna biel (cytat, dwa akordeony z kadrem); audyt sprawdza trzy motywy |
+| Jedna rodzina sans w 2 wariantach + szeryf akcentowy, spójna skala | spełnione | Wix Madefor Display/Text + Newsreader + IBM Plex Mono; audyt: grubości 400/480/500/600, ≤ 14 stopni pisma na stronie |
+| LCP < 2,5 s na 4G | spełnione | Lighthouse mobile: LCP 0,8–1,5 s na 7 stronach, wynik 100/100/100/100, TBT 0 ms |
+| axe bez błędów krytycznych | spełnione | axe-core WCAG 2.1 AA: 0 naruszeń na 9 stronach × 3 szerokości |
+
+### Co jeszcze wygląda tanio — uczciwie
+
+- **Scena jest wygenerowana.** Czyta się jak wysokiej klasy wizualizacja architektoniczna, nie jak sesja zdjęciowa
+  z prawdziwego biura. Zdjęcia z własnej sesji podniosłyby wiarygodność; układ ich nie wymaga zmiany.
+- **Kadr pionowy to inne pomieszczenie** niż poziomy (osobna generacja pod telefon) — spójny nastrojem, nie identyczny.
+- **Brak prawdziwych referencji.** Taśma tekstowa, zasady firmy i liczby z deklaracji stoją tam, gdzie wzorzec ma
+  logotypy klientów, cytaty i prasę. To najsłabszy punkt względem wzorca i jedyny, którego nie da się poprawić kodem.
+- **Podstrony mają bohatera tekstowego** (bez kadru). Są w systemie strony głównej, ale skromniejsze niż ona.
+- **iOS Safari**: przewijany film jest „budzony” pierwszym dotknięciem; nie było jak sprawdzić tego na fizycznym urządzeniu.
+- Film ma 5 s (121 klatek) — przy bardzo wolnym przewijaniu na dużym ekranie widać pojedyncze klatki.
+
+### Co zmieniło się po samoocenie w trakcie
+
+- kadry z monitorem powtarzały się w trzech kartach i obu akordeonach → dogenerowane detale (dokumenty, sala, notes, krzesło);
+- sekcja wiarygodności była samym tekstem → karta z zasadą na kadrze;
+- kafle z własnym tłem brały kolory z motywu strony (słaby kontrast w trakcie przenikania) → własny motyw kafla;
+- konsola w hero pracowała od załadowania strony → startuje przed zbliżeniem (TBT na telefonie 680 ms → 0 ms);
+- nawigacja płaska → panel „Produkt”: trzy kolumny, cienkie linie, pigułka pod wskaźnikiem.
+

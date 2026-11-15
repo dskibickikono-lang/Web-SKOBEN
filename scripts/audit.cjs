@@ -370,6 +370,23 @@ async function auditInteractions(browser, base, problems) {
   if ((await page.getAttribute('#f-name', 'aria-invalid')) !== 'true') fail('brak walidacji pola „Imię i nazwisko”');
   if ((await page.getAttribute('#f-email', 'aria-invalid')) !== 'true') fail('brak walidacji e-maila');
 
+  // Panel „Produkt”: klik otwiera, Escape zamyka i oddaje fokus, odnośnik-kotwica prowadzi do sekcji
+  await page.goto(base + '/wdrozenie/', { waitUntil: 'networkidle' });
+  await page.click('[data-mega-toggle]');
+  await page.waitForTimeout(350);
+  if (!(await page.locator('[data-mega]').isVisible())) fail('panel „Produkt” się nie otwiera');
+  const megaCols = await page.locator('[data-mega] .mega__grid > *').count();
+  if (megaCols !== 3) fail(`panel „Produkt” ma ${megaCols} kolumn zamiast 3`);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(350);
+  if (await page.locator('[data-mega]').isVisible()) fail('Escape nie zamyka panelu „Produkt”');
+  if (!(await page.evaluate(() => document.activeElement?.hasAttribute('data-mega-toggle')))) fail('po zamknięciu panelu fokus nie wraca na przycisk');
+  await page.click('[data-mega-toggle]');
+  await Promise.all([page.waitForURL('**/agenci/#faktury'), page.click('[data-mega] a[href="/agenci/#faktury"]')]);
+  await page.waitForTimeout(600);
+  const anchorTop = await page.evaluate(() => document.getElementById('faktury')?.getBoundingClientRect().top ?? -1);
+  if (!(anchorTop >= 0 && anchorTop < 400)) fail(`kotwica #faktury nie przewija do sekcji (top ${Math.round(anchorTop)} px)`);
+
   // Automatyzacje: zakładki przepływu
   await page.goto(base + '/automatyzacje/', { waitUntil: 'networkidle' });
   await page.locator('[data-pipe] [role="tab"]').nth(1).click();
