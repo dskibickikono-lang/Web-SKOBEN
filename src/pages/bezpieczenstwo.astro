@@ -4,7 +4,6 @@ import PageHero from '../components/PageHero.astro';
 import FeatureSwitcher from '../components/FeatureSwitcher.astro';
 import LayersArt from '../components/LayersArt.astro';
 import CtaBand from '../components/CtaBand.astro';
-import Vignettes from '../components/Vignettes.astro';
 
 const layers = [
   {
@@ -71,16 +70,6 @@ const failure = [
     </div>
   </section>
 
-  <!-- Kontrola w praktyce -->
-  <section class="section section--flush-top">
-    <div class="container">
-      <div class="section-head">
-        <h2 class="statement" data-reveal>Tak te warstwy wyglądają w codziennej pracy.</h2>
-      </div>
-      <Vignettes />
-    </div>
-  </section>
-
   <!-- Dane -->
   <section class="section section--flush-top">
     <div class="container data-wrap">
@@ -104,7 +93,7 @@ const failure = [
   </section>
 
   <!-- Awaria -->
-  <section class="section theme-dark">
+  <section class="section" data-theme="dark">
     <div class="container">
       <div class="promise">
         <p class="label" data-reveal>Czego nie obiecujemy</p>
@@ -160,7 +149,7 @@ const failure = [
   }
 
   .data dt {
-    font-weight: 540;
+    font-weight: 500;
   }
 
   .data dd {

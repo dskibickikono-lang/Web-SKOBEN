@@ -1,0 +1,74 @@
+---
+/**
+ * Pozioma taśma tekstowa: to, co agenci domykają. Jedna kopia jest czytana przez
+ * czytniki ekranu, druga (dla ciągłości pętli) jest ukryta przed nimi.
+ */
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+---
+
+<div class="marquee">
+  <div class="marquee__track">
+    <ul>
+      {items.map((item) => <li>{item}</li>)}
+    </ul>
+    <ul aria-hidden="true">
+      {items.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+  }
+
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 45s linear infinite;
+  }
+
+  .marquee ul {
+    display: flex;
+    align-items: center;
+  }
+
+  .marquee li {
+    display: flex;
+    align-items: center;
+    height: 3.5rem;
+    padding-inline: 1.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+    font-weight: 480;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    color: var(--text-2);
+  }
+
+  .marquee li::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    margin-left: 3.5rem;
+    border-radius: 50%;
+    background: var(--text-3);
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+    }
+  }
+</style>

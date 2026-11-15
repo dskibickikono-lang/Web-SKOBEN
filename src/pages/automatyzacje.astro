@@ -4,7 +4,6 @@ import PageHero from '../components/PageHero.astro';
 import FlowDiagram from '../components/FlowDiagram.astro';
 import Pipeline from '../components/Pipeline.astro';
 import CtaBand from '../components/CtaBand.astro';
-import Film from '../components/Film.astro';
 
 const connections = [
   {
@@ -79,7 +78,7 @@ const reliability = [
   </section>
 
   <!-- Diagram -->
-  <section class="section theme-dark">
+  <section class="section" data-theme="dark">
     <div class="container">
       <div class="section-head">
         <h2 class="h2" data-reveal>Jeden agent, wiele wejść i wyjść.</h2>
@@ -90,23 +89,6 @@ const reliability = [
       </div>
       <div data-reveal style="--reveal-i:2">
         <FlowDiagram id="auto" />
-      </div>
-    </div>
-  </section>
-
-  <!-- Film -->
-  <section class="section">
-    <div class="container film-row">
-      <div class="film-row__text">
-        <h2 class="statement" data-reveal>Ten sam szkielet w ruchu: zgłoszenia.</h2>
-        <p class="body-2" data-reveal style="--reveal-i:1">
-          Wyzwalacz, odczyt, warunki, akcje — i jedna ścieżka dla wyjątków. Tu widać, jak przepływ zachowuje się
-          na prawdziwej kolejce.
-        </p>
-        <a class="link" href="/sandbox/" data-reveal style="--reveal-i:2">Otwórz sandbox</a>
-      </div>
-      <div class="film-frame" data-reveal style="--reveal-i:1">
-        <Film id="flow" pan autoplay="tickets" />
       </div>
     </div>
   </section>

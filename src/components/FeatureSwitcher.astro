@@ -103,9 +103,13 @@ const { id, items, flip = false } = Astro.props;
 <style>
   .fs {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: clamp(2.5rem, 1rem + 6vw, 7rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
     align-items: center;
+  }
+
+  .fs__list {
+    margin-left: 0;
   }
 
   .fs--flip .fs__text {
@@ -178,7 +182,7 @@ const { id, items, flip = false } = Astro.props;
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--accent);
+    background: var(--dot);
     transform: scale(0);
     transition: transform var(--dur-2) var(--ease-out);
   }
@@ -232,7 +236,7 @@ const { id, items, flip = false } = Astro.props;
     display: none;
   }
 
-  /* Panele: stos z przenikaniem */
+  /* Panele: stos; zmiana to przenikanie z lekkim rozmyciem, bez ruchu */
   .fs__panels {
     display: grid;
     min-width: 0;
@@ -241,34 +245,28 @@ const { id, items, flip = false } = Astro.props;
   .fs__panels > :global(*) {
     grid-area: 1 / 1;
     min-width: 0;
-    justify-self: end;
     opacity: 0;
-    transform: translate3d(0, 10px, 0) scale(0.99);
+    filter: blur(4px);
     transition:
-      opacity var(--dur-3) var(--ease-out),
-      transform var(--dur-3) var(--ease-out);
+      opacity var(--dur-3) var(--ease-soft),
+      filter var(--dur-3) var(--ease-soft);
     pointer-events: none;
-  }
-
-  .fs--flip .fs__panels > :global(*) {
-    justify-self: start;
   }
 
   .fs__panels > :global(:first-child) {
     opacity: 1;
-    transform: none;
+    filter: none;
   }
 
   :global(.js) .fs__panels > :global(:first-child:not(.is-active)) {
     opacity: 0;
-    transform: translate3d(0, 10px, 0) scale(0.99);
+    filter: blur(4px);
   }
 
   .fs__panels > :global(.is-active) {
     opacity: 1;
-    transform: none;
+    filter: none;
     pointer-events: auto;
-    transition-delay: 90ms;
   }
 
   @media (max-width: 900px) {

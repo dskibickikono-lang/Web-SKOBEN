@@ -6,8 +6,10 @@
  *
  * Sprawdza każdą stronę w trzech szerokościach: błędy konsoli i sieci,
  * poziome przewijanie, strukturę nagłówków, martwe linki wewnętrzne,
- * zewnętrzne zasoby i pliki graficzne (ma ich nie być), dostępność (axe-core),
- * precyzję układu (piony siatki, skala i grubości pisma, cele dotyku ≥ 40 px)
+ * zewnętrzne zasoby (ma ich nie być), obrazy bez wymiarów i leniwego ładowania,
+ * dostępność (axe-core), precyzję układu (piony siatki, skala i grubości pisma,
+ * cele dotyku ≥ 40 px), scenę hero (film przewijany scrollem, najazd na ekran,
+ * wersja statyczna przy prefers-reduced-motion), zmianę motywu rozdziałów
  * oraz pełny scenariusz klikania sandboxa. Zrzuty trafiają do audit-output/.
  *
  * Wymaga pakietu `playwright` z przeglądarką Chromium (nie jest zależnością
@@ -31,7 +33,7 @@ const VIEWPORTS = [
 ];
 
 /** Dozwolone grubości pisma (skala systemu projektowego). */
-const WEIGHTS = ['400', '450', '480', '500', '540', '620'];
+const WEIGHTS = ['400', '480', '500', '600'];
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -42,6 +44,11 @@ const MIME = {
   '.xml': 'application/xml',
   '.txt': 'text/plain',
   '.json': 'application/json',
+  '.webp': 'image/webp',
+  '.avif': 'image/avif',
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.mp4': 'video/mp4',
 };
 
 function serve() {
@@ -55,7 +62,18 @@ function serve() {
       file = path.join(DIST, '404.html');
       status = 404;
     }
-    res.writeHead(status, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });
+    const type = MIME[path.extname(file)] || 'application/octet-stream';
+    const size = fs.statSync(file).size;
+    // film hero jest przewijany — przeglądarka prosi o zakresy bajtów
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+    if (range && status === 200) {
+      const start = range[1] ? Number(range[1]) : 0;
+      const end = range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
+      res.writeHead(206, { 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Content-Range': `bytes ${start}-${end}/${size}`, 'Content-Length': end - start + 1 });
+      fs.createReadStream(file, { start, end }).pipe(res);
+      return;
+    }
+    res.writeHead(status, { 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Content-Length': size });
     fs.createReadStream(file).pipe(res);
   });
   return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server)));
@@ -72,13 +90,12 @@ async function auditPage(browser, base, route, vp, problems) {
 
   page.on('console', (m) => m.type() === 'error' && !(route === '/404.html' && /404/.test(m.text())) && fail(`console: ${m.text()}`));
   page.on('pageerror', (e) => fail(`pageerror: ${e.message}`));
-  page.on('requestfailed', (r) => fail(`request failed: ${r.url()}`));
+  // przerwane pobieranie filmu przy zmianie pozycji to normalne zachowanie odtwarzacza
+  page.on('requestfailed', (r) => r.resourceType() !== 'media' && fail(`request failed: ${r.url()}`));
   const external = new Set();
-  const images = new Set();
   page.on('request', (r) => {
     const url = r.url();
-    if (!url.startsWith(base) && !url.startsWith('data:')) external.add(url);
-    if (r.resourceType() === 'image' && !url.endsWith('/favicon.svg')) images.add(url);
+    if (!url.startsWith(base) && !url.startsWith('data:') && !url.startsWith('blob:')) external.add(url);
   });
 
   const res = await page.goto(base + route, { waitUntil: 'networkidle' });
@@ -104,7 +121,7 @@ async function auditPage(browser, base, route, vp, problems) {
     const wide = [];
     for (const el of document.querySelectorAll('body *')) {
       // dekoracje (aria-hidden) celowo wychodzą poza kadr i są przycinane przez kontener
-      if (!visible(el) || el.closest('[aria-hidden="true"], .compare-wrap, .sbx__queue-list, .pipe__tabs, svg')) continue;
+      if (!visible(el) || el.closest('[aria-hidden="true"], .marquee, .compare-wrap, .sbx__queue-list, .pipe__tabs, svg')) continue;
       const r = el.getBoundingClientRect();
       if (r.right > doc.clientWidth + 1 || r.left < -1) wide.push(`${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]}`);
     }
@@ -129,7 +146,8 @@ async function auditPage(browser, base, route, vp, problems) {
       if (!visible(el) || el.closest('svg, [aria-hidden="true"]')) continue;
       if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
       const cs = getComputedStyle(el);
-      sizes.add(cs.fontSize);
+      // akcent szeryfowy w nagłówku ma kompensację optyczną wielkości — to nie osobny stopień skali
+      if (!(el.tagName === 'EM' && el.closest('h1, h2, h3, blockquote'))) sizes.add(cs.fontSize);
       weights.add(cs.fontWeight);
     }
     return {
@@ -141,7 +159,10 @@ async function auditPage(browser, base, route, vp, problems) {
       small: small.slice(0, 6),
       h1: document.querySelectorAll('h1').length,
       headings: [...document.querySelectorAll('h1,h2,h3,h4')].filter(visible).map((h) => Number(h.tagName[1])),
-      imgs: document.querySelectorAll('img, picture, video').length,
+      // obraz bez wymiarów przesuwa układ; poniżej pierwszego ekranu ma się ładować leniwie
+      imgNoSize: [...document.querySelectorAll('img')].filter((i) => !i.getAttribute('width') || !i.getAttribute('height')).length,
+      imgEager: [...document.querySelectorAll('img')].filter((i) => !i.closest('[data-hero]') && i.loading !== 'lazy').length,
+      consoles: document.querySelectorAll('[data-sbx], [data-sbx-film]').length,
       title: document.title,
       description: document.querySelector('meta[name="description"]')?.getAttribute('content') || '',
       lang: doc.lang,
@@ -159,8 +180,11 @@ async function auditPage(browser, base, route, vp, problems) {
       break;
     }
   }
-  if (facts.imgs > 0) fail(`znaleziono ${facts.imgs} elementów img/picture/video`);
-  if (images.size) fail(`żądania plików graficznych: ${[...images].join(', ')}`);
+  if (facts.imgNoSize) fail(`${facts.imgNoSize} obrazów bez atrybutów width/height`);
+  if (facts.imgEager) fail(`${facts.imgEager} obrazów poza hero bez loading="lazy"`);
+  // konsola występuje tylko w dwóch miejscach: zbliżenie w hero i pełny sandbox
+  const expected = route === '/' || route === '/sandbox/' ? 1 : 0;
+  if (facts.consoles !== expected) fail(`liczba konsol na stronie: ${facts.consoles}, oczekiwano ${expected}`);
   if (external.size) fail(`zasoby zewnętrzne: ${[...external].join(', ')}`);
   if (!facts.title || facts.title.length > 70) fail(`tytuł strony: "${facts.title}"`);
   if (facts.description.length < 50 || facts.description.length > 170) fail(`meta description ma ${facts.description.length} znaków`);
@@ -272,41 +296,64 @@ async function auditInteractions(browser, base, problems) {
   const fail = (msg) => problems.push(`interakcje: ${msg}`);
   page.on('pageerror', (e) => fail(`pageerror: ${e.message}`));
 
-  // Strona główna: przełącznik funkcji, kalkulator, FAQ, formularz hero
+  // Strona główna: przełącznik funkcji, akordeon kroków, scena hero, motywy rozdziałów
   await page.goto(base + '/', { waitUntil: 'networkidle' });
   const triggers = page.locator('[data-fs]').first().locator('[data-fs-trigger]');
+  await triggers.nth(2).scrollIntoViewIfNeeded();
   await triggers.nth(2).click();
   if ((await triggers.nth(2).getAttribute('aria-expanded')) !== 'true') fail('akordeon funkcji nie reaguje');
   const activePanels = await page.locator('[data-fs]').first().locator('[data-fs-panels] > .is-active').count();
   if (activePanels !== 1) fail(`aktywnych paneli: ${activePanels}`);
 
-  const before = await page.locator('[data-res="hours"]').innerText();
-  await page.locator('#calc-cases').fill('8000');
-  const after = await page.locator('[data-res="hours"]').innerText();
-  if (before === after) fail('kalkulator nie przelicza wyniku');
+  const steps = page.locator('.split details');
+  await steps.nth(1).locator('summary').click();
+  const openSteps = await page.locator('.split').first().locator('details[open]').count();
+  if (openSteps !== 1) fail(`akordeon kroków: otwartych pozycji ${openSteps}, oczekiwano 1`);
 
-  await page.locator('.faq__item summary').first().click();
-  if (!(await page.locator('.faq__item').first().getAttribute('open')) === null) fail('FAQ się nie otwiera');
-
-  // Hero: przewijanie prowadzi kamerę przez bramę — ekran konsoli rośnie do szerokości okna
+  // Hero: scroll przewija film (najazd kamery), potem ekran monitora rośnie do czytelnej konsoli
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForTimeout(400);
-  const screenWidth = () => page.evaluate(() => document.querySelector('.cine__screen').getBoundingClientRect().width);
-  const w0 = await screenWidth();
-  const span = await page.evaluate(() => document.querySelector('[data-cine]').offsetHeight - window.innerHeight);
-  await page.evaluate((y) => window.scrollTo(0, y), Math.round(span * 0.62));
   await page.waitForTimeout(500);
-  const w1 = await screenWidth();
-  await page.evaluate((y) => window.scrollTo(0, y), span);
-  await page.waitForTimeout(500);
-  const w2 = await screenWidth();
-  const captionShown = await page.evaluate(() => Number(getComputedStyle(document.querySelector('[data-cine-caption]')).opacity) > 0.9);
-  if (!(w0 < 520 && w1 > 1300)) fail(`najazd kamery w hero nie działa: ekran ${Math.round(w0)} → ${Math.round(w1)} px`);
-  if (!(w2 < 1000 && captionShown)) fail(`ekran nie osiada po najeździe: ${Math.round(w2)} px, podpis widoczny: ${captionShown}`);
+  const hero = () =>
+    page.evaluate(() => {
+      const c = document.querySelector('[data-hero-console]');
+      const v = document.querySelector('[data-hero-video]');
+      return {
+        console: c.getBoundingClientRect().width,
+        consoleOpacity: Number(getComputedStyle(c).opacity),
+        copyOpacity: Number(getComputedStyle(document.querySelector('[data-hero-copy]')).opacity),
+        captionOpacity: Number(getComputedStyle(document.querySelector('[data-hero-caption]')).opacity),
+        time: v.currentTime,
+        duration: v.duration || 0,
+        theme: document.body.dataset.theme,
+      };
+    });
+  const span = await page.evaluate(() => document.querySelector('[data-hero]').offsetHeight - window.innerHeight);
+  if (span < 1500) fail(`scena hero nie ma drogi przewijania (${span} px)`);
+  const h0 = await hero();
+  if (!(h0.copyOpacity > 0.9 && h0.consoleOpacity < 0.05)) fail(`hero na starcie: nagłówek ${h0.copyOpacity}, konsola ${h0.consoleOpacity}`);
+  await page.evaluate((y) => window.scrollTo(0, y), Math.round(span * 0.4));
+  await page.waitForFunction(() => document.querySelector('[data-hero-video]').currentTime > 1, null, { timeout: 15000 }).catch(() => {});
+  const h1 = await hero();
+  if (!(h1.time > 1 && h1.copyOpacity < 0.05)) fail(`scroll nie przewija filmu hero: czas ${h1.time.toFixed(2)} s z ${h1.duration.toFixed(2)} s, nagłówek ${h1.copyOpacity}`);
+  await page.evaluate((y) => window.scrollTo(0, y), Math.round(span * 0.98));
+  await page.waitForTimeout(900);
+  const h2 = await hero();
+  if (!(h2.console > 880 && h2.consoleOpacity > 0.95)) fail(`konsola nie wychodzi z ekranu monitora: ${Math.round(h2.console)} px, krycie ${h2.consoleOpacity}`);
+  if (!(h2.captionOpacity > 0.9)) fail(`podpis konsoli niewidoczny (${h2.captionOpacity})`);
   const filmRuns = await page.waitForFunction(() => document.querySelectorAll('[data-film="hero"] .sbx-log__item').length > 2, null, { timeout: 20000 }).then(() => true).catch(() => false);
-  if (!filmRuns) fail('film w hero nie odtwarza się');
+  if (!filmRuns) fail('konsola w hero nie pracuje');
+
+  // Motyw strony przenika razem z rozdziałem: atrament → ciepła biel → chłodna biel
+  const themes = new Set([h2.theme]);
+  const total = await page.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = span; y < total; y += 450) {
+    await page.evaluate((top) => window.scrollTo(0, top), y);
+    await page.waitForTimeout(60);
+    themes.add(await page.evaluate(() => document.body.dataset.theme));
+  }
+  for (const t of ['dark', 'warm', 'light']) if (!themes.has(t)) fail(`motyw „${t}” nie pojawia się na stronie głównej`);
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(500);
 
   await page.fill('#hero-email', 'anna@firma.example');
   await Promise.all([page.waitForURL('**/kontakt/**'), page.click('.hero__form button')]);
@@ -346,6 +393,15 @@ async function auditInteractions(browser, base, problems) {
   await rp.goto(base + '/', { waitUntil: 'networkidle' });
   const hidden = await rp.evaluate(() => [...document.querySelectorAll('[data-reveal]')].filter((el) => getComputedStyle(el).opacity !== '1').length);
   if (hidden) fail(`reduced-motion: ${hidden} elementów pozostaje ukrytych`);
+  // hero bez ruchu: jeden ekran, statyczny kadr, film nie jest pobierany
+  const still = await rp.evaluate(() => ({
+    height: document.querySelector('[data-hero]').offsetHeight,
+    src: document.querySelector('[data-hero-video]').currentSrc,
+    poster: document.querySelector('[data-hero] img')?.complete,
+  }));
+  if (still.height > 900 + 2) fail(`reduced-motion: hero ma ${still.height} px zamiast jednego ekranu`);
+  if (still.src) fail('reduced-motion: film hero został załadowany');
+  if (!still.poster) fail('reduced-motion: brak statycznego kadru hero');
   await r.close();
 
   // Bez JavaScriptu treść musi pozostać czytelna
@@ -357,6 +413,7 @@ async function auditInteractions(browser, base, problems) {
     h1: document.querySelector('h1')?.textContent,
   }));
   if (noJs.hidden) fail(`bez JS: ${noJs.hidden} elementów ukrytych`);
+  if (!noJs.h1) fail('bez JS: brak nagłówka h1');
   await n.close();
 }
 
@@ -408,6 +465,11 @@ async function auditInteractions(browser, base, problems) {
   const fontsKb = Math.round(fs.readdirSync(path.join(DIST, '_astro')).filter((f) => f.endsWith('.woff2')).reduce((s, f) => s + fs.statSync(path.join(DIST, '_astro', f)).size, 0) / 1024);
   console.log(`\nWaga: JS+CSS łącznie ${assetsKb} kB (nieskompresowane), fonty ${fontsKb} kB (wszystkie podzbiory).`);
   if (assetsKb > 400) problems.push(`JS+CSS przekracza budżet 400 kB: ${assetsKb} kB`);
+  // Budżet mediów: pierwszy ekran to sam kadr (poster), film dociąga się po nim
+  const media = path.join(DIST, 'media');
+  const kb = (f) => Math.round(fs.statSync(path.join(media, f)).size / 1024);
+  for (const f of ['hero/office-landscape-poster.webp', 'hero/office-portrait-poster.webp']) if (kb(f) > 120) problems.push(`kadr hero ${f} waży ${kb(f)} kB (budżet 120 kB)`);
+  for (const f of ['hero/office-landscape-1080.mp4', 'hero/office-landscape-720.mp4', 'hero/office-portrait-720.mp4']) if (kb(f) > 5000) problems.push(`film hero ${f} waży ${kb(f)} kB (budżet 5 MB)`);
 
   if (problems.length) {
     console.log(`\n✗ Problemy (${problems.length}):`);

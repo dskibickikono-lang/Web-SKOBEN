@@ -1,127 +1,239 @@
 /* ==========================================================================
-   SKOBEN — system projektowy
+   SKOBEN — system projektowy (iteracja 3, patrz docs/art-direction.md)
    Tokeny → motywy → reset → typografia → prymitywy layoutu → komponenty bazowe
    ========================================================================== */
 
+/* Kolory motywu są zarejestrowane jako <color>, żeby zmiana motywu całej strony
+   mogła płynnie przenikać (tło, tekst, linie i nawigacja naraz). */
+@property --bg { syntax: '<color>'; inherits: true; initial-value: #fbfcfd; }
+@property --surface { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --surface-2 { syntax: '<color>'; inherits: true; initial-value: #f2f2f7; }
+@property --surface-3 { syntax: '<color>'; inherits: true; initial-value: #e9e9f0; }
+@property --text { syntax: '<color>'; inherits: true; initial-value: #1c1c23; }
+@property --text-2 { syntax: '<color>'; inherits: true; initial-value: #535461; }
+@property --text-3 { syntax: '<color>'; inherits: true; initial-value: #6b6c7a; }
+@property --line { syntax: '<color>'; inherits: true; initial-value: #e6e6ee; }
+@property --line-2 { syntax: '<color>'; inherits: true; initial-value: #d3d3de; }
+@property --line-strong { syntax: '<color>'; inherits: true; initial-value: #1c1c23; }
+
 :root {
-  /* Paleta bazowa */
-  --ink-950: #090e0c;
-  --ink-900: #0d1311;
-  --ink-850: #111815;
-  --ink-800: #161e1b;
-  --ink-700: #1e2824;
-  --ink-600: #2a3631;
-  --ink-500: #3c4943;
+  /* Atrament */
+  --ink-950: #15151b;
+  --ink-900: #1c1c23;
+  --ink-850: #20202a;
+  --ink-800: #23232f;
+  --ink-700: #2b2b38;
+  --ink-600: #3a3a49;
+  --ink-500: #505062;
 
-  --bone-0: #fdfcfa;
-  --bone-50: #f8f7f3;
-  --bone-100: #f1efe9;
-  --bone-200: #e6e3db;
-  --bone-300: #d4d0c5;
+  /* Ciepła biel */
+  --bone-0: #fcfbf8;
+  --bone-50: #f6f4ef;
+  --bone-100: #edeae3;
+  --bone-200: #e2ded4;
+  --bone-300: #cfcabd;
 
-  --green-700: #17473a;
-  --green-600: #1f5a4a;
-  --green-500: #2a7561;
+  /* Chłodna biel */
+  --frost-0: #ffffff;
+  --frost-50: #fbfcfd;
+  --frost-100: #f2f2f7;
+  --frost-200: #e9e9f0;
+  --frost-300: #dddde5;
+
+  /* Jedyny akcent */
+  --green-700: #235a4e;
+  --green-600: #2a6b5c;
+  --green-500: #2f7a69;
   --mint-300: #8fd6bb;
   --mint-100: #dcebe4;
 
-  --brass-700: #856527;
+  /* Statusy w interfejsie produktu (nie w marce) */
+  --brass-700: #7a5b20;
   --brass-500: #b9975b;
   --brass-300: #d9bb80;
   --brass-100: #f2e9d6;
-
   --red-600: #a4452f;
   --red-300: #e59c8a;
 
-  /* Typografia */
-  --font-sans: 'Hanken Grotesk Variable', 'Hanken Fallback', ui-sans-serif, system-ui, -apple-system,
+  /* Typografia: jedna rodzina sans w dwóch odmianach, szeryf akcentowy, mono do drobnicy */
+  --font-display: 'Wix Madefor Display Variable', 'Sans Fallback', ui-sans-serif, system-ui, -apple-system,
     'Segoe UI', sans-serif;
-  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-sans: 'Wix Madefor Text Variable', 'Sans Fallback', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+  --font-serif: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  --text-display: clamp(1.875rem, 1.3rem + 2.45vw, 3.125rem);
-  --text-h2: clamp(1.625rem, 1.25rem + 1.6vw, 2.625rem);
-  --text-statement: clamp(1.3125rem, 1.15rem + 0.6vw, 1.5rem);
-  --text-h3: 1.25rem;
-  --text-lede: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --text-number: clamp(2.25rem, 1.6rem + 2.667vw, 4rem);
+  --text-display: clamp(1.75rem, 0.683rem + 2.668vw, 3.0625rem);
+  --text-h2: clamp(1.75rem, 1.425rem + 1.333vw, 2.625rem);
+  --text-title: clamp(1.5rem, 1.314rem + 0.762vw, 2rem);
+  --text-statement: clamp(1.3125rem, 1.24rem + 0.19vw, 1.5rem);
+  --text-h3: 1.125rem;
+  --text-lede: clamp(1rem, 0.884rem + 0.476vw, 1.3125rem);
   --text-body: 1rem;
   --text-sm: 0.9375rem;
   --text-xs: 0.8125rem;
   --text-2xs: 0.75rem;
 
-  /* Rytm */
-  --gutter: clamp(1.25rem, 0.6rem + 2.6vw, 2.5rem);
-  --container: 75rem;
-  --section-y: clamp(5rem, 3rem + 7vw, 9.5rem);
+  /* Rytm: kolumna treści 1024 px, sekcje mają odstęp tylko u góry */
+  --gutter: clamp(1.5rem, 1.1rem + 1.1vw, 2rem);
+  --container: 64rem;
+  --pad-sm: clamp(2rem, 1.8rem + 0.5vw, 2.5rem);
+  --pad-md: clamp(3.5rem, 3.1rem + 1vw, 4.5rem);
+  --pad-lg: clamp(5rem, 4.3rem + 2vw, 7rem);
+  --pad-xl: clamp(6rem, 5.3rem + 2vw, 8rem);
+  --section-y: var(--pad-lg);
   --radius-sm: 8px;
   --radius: 12px;
-  --radius-lg: 20px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
   --header-h: 4.5rem;
 
-  /* Ruch */
-  --ease-out: cubic-bezier(0.22, 0.8, 0.24, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-1: 140ms;
-  --dur-2: 260ms;
-  --dur-3: 520ms;
-  --dur-4: 900ms;
+  /* Ruch: wolno i rzadko */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-enter: cubic-bezier(0.28, 1.1, 0.74, 1);
+  --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --dur-1: 200ms;
+  --dur-2: 300ms;
+  --dur-3: 500ms;
+  --dur-4: 670ms;
 }
 
-/* --- Motywy ---------------------------------------------------------------- */
+/* --- Motywy ----------------------------------------------------------------
+   Motyw ustawia <body data-theme>; skrypt w Base.astro przełącza go, gdy środek
+   okna wchodzi w sekcję oznaczoną data-theme. Klasy .theme-* zostają do lokalnych
+   wysp (np. konsola jest zawsze ciemna). */
 
 :root,
-.theme-light {
+.theme-light,
+body[data-theme='light'] {
   color-scheme: light;
-  --bg: var(--bone-50);
-  --surface: var(--bone-0);
-  --surface-2: var(--bone-100);
-  --surface-3: var(--bone-200);
-  --line: rgb(19 24 22 / 0.11);
-  --line-2: rgb(19 24 22 / 0.2);
-  --line-strong: rgb(19 24 22 / 0.86);
-  --text: #131816;
-  --text-2: #49544e;
-  --text-3: #616b65;
+  --bg: var(--frost-50);
+  --surface: var(--frost-0);
+  --surface-2: var(--frost-100);
+  --surface-3: var(--frost-200);
+  --line: #e6e6ee;
+  --line-2: #d3d3de;
+  --line-strong: #1c1c23;
+  --text: #1c1c23;
+  --text-2: #535461;
+  --text-3: #6b6c7a;
+  --glass: rgb(112 115 147 / 0.1);
+  --glass-line: rgb(112 115 147 / 0.22);
   --accent: var(--green-600);
   --accent-strong: var(--green-700);
   --accent-soft: var(--mint-100);
+  --dot: var(--green-600);
   --warn: var(--brass-700);
   --warn-soft: var(--brass-100);
   --danger: var(--red-600);
   --danger-soft: #f6e4de;
   --btn-bg: var(--green-600);
   --btn-bg-hover: var(--green-700);
-  --btn-fg: #f6f5f0;
+  --btn-fg: #ffffff;
   --focus: var(--green-500);
-  --shadow-panel: 0 1px 0 rgb(19 24 22 / 0.03), 0 12px 32px -12px rgb(19 24 22 / 0.12),
-    0 40px 80px -40px rgb(19 24 22 / 0.14);
+  --shadow-panel: 0 24px 60px -28px rgb(28 28 35 / 0.28);
 }
 
-.theme-dark {
+.theme-warm,
+body[data-theme='warm'] {
+  color-scheme: light;
+  --bg: var(--bone-50);
+  --surface: var(--bone-0);
+  --surface-2: var(--bone-100);
+  --surface-3: var(--bone-200);
+  --line: #e2ded4;
+  --line-2: #cfcabd;
+  --line-strong: #24231f;
+  --text: #24231f;
+  --text-2: #5a564b;
+  --text-3: #6f6a5d;
+  --glass: rgb(112 105 80 / 0.1);
+  --glass-line: rgb(112 105 80 / 0.24);
+  --accent: var(--green-600);
+  --accent-strong: var(--green-700);
+  --accent-soft: #dfe7dd;
+  --dot: var(--green-600);
+  --warn: var(--brass-700);
+  --warn-soft: var(--brass-100);
+  --danger: var(--red-600);
+  --danger-soft: #f3e2da;
+  --btn-bg: var(--green-600);
+  --btn-bg-hover: var(--green-700);
+  --btn-fg: #ffffff;
+  --focus: var(--green-500);
+  --shadow-panel: 0 24px 60px -28px rgb(36 35 31 / 0.28);
+}
+
+.theme-dark,
+body[data-theme='dark'] {
   color-scheme: dark;
   --bg: var(--ink-900);
-  --surface: var(--ink-850);
-  --surface-2: var(--ink-800);
-  --surface-3: var(--ink-700);
-  --line: rgb(236 235 230 / 0.1);
-  --line-2: rgb(236 235 230 / 0.18);
-  --line-strong: rgb(236 235 230 / 0.9);
-  --text: #ecebe6;
-  --text-2: #b1b9b3;
-  --text-3: #86918b;
+  --surface: var(--ink-800);
+  --surface-2: var(--ink-700);
+  --surface-3: var(--ink-600);
+  --line: #34343f;
+  --line-2: #55566a;
+  --line-strong: #ededf2;
+  --text: #ededf2;
+  --text-2: #b9bac6;
+  --text-3: #9899a8;
+  --glass: rgb(175 178 206 / 0.16);
+  --glass-line: rgb(175 178 206 / 0.32);
   --accent: var(--mint-300);
   --accent-strong: #b4e6d2;
   --accent-soft: rgb(143 214 187 / 0.12);
+  --dot: var(--mint-300);
   --warn: var(--brass-300);
   --warn-soft: rgb(217 187 128 / 0.13);
   --danger: var(--red-300);
   --danger-soft: rgb(229 156 138 / 0.13);
-  --btn-bg: #ecebe6;
-  --btn-bg-hover: #ffffff;
-  --btn-fg: var(--ink-900);
+  --btn-bg: var(--green-500);
+  --btn-bg-hover: #358a77;
+  --btn-fg: #ffffff;
   --focus: var(--mint-300);
-  --shadow-panel: 0 0 0 1px rgb(236 235 230 / 0.06), 0 24px 60px -20px rgb(0 0 0 / 0.6),
-    0 60px 120px -40px rgb(0 0 0 / 0.5);
+  --shadow-panel: 0 30px 80px -30px rgb(0 0 0 / 0.7);
+}
+
+body {
+  transition:
+    --bg var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --surface var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --surface-2 var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --surface-3 var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --text var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --text-2 var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --text-3 var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --line var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --line-2 var(--dur-3) cubic-bezier(0, 0, 0.6, 1),
+    --line-strong var(--dur-3) cubic-bezier(0, 0, 0.6, 1);
+}
+
+/* Bez JavaScriptu motyw strony się nie przełącza — sekcje niosą własne kolory. */
+html:not(.js) [data-theme='dark'] {
+  color-scheme: dark;
+  --bg: var(--ink-900);
+  --surface: var(--ink-800);
+  --surface-2: var(--ink-700);
+  --line: #34343f;
+  --line-2: #55566a;
+  --line-strong: #ededf2;
+  --text: #ededf2;
+  --text-2: #b9bac6;
+  --text-3: #9899a8;
+  --btn-bg: var(--green-500);
+  --dot: var(--mint-300);
+  background: var(--bg);
+  color: var(--text);
+}
+
+html:not(.js) [data-theme='warm'] {
+  --bg: var(--bone-50);
+  --text: #24231f;
+  --text-2: #5a564b;
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* --- Reset ----------------------------------------------------------------- */
@@ -147,7 +259,7 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-body);
   font-weight: 400;
-  line-height: 1.55;
+  line-height: 1.5;
   font-synthesis: none;
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
@@ -221,11 +333,11 @@ canvas {
 }
 
 @font-face {
-  font-family: 'Hanken Fallback';
+  font-family: 'Sans Fallback';
   src: local('Arial'), local('Helvetica Neue'), local('Helvetica');
-  size-adjust: 99%;
-  ascent-override: 100%;
-  descent-override: 30%;
+  size-adjust: 104%;
+  ascent-override: 96%;
+  descent-override: 26%;
   line-gap-override: 0%;
 }
 
@@ -234,43 +346,71 @@ canvas {
   navigation: auto;
 }
 
-/* --- Typografia ------------------------------------------------------------ */
+/* --- Typografia ------------------------------------------------------------
+   Hierarchię buduje rozmiar i kolor, nie grubość: nagłówki 480, treść 400. */
+
+.display,
+.h2,
+.title,
+.statement,
+.number {
+  font-family: var(--font-display);
+  font-weight: 480;
+  text-wrap: balance;
+}
 
 .display {
   font-size: var(--text-display);
-  font-weight: 480;
   line-height: 1.1;
-  letter-spacing: -0.012em;
-  text-wrap: balance;
+  letter-spacing: -0.015em;
 }
 
 .h2 {
   font-size: var(--text-h2);
-  font-weight: 480;
   line-height: 1.15;
-  letter-spacing: -0.008em;
-  text-wrap: balance;
+  letter-spacing: -0.012em;
+}
+
+.title {
+  font-size: var(--text-title);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
 .statement {
   font-size: var(--text-statement);
-  font-weight: 480;
   line-height: 1.2;
-  letter-spacing: 0.004em;
-  text-wrap: balance;
+  letter-spacing: -0.005em;
+}
+
+.number {
+  font-size: var(--text-number);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* Akcent szeryfowy: jedno–dwa słowa w nagłówku */
+.display em,
+.h2 em,
+.title em,
+.statement em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  font-size: 1.04em;
 }
 
 .h3 {
   font-size: var(--text-h3);
-  font-weight: 540;
-  line-height: 1.3;
-  letter-spacing: -0.005em;
+  font-weight: 500;
+  line-height: 1.35;
   text-wrap: balance;
 }
 
 .lede {
   font-size: var(--text-lede);
-  line-height: 1.45;
+  line-height: 1.35;
   color: var(--text-2);
   text-wrap: pretty;
 }
@@ -295,9 +435,9 @@ canvas {
 .label {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
-  font-weight: 450;
-  line-height: 1.3;
-  letter-spacing: 0.06em;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-3);
 }
@@ -325,19 +465,21 @@ canvas {
   padding-inline: var(--gutter);
 }
 
+/* Sekcje nie mają własnego tła — kolor niesie motyw całej strony.
+   Odstęp jest tylko u góry; rytm pionowy to górny odstęp następnej sekcji. */
 .section {
   position: relative;
-  padding-block: var(--section-y);
-  background: var(--bg);
+  padding-block: var(--pad-lg) 0;
   color: var(--text);
 }
 
-.section--tight {
-  padding-block: calc(var(--section-y) * 0.62);
+.section--tight,
+.section--flush-top {
+  padding-top: var(--pad-md);
 }
 
-.section--flush-top {
-  padding-top: 0;
+main > :last-child:not(.cta-band) {
+  padding-bottom: var(--pad-xl);
 }
 
 .section-head {
@@ -383,14 +525,9 @@ canvas {
   white-space: nowrap;
   user-select: none;
   transition:
-    background-color var(--dur-1) ease,
-    border-color var(--dur-1) ease,
-    color var(--dur-1) ease,
-    transform var(--dur-1) ease;
-}
-
-.btn:active {
-  transform: scale(0.985);
+    background-color var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
 }
 
 .btn--primary {
@@ -411,6 +548,20 @@ canvas {
 .btn--ghost:hover {
   border-color: color-mix(in srgb, var(--text) 42%, transparent);
   background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+/* przycisk „szklany”: na zdjęciu i na ciemnym tle */
+.btn--glass {
+  border: 1px solid var(--glass-line);
+  color: inherit;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.btn--glass:hover {
+  background: color-mix(in srgb, var(--glass) 100%, rgb(175 178 206 / 0.14));
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
 }
 
 .btn--sm {
@@ -541,11 +692,11 @@ canvas {
 
 .js [data-reveal] {
   opacity: 0;
-  transform: translate3d(0, 14px, 0);
+  transform: translate3d(0, 40px, 0);
   transition:
-    opacity var(--dur-4) var(--ease-out),
-    transform var(--dur-4) var(--ease-out);
-  transition-delay: calc(var(--reveal-i, 0) * 70ms);
+    opacity var(--dur-4) cubic-bezier(0.59, 0.41, 0.68, 0.49),
+    transform var(--dur-4) var(--ease-enter);
+  transition-delay: 150ms;
   will-change: opacity, transform;
 }
 
@@ -558,14 +709,14 @@ canvas {
 /* Treść nad zgięciem wchodzi czystym CSS — nie czeka na JavaScript,
    więc nie opóźnia LCP i działa także bez skryptów. */
 [data-rise] {
-  animation: rise var(--dur-4) var(--ease-out) both;
-  animation-delay: calc(var(--reveal-i, 0) * 70ms + 40ms);
+  animation: rise var(--dur-4) var(--ease-enter) both;
+  animation-delay: 60ms;
 }
 
 @keyframes rise {
   from {
     opacity: 0.001;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 24px, 0);
   }
 }
 
@@ -600,7 +751,7 @@ canvas {
 
 .prose strong {
   color: var(--text);
-  font-weight: 540;
+  font-weight: 500;
 }
 
 /* --- Wspólne siatki --------------------------------------------------------- */
@@ -660,57 +811,4 @@ canvas {
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 0.75rem;
-}
-
-/* --- Wiersz z filmem produktowym (podstrony) ------------------------------- */
-
-.film-row {
-  display: grid;
-  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
-  gap: clamp(2rem, 1rem + 5vw, 6rem);
-  align-items: center;
-}
-
-.film-row__text {
-  display: grid;
-  gap: 1.125rem;
-  justify-items: start;
-}
-
-.film-frame {
-  position: relative;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid var(--line-2);
-  box-shadow: var(--shadow-panel);
-  background: var(--ink-850);
-}
-
-@media (max-width: 900px) {
-  .film-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .film-frame {
-    --film-aspect: 0.92;
-  }
-}
-
-/* Film wjeżdża w kadr razem z przewijaniem (tam, gdzie przeglądarka wspiera oś widoku) */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .film-frame,
-    .work-film {
-      animation: frame-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 34%;
-    }
-
-    @keyframes frame-in {
-      from {
-        transform: translate3d(0, 36px, 0) scale(0.94);
-        opacity: 0.4;
-      }
-    }
-  }
 }

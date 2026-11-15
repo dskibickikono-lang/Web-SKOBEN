@@ -1,0 +1,166 @@
+---
+/**
+ * Tytuł u góry kolumny, akordeon dosunięty do dołu, obok obraz 4:5.
+ * Akordeon to natywne <details name>: jedna pozycja otwarta naraz, bez JS.
+ */
+interface Props {
+  id: string;
+  title: string;
+  items: { title: string; body: string }[];
+  image: string;
+  alt: string;
+  link?: { href: string; label: string };
+  /** Obraz po lewej stronie. */
+  flip?: boolean;
+}
+const { id, title, items, image, alt, link, flip = false } = Astro.props;
+---
+
+<div class:list={['split', { 'split--flip': flip }]}>
+  <div class="split__text">
+    <h2 class="title">{title}</h2>
+    <div class="split__list">
+      {
+        items.map((item, i) => (
+          <details name={id} open={i === 0}>
+            <summary>{item.title}</summary>
+            <p>{item.body}</p>
+          </details>
+        ))
+      }
+      {
+        link && (
+          <a class="link split__link" href={link.href}>
+            {link.label}
+          </a>
+        )
+      }
+    </div>
+  </div>
+  <img class="split__image" src={image} alt={alt} width="992" height="1240" loading="lazy" decoding="async" />
+</div>
+
+<style>
+  .split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  .split--flip .split__text {
+    order: 2;
+  }
+
+  .split__text {
+    display: grid;
+    align-content: space-between;
+    gap: 3rem;
+    padding-block: 0.5rem;
+  }
+
+  .split__text .title {
+    max-width: 26rem;
+  }
+
+  .split__list {
+    interpolate-size: allow-keywords;
+  }
+
+  details {
+    border-top: 1px solid var(--line-2);
+  }
+
+  details[open] {
+    border-top-color: var(--line-strong);
+  }
+
+  summary {
+    position: relative;
+    display: block;
+    padding-block: 0.875rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--text-2);
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--dur-2) var(--ease-out);
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:hover,
+  details[open] summary {
+    color: var(--text);
+  }
+
+  /* kropka aktywnej pozycji — jedno z trzech miejsc, gdzie występuje akcent */
+  summary::before {
+    content: '';
+    position: absolute;
+    left: -1.25rem;
+    top: 1.4rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dot);
+    transform: scale(0);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  details[open] summary::before {
+    transform: scale(1);
+  }
+
+  details p {
+    max-width: 30rem;
+    padding-bottom: 1.25rem;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  details::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size var(--dur-2) var(--ease-out),
+      content-visibility var(--dur-2) allow-discrete;
+  }
+
+  details[open]::details-content {
+    block-size: auto;
+  }
+
+  .split__link {
+    margin-top: 1.5rem;
+  }
+
+  .split__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    object-fit: cover;
+  }
+
+  @media (max-width: 860px) {
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .split--flip .split__text {
+      order: 0;
+    }
+
+    .split__text {
+      gap: 2rem;
+    }
+
+    summary::before {
+      left: auto;
+      right: 0.25rem;
+    }
+  }
+</style>

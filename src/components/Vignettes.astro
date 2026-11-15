@@ -29,9 +29,10 @@ const tiles = [
 
 <ul class="vg">
   {
-    tiles.map((t, i) => (
-      <li class="vg__item" data-reveal style={`--reveal-i:${i % 2}`}>
-        <div class={`vg__tile vg__tile--${t.key}`} aria-hidden="true">
+    tiles.map((t) => (
+      <li class="vg__item">
+        <div class={`vg__tile vg__tile--${t.key} theme-warm`} data-vg-tile>
+          <div class="vg__scene" aria-hidden="true">
           {t.key === 'read' && (
             <>
               <div class="doc">
@@ -101,6 +102,13 @@ const tiles = [
               </span>
             </>
           )}
+          </div>
+          <button class="vg__pause" type="button" aria-label={`Wstrzymaj animację: ${t.title}`} aria-pressed="false" data-vg-pause>
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path class="i-pause" d="M4.5 3h2.5v10H4.5zM9 3h2.5v10H9z" fill="currentColor" />
+              <path class="i-play" d="M5 2.8l8 5.2-8 5.2z" fill="currentColor" />
+            </svg>
+          </button>
         </div>
         <h3 class="vg__title">{t.title}</h3>
         <p class="vg__body">{t.body}</p>
@@ -109,40 +117,97 @@ const tiles = [
   }
 </ul>
 
+<script>
+  // Pętle w kaflach grają tylko w kadrze i dają się zatrzymać.
+  document.querySelectorAll<HTMLElement>('[data-vg-tile]').forEach((tile) => {
+    const button = tile.querySelector<HTMLButtonElement>('[data-vg-pause]');
+    let userPaused = false;
+    const apply = (visible: boolean) => tile.classList.toggle('is-paused', userPaused || !visible);
+    new IntersectionObserver(([e]) => apply(e?.isIntersecting ?? false), { threshold: 0.2 }).observe(tile);
+    button?.addEventListener('click', () => {
+      userPaused = !userPaused;
+      button.setAttribute('aria-pressed', String(userPaused));
+      apply(true);
+    });
+  });
+</script>
+
 <style>
   .vg {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(1.25rem, 0.75rem + 1.5vw, 2rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 2rem;
   }
 
   .vg__item {
     display: grid;
     align-content: start;
-    gap: 0.375rem;
   }
 
+  /* płaski kafel: jeden promień, bez ramki i cienia; podpis pod spodem */
   .vg__tile {
     position: relative;
-    aspect-ratio: 4 / 3;
-    margin-bottom: 0.875rem;
-    border-radius: 14px;
+    aspect-ratio: 3 / 2;
+    margin-bottom: 0.75rem;
+    border-radius: var(--radius);
     overflow: hidden;
-    background: radial-gradient(120% 110% at 50% 0%, #fcfbf8 0%, #f0eee8 55%, #e9e6de 100%);
-    font-size: 0.75rem;
+    background: var(--surface-2);
+    color: #24231f;
+  }
+
+  .vg__scene {
+    position: absolute;
+    inset: 0;
+    font-size: clamp(0.75rem, 0.5rem + 0.9vw, 0.9375rem);
     line-height: 1.3;
-    color: var(--text);
+  }
+
+  .vg__tile:global(.is-paused) .vg__scene :global(*),
+  .vg__tile:global(.is-paused) .vg__scene :global(*)::before,
+  .vg__tile:global(.is-paused) .vg__scene :global(*)::after {
+    animation-play-state: paused !important;
+  }
+
+  .vg__pause {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgb(112 105 80 / 0.1);
+    border: 1px solid rgb(112 105 80 / 0.24);
+    color: #24231f;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+
+  .vg__pause:hover {
+    background: rgb(112 105 80 / 0.2);
+  }
+
+  .vg__pause .i-play,
+  .vg__pause[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+
+  .vg__pause[aria-pressed='true'] .i-play {
+    display: block;
   }
 
   .vg__title {
-    font-size: var(--text-sm);
-    font-weight: 540;
+    font-size: 1.125rem;
+    font-weight: 500;
     line-height: 1.35;
   }
 
   .vg__body {
-    font-size: var(--text-sm);
-    line-height: 1.5;
+    font-size: 1.125rem;
+    line-height: 1.35;
     color: var(--text-2);
     text-wrap: pretty;
   }
@@ -167,7 +232,7 @@ const tiles = [
   .doc b {
     margin-bottom: 0.25rem;
     font-size: 0.9375rem;
-    font-weight: 540;
+    font-weight: 500;
     color: #69726d;
   }
 
@@ -412,7 +477,7 @@ const tiles = [
 
   .form__val::before {
     content: '2%';
-    font-weight: 540;
+    font-weight: 500;
     color: var(--green-600);
     animation: val 6s steps(1) infinite;
   }
@@ -647,20 +712,15 @@ const tiles = [
     }
   }
 
-  @media (max-width: 1000px) {
-    .vg {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      row-gap: 2.25rem;
-    }
-  }
-
-  @media (max-width: 560px) {
+  @media (max-width: 760px) {
     .vg {
       grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
     }
 
-    .vg__tile {
-      font-size: 0.8125rem;
+    .vg__title,
+    .vg__body {
+      font-size: 0.9375rem;
     }
   }
 </style>

@@ -1,13 +1,16 @@
 ---
+/**
+ * Strona główna — układ według docs/art-direction.md, §5.
+ * Motywy: atrament (hero, funkcje, taśma) → ciepła biel (kafle kontroli) →
+ * chłodna biel (cytat, wdrożenie, integracje) → atrament (liczby, bezpieczeństwo, dalej, wezwanie).
+ */
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import FeatureSwitcher from '../components/FeatureSwitcher.astro';
-import Film from '../components/Film.astro';
+import UiFragments from '../components/UiFragments.astro';
+import Marquee from '../components/Marquee.astro';
 import Vignettes from '../components/Vignettes.astro';
-import FlowDiagram from '../components/FlowDiagram.astro';
-import ProcessSteps from '../components/ProcessSteps.astro';
-import Calculator from '../components/Calculator.astro';
-import Faq from '../components/Faq.astro';
+import SplitFeature from '../components/SplitFeature.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { facts } from '../config/site';
 
@@ -30,300 +33,584 @@ const work = [
   },
 ];
 
-const refusals = [
+const closes = [
+  'Zamówienia z e-maili',
+  'Faktury kosztowe',
+  'KSeF',
+  'Reklamacje',
+  'Komunikaty EDI',
+  'Zgłoszenia serwisowe',
+  'Uzgodnienia płatności',
+  'Zwroty',
+  'Raporty dzienne',
+  'Potwierdzenia dostaw',
+];
+
+const steps = [
   {
-    title: 'Żadnych demo na pokaz',
-    body: 'Pilot działa na Twoich realnych sprawach i w Twoich systemach. Albo dowozi uzgodniony miernik, albo nie trafia na produkcję.',
+    title: 'Mapowanie',
+    body: `Rozkładamy jeden proces na kroki, wyjątki i wolumeny. Ustalamy miernik bazowy: ile spraw, ile minut, ile błędów. Zwykle ${facts.mapping}.`,
   },
   {
-    title: 'Żadnych slajdów zamiast wdrożenia',
-    body: 'Nie piszemy strategii AI. Efektem naszej pracy jest działający agent, instrukcja operacyjna i liczba, którą można sprawdzić.',
+    title: 'Pilot',
+    body: `Agent pracuje na realnych sprawach — najpierw w cieniu, potem z akceptacją człowieka. Porównujemy wynik z miernikiem. Zwykle ${facts.pilot}.`,
   },
   {
-    title: 'Żadnej czarnej skrzynki',
-    body: 'Reguły, progi i uprawnienia są jawne i należą do Ciebie. Każdą decyzję agenta da się odtworzyć z dziennika.',
+    title: 'Produkcja',
+    body: 'Przekazujemy kolejkę, uprawnienia i instrukcję operacyjną. Zespół zajmuje się wyjątkami, nie przepisywaniem.',
+  },
+  {
+    title: 'Utrzymanie',
+    body: 'Pilnujemy jakości, reagujemy na zmiany w systemach i dokładamy reguły, gdy proces się zmienia.',
   },
 ];
 
-const faq = [
+const systems = [
   {
-    q: 'Co się dzieje, gdy agent się pomyli?',
-    a: 'Zakładamy, że się pomyli — dlatego każda sprawa spoza reguł trafia do człowieka, a każdy zapis ma ślad w dzienniku i da się go cofnąć. W pilocie mierzymy odsetek błędów na Twoich danych i dopiero na tej podstawie ustalamy, co agent może domykać sam.',
+    title: 'API',
+    body: 'Pierwszy wybór. Zapis jest transakcyjny, szybki i odporny na zmiany wyglądu ekranów.',
   },
   {
-    q: 'Czy musimy wymieniać ERP albo CRM?',
-    a: 'Nie. Agent pracuje w systemach, które już masz: przez API, pliki wymiany, pocztę, a gdy nie ma innej drogi — przez interfejs użytkownika. Zakres integracji ustalamy na etapie mapowania.',
+    title: 'Pliki i EDI',
+    body: 'Import i eksport w formatach, które system już obsługuje. Sprawdzone, przewidywalne, łatwe do audytu.',
   },
   {
-    q: 'Ile to trwa?',
-    a: `Mapowanie jednego procesu zajmuje zwykle ${facts.mapping}, pilot na realnych sprawach ${facts.pilot}. Termin zależy głównie od dostępu do systemów i osób, które znają wyjątki — mówimy o tym wprost na pierwszej rozmowie.`,
+    title: 'Poczta i dokumenty',
+    body: 'Skrzynki wspólne, załączniki, skany. Agent czyta je tak, jak przychodzą — bez nowych formularzy dla kontrahentów.',
   },
   {
-    q: 'Od jakiego wolumenu to ma sens?',
-    a: 'Od powtarzalności, nie od skali. Jeśli proces ma stałe kroki, mierzalny wolumen i ktoś dziś przepisuje w nim dane między systemami — warto policzyć. Kalkulator powyżej pokaże rząd wielkości, a rozmowa — czy założenia są realne.',
+    title: 'Interfejs użytkownika',
+    body: 'Ostateczność. Gdy system nie daje innej drogi, agent pracuje przez ekran — i mówimy wprost, że to rozwiązanie najwolniejsze.',
+  },
+];
+
+const numbers = [
+  { value: '1', label: 'proces na start — nie „transformacja”' },
+  { value: facts.callLength.replace(/\D+/g, ''), label: 'minut pierwszej rozmowy, bez prezentacji' },
+  { value: facts.pilot.replace(/[^\d–]+/g, ''), label: 'tygodni pilota na realnych sprawach' },
+  { value: '100%', label: 'decyzji agenta w dzienniku' },
+];
+
+const guards = [
+  {
+    key: 'access',
+    title: 'Uprawnienia tylko do procesu',
+    body: 'Agent działa na koncie technicznym. Reszty systemu nie widzi i nie może zmienić.',
   },
   {
-    q: 'Kto jest właścicielem konfiguracji i danych?',
-    a: 'Ty. Reguły, progi, instrukcje i dziennik decyzji należą do Twojej organizacji. Agent działa na uprawnieniach, które nadajesz i w każdej chwili możesz odebrać.',
+    key: 'stop',
+    title: 'Jeden wyłącznik',
+    body: 'Zatrzymujesz agenta jednym ruchem. Sprawy wracają do ludzi w tej samej kolejce.',
   },
   {
-    q: 'Co z danymi osobowymi i tajemnicą handlową?',
-    a: 'Agent dostaje dostęp tylko do danych potrzebnych w danym procesie. Zakres przetwarzania, lokalizację danych i umowę powierzenia ustalamy przed pilotem — szczegóły opisujemy na stronie Bezpieczeństwo.',
+    key: 'test',
+    title: 'Test przed każdą zmianą',
+    body: 'Nowa reguła przechodzi najpierw przez historyczne sprawy. Widzisz, co zmieniłaby wstecz.',
   },
+];
+
+const next = [
+  { href: '/agenci/', image: '/media/sections/card-agents.webp', kicker: 'Produkt', title: 'Z czego składa się agent i jakie kolejki obsługuje' },
+  { href: '/wdrozenie/', image: '/media/sections/card-rollout.webp', kicker: 'Współpraca', title: 'Cztery etapy, stały zakres i warunek przejścia dalej' },
+  { href: '/bezpieczenstwo/', image: '/media/sections/card-security.webp', kicker: 'Kontrola', title: 'Cztery warstwy między modelem a Twoim systemem' },
 ];
 ---
 
 <Base heroTone="dark">
   <Hero />
 
-  <!-- Praca -->
-  <section class="section theme-dark work">
+  <!-- 2. Funkcje: akordeon + osobne fragmenty interfejsu -->
+  <section class="section" data-theme="dark">
     <div class="container">
       <FeatureSwitcher id="work" items={work}>
+        <h2 class="statement" slot="intro" data-reveal>Jedna kolejka pracy.<br />Każda sprawa <em>domknięta</em>.</h2>
         <a class="link" href="/sandbox/" slot="after">Otwórz sandbox</a>
-        <div class="work-film">
-          <Film id="work" pan />
-          <button class="work-film__toggle" type="button" data-film-toggle aria-label="Wstrzymaj film" aria-pressed="false">
-            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-              <path class="i-pause" d="M4.5 3h2.5v10H4.5zM9 3h2.5v10H9z" fill="currentColor"></path>
-              <path class="i-play" d="M5 2.8l8 5.2-8 5.2z" fill="currentColor"></path>
-            </svg>
-          </button>
-        </div>
+        <UiFragments />
       </FeatureSwitcher>
     </div>
   </section>
 
-  <!-- Zasady -->
-  <section class="section refusals">
+  <!-- 3. Taśma -->
+  <section class="section proof" data-theme="dark">
     <div class="container">
-      <div class="refusals__head">
-        <h2 class="h2" data-reveal>
-          Nie sprzedajemy „transformacji AI”. Bierzemy jeden proces i&nbsp;dowozimy go do końca.
-        </h2>
+      <h2 class="h2 proof__title" data-reveal>
+        To, co dziś ktoś przepisuje między systemami, agent <em>zamyka</em> sam
+      </h2>
+    </div>
+    <Marquee items={closes} />
+  </section>
+
+  <!-- 4. Kontrola: kafle 2×2 -->
+  <section class="section" data-theme="warm">
+    <div class="container" data-reveal>
+      <div class="rule-head">
+        <h2 class="title">Automatyzacja, którą da się <em>skontrolować</em>.</h2>
       </div>
-      <div class="grid-3">
-        {
-          refusals.map((r, i) => (
-            <div class="item-rule" data-reveal style={`--reveal-i:${i}`}>
-              <span class="label">Zasada 0{i + 1}</span>
-              <h3 class="h3">{r.title}</h3>
-              <p class="body-2">{r.body}</p>
-            </div>
-          ))
-        }
-      </div>
+      <Vignettes />
     </div>
   </section>
 
-  <!-- Kontrola -->
-  <section class="section section--flush-top">
+  <!-- 5. Zasada -->
+  <section class="section section--quote" data-theme="light">
     <div class="container">
-      <div class="vg-head">
-        <h2 class="statement" data-reveal>Automatyzacja, którą da się skontrolować.</h2>
+      <figure class="quote" data-reveal>
+        <blockquote>
+          Nie sprzedajemy „transformacji AI”. Bierzemy jeden proces i dowozimy go do końca — z miernikiem, który
+          można sprawdzić.
+        </blockquote>
+        <figcaption>
+          <strong>Zasada pierwsza</strong>
+          <span>SKOBEN</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 6. Wdrożenie -->
+  <section class="section" data-theme="light">
+    <div class="container" data-reveal>
+      <SplitFeature
+        id="steps"
+        title="Od procesu do produkcji w czterech krokach."
+        items={steps}
+        image="/media/sections/steps.webp"
+        alt="Jasne biuro o świcie z długim dębowym stołem i monitorem na tle okna"
+        link={{ href: '/wdrozenie/', label: 'Zobacz, co dostajesz na każdym etapie' }}
+      />
+    </div>
+  </section>
+
+  <!-- 7. Integracje -->
+  <section class="section" data-theme="light">
+    <div class="container" data-reveal>
+      <SplitFeature
+        id="systems"
+        title="Agent pracuje w Twoich systemach, nie obok nich."
+        items={systems}
+        image="/media/sections/systems.webp"
+        alt="Biurko z monitorem w porannym słońcu, za szybą mgła nad miastem"
+        link={{ href: '/automatyzacje/', label: 'Jak automatyzujemy przepływy' }}
+        flip
+      />
+    </div>
+  </section>
+
+  <!-- 8. Liczby -->
+  <section class="section section--numbers" data-theme="dark">
+    <div class="container" data-reveal>
+      <h2 class="h2 numbers__title">Wchodzimy jednym procesem. Zostajemy, gdy liczby się <em>zgadzają</em>.</h2>
+      <dl class="numbers">
+        {
+          numbers.map((n) => (
+            <div>
+              <dt class="number">{n.value}</dt>
+              <dd>{n.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- 9. Bezpieczeństwo -->
+  <section class="section" data-theme="dark">
+    <div class="container" data-reveal>
+      <div class="rule-head">
+        <h2 class="title">Agent ma tyle władzy, ile mu dasz. I ani kroku więcej.</h2>
       </div>
-      <Vignettes />
-      <p class="vg-more" data-reveal>
+      <ul class="guards">
+        {
+          guards.map((g) => (
+            <li>
+              <div class={`guard guard--${g.key}`} aria-hidden="true">
+                {g.key === 'access' && (
+                  <div class="guard__list">
+                    <span class="on">ERP · zamówienia <b>zapis</b></span>
+                    <span class="on">CRM · kontrahenci <b>odczyt</b></span>
+                    <span>ERP · finanse <b>brak</b></span>
+                    <span>Kadry <b>brak</b></span>
+                  </div>
+                )}
+                {g.key === 'stop' && (
+                  <div class="guard__switch">
+                    <i />
+                    <span>Agent zamówień</span>
+                    <b>wstrzymany</b>
+                  </div>
+                )}
+                {g.key === 'test' && (
+                  <div class="guard__test">
+                    <div class="guard__bars">
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <i class:list={{ diff: [5, 13, 20].includes(i) }} />
+                      ))}
+                    </div>
+                    <span>
+                      <b>3</b> decyzje zmieniłyby się wstecz
+                    </span>
+                  </div>
+                )}
+              </div>
+              <h3 class="tile-title">{g.title}</h3>
+              <p class="tile-body">{g.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="more">
         <a class="link" href="/bezpieczenstwo/">Zobacz model kontroli</a>
       </p>
     </div>
   </section>
 
-  <!-- Przepływ -->
-  <section class="section theme-dark flow-section">
-    <div class="container">
-      <div class="section-head">
-        <h2 class="h2" data-reveal>Agent pracuje w Twoich systemach, nie obok nich.</h2>
-        <p class="lede" data-reveal style="--reveal-i:1">
-          Nie wymieniamy ERP ani CRM. Podłączamy się tam, gdzie praca już dziś się odbywa — przez API, pliki
-          i&nbsp;pocztę.
-        </p>
+  <!-- 10. Dalej -->
+  <section class="section" data-theme="dark">
+    <div class="container" data-reveal>
+      <div class="rule-head">
+        <h2 class="title">Zanim porozmawiamy</h2>
       </div>
-      <div data-reveal style="--reveal-i:2">
-        <FlowDiagram />
-      </div>
-      <p class="flow-section__more" data-reveal>
-        <a class="link" href="/automatyzacje/">Jak automatyzujemy przepływy</a>
-      </p>
-    </div>
-  </section>
-
-  <!-- Wdrożenie -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <h2 class="h2" data-reveal>Od procesu do produkcji w czterech krokach.</h2>
-        <p class="lede" data-reveal style="--reveal-i:1">
-          Każdy etap ma stały zakres, właściciela po obu stronach i warunek przejścia dalej.
-        </p>
-      </div>
-      <ProcessSteps />
-      <p class="steps-more" data-reveal>
-        <a class="link" href="/wdrozenie/">Zobacz, co dostajesz na każdym etapie</a>
-      </p>
-    </div>
-  </section>
-
-  <!-- Kalkulator -->
-  <section class="section section--flush-top">
-    <div class="container">
-      <div class="section-head">
-        <h2 class="h2" data-reveal>Policz to na swoich liczbach.</h2>
-        <p class="lede" data-reveal style="--reveal-i:1">
-          Cztery suwaki, jawne założenia. Wynik to rząd wielkości, z którym warto przyjść na rozmowę.
-        </p>
-      </div>
-      <div data-reveal>
-        <Calculator />
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="section section--flush-top">
-    <div class="container faq-wrap">
-      <h2 class="h2" data-reveal>Pytania, które padają na pierwszej rozmowie</h2>
-      <div data-reveal style="--reveal-i:1">
-        <Faq items={faq} />
-      </div>
+      <ul class="next">
+        {
+          next.map((n) => (
+            <li>
+              <a class="next__card" href={n.href}>
+                <img src={n.image} alt="" width="768" height="512" loading="lazy" decoding="async" />
+                <span class="label">{n.kicker}</span>
+                <span class="next__title">{n.title}</span>
+                <span class="next__arrow" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
   <CtaBand />
 </Base>
 
-<script>
-  import { mountFilm, whenNear, type FilmHandle, type FilmId } from '../scripts/sandbox/film';
-
-  // Film w sekcji „Jedna kolejka pracy”: każda pozycja listy ma swój film,
-  // a po jego zakończeniu lista przechodzi do następnej.
-  const fs = document.querySelector<HTMLElement>('.work [data-fs]');
-  const stage = fs?.querySelector<HTMLElement>('[data-film]');
-  const toggle = fs?.querySelector<HTMLButtonElement>('[data-film-toggle]');
-  if (fs && stage) {
-    const ids: FilmId[] = ['orders', 'invoices', 'tickets', 'rules'];
-    let index = 0;
-    let film: FilmHandle | undefined;
-    fs.addEventListener('fs:change', (e) => {
-      index = (e as CustomEvent<number>).detail;
-      film?.play(ids[index] ?? 'orders');
-    });
-    // konsola filmu powstaje dopiero, gdy sekcja zbliża się do ekranu
-    whenNear(stage, () => {
-      film = mountFilm(stage, {
-        onEnd: () => fs.dispatchEvent(new CustomEvent('fs:goto', { detail: (index + 1) % ids.length })),
-        onProgress: (v) => fs.style.setProperty('--fs-progress', String(v)),
-      });
-      film.play(ids[index] ?? 'orders');
-    });
-    toggle?.addEventListener('click', () => {
-      if (!film) return;
-      film.setPaused(!film.paused);
-      toggle.setAttribute('aria-pressed', String(film.paused));
-      toggle.setAttribute('aria-label', film.paused ? 'Odtwórz film' : 'Wstrzymaj film');
-    });
-  }
-</script>
-
 <style>
-  .work-film {
-    position: relative;
-    width: 100%;
-    background: var(--ink-850);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--line-2);
-    box-shadow: var(--shadow-panel);
+  /* Sekcja z tytułem zaczyna się linią; tytuł leży pod nią */
+  .rule-head {
+    padding-top: 1.5rem;
+    margin-bottom: var(--pad-sm);
+    border-top: 1px solid var(--line-2);
   }
 
-  .work-film__toggle {
+  .rule-head .title {
+    max-width: 36rem;
+  }
+
+  .more {
+    margin-top: var(--pad-sm);
+  }
+
+  /* 3. Taśma */
+  .proof__title {
+    max-width: 42rem;
+    margin: 0 auto var(--pad-sm);
+    text-align: center;
+  }
+
+  /* 5. Zasada */
+  .section--quote {
+    padding-top: var(--pad-xl);
+  }
+
+  .quote {
+    display: grid;
+    gap: 2rem;
+    max-width: 42rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .quote blockquote {
+    font-family: var(--font-display);
+    font-size: clamp(1.3125rem, 1.15rem + 0.67vw, 1.75rem);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    color: var(--text-2);
+    text-wrap: balance;
+  }
+
+  .quote figcaption {
+    display: grid;
+    gap: 0.125rem;
+    font-size: var(--text-sm);
+  }
+
+  .quote figcaption strong {
+    font-weight: 500;
+  }
+
+  .quote figcaption span {
+    color: var(--text-2);
+  }
+
+  /* 8. Liczby */
+  .section--numbers {
+    padding-top: var(--pad-xl);
+  }
+
+  .numbers__title {
+    max-width: 44rem;
+    margin: 0 auto var(--pad-md);
+    text-align: center;
+  }
+
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .numbers > div {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-inline: 1.5rem;
+    border-left: 1px solid var(--line-2);
+    text-align: center;
+  }
+
+  .numbers > div:first-child {
+    border-left: 0;
+  }
+
+  .numbers dd {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--text-2);
+    text-wrap: balance;
+  }
+
+  /* 9. Bezpieczeństwo: kafle 4:5 z jednym świecącym elementem */
+  .guards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .guard {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    margin-bottom: 0.75rem;
+    padding: 12%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background:
+      radial-gradient(80% 60% at 50% 110%, rgb(92 112 158 / 0.34), transparent 70%),
+      linear-gradient(180deg, #23232f, #1a1a22);
+    font-size: var(--text-sm);
+    color: #b9bac6;
+  }
+
+  .tile-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .tile-body {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .guard__list {
+    display: grid;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .guard__list span {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgb(175 178 206 / 0.14);
+    opacity: 0.5;
+  }
+
+  .guard__list b {
+    font-weight: 400;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .guard__list .on {
+    opacity: 1;
+    color: #ededf2;
+    border-color: rgb(143 214 187 / 0.5);
+    box-shadow: 0 0 40px -8px rgb(143 214 187 / 0.35);
+  }
+
+  .guard__list .on b {
+    color: var(--mint-300);
+  }
+
+  .guard__switch {
+    display: grid;
+    justify-items: center;
+    gap: 0.625rem;
+    text-align: center;
+  }
+
+  .guard__switch i {
+    position: relative;
+    width: 5.5rem;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+    border-radius: 999px;
+    background: #2b2b38;
+    box-shadow: inset 0 0 0 1px rgb(175 178 206 / 0.24);
+  }
+
+  .guard__switch i::after {
+    content: '';
     position: absolute;
-    left: 0.875rem;
-    bottom: 0.875rem;
-    z-index: 6;
+    top: 0.375rem;
+    left: 0.375rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: #f1dcc0;
+    box-shadow: 0 0 44px 6px rgb(217 187 128 / 0.45);
+  }
+
+  .guard__switch span {
+    color: #ededf2;
+    font-weight: 500;
+  }
+
+  .guard__switch b {
+    font-weight: 400;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--brass-300);
+  }
+
+  .guard__test {
+    display: grid;
+    gap: 1.25rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .guard__bars {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.5rem;
+  }
+
+  .guard__bars i {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: rgb(175 178 206 / 0.16);
+  }
+
+  .guard__bars i.diff {
+    background: #f1dcc0;
+    box-shadow: 0 0 26px 2px rgb(217 187 128 / 0.5);
+  }
+
+  .guard__test b {
+    font-weight: 500;
+    color: #ededf2;
+  }
+
+  /* 10. Dalej: karty w formacie kart prasowych */
+  .next {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .next__card {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 2rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .next__card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    margin-bottom: 0.75rem;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+  }
+
+  .next__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.3125rem, 1.2rem + 0.45vw, 1.75rem);
+    font-weight: 480;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .next__arrow {
     display: grid;
     place-items: center;
     width: 2.5rem;
     height: 2.5rem;
+    margin-top: 1rem;
     border-radius: 50%;
-    background: rgb(236 235 230 / 0.14);
-    border: 1px solid rgb(236 235 230 / 0.2);
-    color: #ecebe6;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    transition: background-color var(--dur-1) ease;
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    transition: background-color var(--dur-2) var(--ease-out);
   }
 
-  .work-film__toggle:hover {
-    background: rgb(236 235 230 / 0.24);
-  }
-
-  .work-film__toggle .i-play,
-  .work-film__toggle[aria-pressed='true'] .i-pause {
-    display: none;
-  }
-
-  .work-film__toggle[aria-pressed='true'] .i-play {
-    display: block;
-  }
-
-  .work {
-    padding-top: clamp(1.5rem, 1rem + 2vw, 3rem);
-  }
-
-  /* lista funkcji wsuwa się pod podpis osiadłej konsoli (patrz Hero.astro) */
-  :global(.js) .work {
-    position: relative;
-    z-index: 2;
-    margin-top: calc(var(--dock-overlap, 0px) * -1);
-    background: linear-gradient(to bottom, rgb(13 19 17 / 0), var(--ink-900) 5rem);
-  }
-
-  @media (max-width: 900px) {
-    .work-film {
-      --film-aspect: 0.92;
-    }
-  }
-
-  .vg-head {
-    padding-top: 1.5rem;
-    margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem);
-    border-top: 1px solid var(--line-2);
-  }
-
-  .vg-more {
-    margin-top: clamp(2rem, 1.5rem + 2vw, 3.5rem);
-  }
-
-  .refusals__head {
-    max-width: 52rem;
-    margin-bottom: clamp(3rem, 2rem + 4vw, 5.5rem);
-  }
-
-  .flow-section__more,
-  .steps-more {
-    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
-  }
-
-  .faq-wrap {
-    display: grid;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
-    gap: clamp(2rem, 1rem + 4vw, 5rem);
-    align-items: start;
-  }
-
-  .faq-wrap > h2 {
-    position: sticky;
-    top: calc(var(--header-h) + 2rem);
+  .next__card:hover .next__arrow {
+    background: color-mix(in srgb, var(--text) 16%, transparent);
   }
 
   @media (max-width: 860px) {
-    .faq-wrap > h2 {
-      position: static;
+    .numbers {
+      grid-template-columns: minmax(0, 1fr);
     }
 
-    .faq-wrap {
+    .numbers > div {
+      padding: 1.5rem 0;
+      border-left: 0;
+      border-top: 1px solid var(--line-2);
+    }
+
+    .guards,
+    .next {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .guard {
+      aspect-ratio: 4 / 3;
+      padding: 8% 12%;
+    }
+
+    .tile-title,
+    .tile-body {
+      font-size: 0.9375rem;
+    }
+
+    .next__card {
+      padding: 1rem;
     }
   }
 </style>
