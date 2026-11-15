@@ -120,9 +120,22 @@ import Film from './Film.astro';
       S = { x: ox + clip.sx * dw, y: oy + clip.sy * dh, w: clip.sw * dw, h: clip.sh * dh };
 
       // panel konsoli: na desktopie cała konsola, na telefonie czytelny wycinek z kamerą
-      const ratio = portrait ? 0.74 : FILM_RATIO;
-      const cw = portrait ? W - 32 : Math.min(1024, W - 64, (H - HEADER - 150) * ratio);
-      C = { x: (W - cw) / 2, y: HEADER + (portrait ? 20 : 28), w: cw, h: cw / ratio };
+      // (tablet w pionie dostaje szerszy wycinek, wyśrodkowany w pionie)
+      const tablet = portrait && W >= 760;
+      const ratio = !portrait ? FILM_RATIO : tablet ? 1.12 : 0.74;
+      const cw = !portrait
+        ? Math.min(1024, W - 64, (H - HEADER - 150) * ratio)
+        : tablet
+          ? Math.min(W - 64, (H - HEADER - 170) * ratio)
+          : W - 32;
+      const top = tablet ? Math.max(HEADER + 28, (H - cw / ratio - 110) / 2) : HEADER + (portrait ? 20 : 28);
+      C = { x: (W - cw) / 2, y: top, w: cw, h: cw / ratio };
+      // tryb kadru konsoli ustalamy przed jej uruchomieniem
+      if (!filmStarted) {
+        filmEl.toggleAttribute('data-pan', portrait);
+        if (portrait) filmEl.style.setProperty('--film-aspect', String(ratio));
+        else filmEl.style.removeProperty('--film-aspect');
+      }
       consoleEl.style.left = `${C.x}px`;
       consoleEl.style.top = `${C.y}px`;
       consoleEl.style.width = `${C.w}px`;
@@ -225,11 +238,7 @@ import Film from './Film.astro';
     );
     window.addEventListener('resize', measure, { passive: true });
 
-    // konsola: na telefonie wycinek z kamerą podążającą za kursorem
-    if (window.innerWidth < 760) {
-      filmEl.setAttribute('data-pan', '');
-      filmEl.style.setProperty('--film-aspect', '0.74');
-    }
+    // konsola: w pionie wycinek z kamerą podążającą za kursorem (ustala measure)
     measure();
   }
 

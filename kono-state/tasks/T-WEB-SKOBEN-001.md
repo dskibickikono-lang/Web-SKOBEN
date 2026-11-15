@@ -3,10 +3,10 @@ id: T-WEB-SKOBEN-001
 title: Strona B2B SKOBEN — agenci AI i automatyzacja workflow
 channel: pm-local
 requested_by: owner
-status: in-progress
+status: review
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
-sha: patrz PR #1 — ostatni commit kodu „Pomiar precyzji w audycie…”
+sha: 61a4bc0777218abcaac175a30420332a7713be26 (ostatni commit kodu iteracji 3; późniejsze commity to wyłącznie ta karta)
 created: 2026-11-14
 ---
 
@@ -14,8 +14,10 @@ created: 2026-11-14
 
 ## Cel
 Kompletna, produkcyjna strona B2B dla SKOBEN (wdrożenia agentów AI, automatyzacja workflow),
-benchmark jakości: mercury.com. Treści po polsku, interaktywny sandbox produktu, wizualizacje
-wyłącznie z kodu (SVG/CSS/Canvas), bez zewnętrznych plików graficznych.
+benchmark jakości: mercury.com. Treści po polsku, interaktywny sandbox produktu.
+Założenie „wyłącznie z kodu, bez plików graficznych” obowiązywało w iteracjach 1–2; brief iteracji 3
+je zniósł (wygenerowane kadry i film hero). **Aktualny stan i wyniki: sekcja „Iteracja 3 — wykonanie”
+na końcu karty.** Sekcje „Wynik testów” i „Protokół przeglądu” niżej opisują iterację 1 (historia).
 
 ## Uwagi do reguł pracy
 - Identyfikator karty nadany lokalnie — w tym repozytorium nie było wcześniej katalogu `kono-state/`
@@ -173,6 +175,65 @@ w założeniach”. Zmiana założeń:
    i link do nagrania scrolla.
 
 Dodatkowo właściciel potwierdził deklarację „Wdrażamy równolegle tylko kilka firm”.
+
+## Iteracja 3 — wykonanie (2026-11-14/15)
+
+Status: **do odbioru przez właściciela**. Merge i wdrożenie po stronie właściciela.
+
+Zrobione według procesu z briefu:
+- a) `docs/art-direction.md`: moodboard, typografia, paleta, wybór kadru, storyboard 12 sekcji
+  (zrzut wzorca | plan SKOBEN | zasoby i ruch); studium wzorca `docs/art-direction/mercury-study.md`
+  + 91 zrzutów referencyjnych (1440 i 390) i nagrania scrolla wzorca.
+- b) tokeny w `src/styles/global.css`: trzy motywy (atrament / ciepła biel / chłodna biel) przenikające
+  razem z rozdziałem, jeden akcent (wirydian), Wix Madefor Display + Text, Newsreader (kursywa akcentowa),
+  IBM Plex Mono; skala display / h2 / title / statement / lede / body / ui / mono; ruch 200–670 ms ease-out.
+- c) hero: wygenerowana scena biura o błękitnej godzinie (kadr poziomy i osobny pionowy), film 5 s z najazdem
+  kamery przewijany scrollem, ekran monitora rośnie do czytelnej, żywej konsoli; statyczny kadr przy
+  `prefers-reduced-motion` i bez JS. Usunięte: łuk/portal, złota poświata.
+- d) strona główna od nowa: fragmenty interfejsu (4 różne) przy liście funkcji, taśma + zasada na kadrze,
+  jasne kafle 2×2 z pętlami i pauzą, cytat-zasada, dwa akordeony z kadrem, liczby, kafle kontroli,
+  karty „dalej”, końcowe wezwanie. Konsola tylko w hero i na `/sandbox/`.
+- panel „Produkt” (mega-menu 3 kolumny, cienkie linie), pigułka pod wskaźnikiem w nawigacji.
+- podstrony przeniesione na nowe tokeny; usunięte filmy z konsolą i łuki z iteracji 2.
+
+Dowody dla właściciela (w repozytorium):
+- zestawienia Mercury vs SKOBEN: `docs/art-direction/compare/hero.jpg`, `features.jpg`, `proof.jpg`,
+- nagrania scrolla hero: `docs/art-direction/video/skoben-hero-scroll-desktop.mp4`, `…-mobile.mp4`
+  (składane klatka po klatce w headless Chromium),
+- stan kryteriów odbioru i lista słabych miejsc: `docs/art-direction.md`, sekcja 8.
+
+Wynik testów iteracji 3 (Linux, Node 22, Chromium 1243; lokalnie i w GitHub Actions):
+- `npm run build` (`astro check` + `astro build`): 0 błędów, 0 ostrzeżeń; 9 stron.
+- `npm run audit`: bez zastrzeżeń — 9 stron × 3 szerokości (1440 / 834 / 390), 16 linków wewnętrznych,
+  axe-core WCAG 2.1 AA bez naruszeń; testy: film hero przewijany scrollem, konsola wychodząca z ekranu,
+  trzy motywy, panel „Produkt”, liczba konsol (1 / 1 / 0), obrazy z wymiarami i lazy, budżet mediów,
+  sandbox (desktop + mobile), formularze, menu mobilne, reduced-motion, praca bez JS.
+- GitHub Actions `CI` (ubuntu-latest, build + audyt): __CI__
+- Lighthouse mobile (4G symulowane), 7 stron: 100 / 100 / 100 / 100; LCP 0,8–1,5 s; TBT 0 ms; CLS ≤ 0,001.
+- Płynność scrolla hero w headless (render programowy, bez GPU): 1440 px — mediana klatki 16,7 ms,
+  18 z 275 klatek > 20 ms; 390 px — wszystkie klatki 16,7 ms. 60 kl./s na laptopie: do potwierdzenia
+  przez właściciela na fizycznym sprzęcie.
+- `npm run check:release`: **nie przechodzi celowo** — `confirmedByOwner: false` do czasu odbioru nowych
+  treści (dwie „zasady” na stronie głównej, panel „Produkt”). Bramka nie jest częścią CI.
+- Projekt nie zawiera testów pytest — repozytorium to statyczna strona bez kodu Pythona.
+
+Media i koszty:
+- Higgsfield na koncie właściciela (klucz jednodniowy przekazany w sesji; nie jest zapisany w repozytorium,
+  logach ani commitach — do usunięcia przez właściciela): 16 kadrów w 13 wywołaniach (Ideogram 4.0 i modele porównawcze)
+  + 2 filmy (Kling 3.0 4K poziomy, Kling 3.0 Pro pionowy). Łącznie **3,055 USD** z limitu 7,50 USD.
+- Modele, prompty i koszty: `assets-src/hero/generated/SOURCES.md`, `assets-src/sections/generated/SOURCES.md`.
+  Pliki źródłowe (PNG, MP4 4K) są tylko w kontenerze sesji (`assets-src/`, poza gitem) — znikną z nim;
+  wersje produkcyjne są w `public/media/`.
+
+Znane ograniczenia (bez upiększeń):
+- brak prawdziwych logotypów klientów, cytatów i prasy — w ich miejscach stoją taśma tekstowa, dwie zasady
+  firmy i liczby z potwierdzonych deklaracji; zmyślonych referencji nie ma,
+- scena jest wygenerowana (klasa wizualizacji architektonicznej), kadr pionowy to inne pomieszczenie,
+- podstrony mają nagłówek tekstowy bez kadru,
+- zachowanie przewijanego filmu na iOS Safari nie było sprawdzone na fizycznym urządzeniu.
+
+Do decyzji właściciela: odbiór wizualny iteracji 3 (albo uwagi do iteracji 4), potwierdzenie nowych treści
+(`confirmedByOwner`), merge PR #1, usunięcie klucza Higgsfield.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em
