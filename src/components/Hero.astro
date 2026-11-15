@@ -1,15 +1,18 @@
 ---
 /**
- * Hero: pełnoekranowa scena biura o błękitnej godzinie (docs/art-direction.md, §4–5).
+ * Hero: plenerowa scena o świcie — biurko z laptopem na końcu pomostu nad jeziorem.
  *
  * Scena jest przypięta na czas przewijania:
- *  A  0–50% drogi   film sterowany przewijaniem — kamera najeżdża na monitor,
- *                   nagłówek gaśnie w miejscu;
- *  B  50–82%        kadr powiększa się w oś ekranu monitora, na ekranie pojawia
- *                   się żywa konsola i rośnie do czytelnego panelu, pokój rozpływa
- *                   się w tle strony;
- *  C  82–100%       pod panelem pojawia się podpis.
- * Przy ograniczonym ruchu i bez JS zostaje statyczny kadr z nagłówkiem.
+ *  A  0–62% drogi   film sterowany przewijaniem — kamera jedzie pomostem, mija krzesło
+ *                   i dochodzi do laptopa; nagłówek gaśnie w miejscu. Przez cały najazd
+ *                   na ekranie laptopa leży żywa konsola: jej narożniki są przypięte
+ *                   do ekranu klatka po klatce (src/data/hero-track.json) transformacją
+ *                   perspektywiczną;
+ *  B  62–86%        ekran wypełnia kadr: konsola rośnie do czytelnego panelu, plener
+ *                   rozpływa się w tle strony;
+ *  C  88–97%        pod panelem pojawia się podpis.
+ * Przy ograniczonym ruchu zostaje statyczny kadr z konsolą na ekranie laptopa,
+ * bez JS — sam kadr z nagłówkiem.
  */
 import Film from './Film.astro';
 ---
@@ -18,11 +21,11 @@ import Film from './Film.astro';
   <div class="hero__stage">
     <div class="hero__scene" data-hero-scene>
       <picture>
-        <source media="(max-width: 759px), (max-aspect-ratio: 4/5)" srcset="/media/hero/office-portrait-poster.webp" />
+        <source media="(max-width: 759px), (max-aspect-ratio: 4/5)" srcset="/media/hero/pier-portrait-poster.webp" />
         <img
           class="hero__poster"
-          src="/media/hero/office-landscape-poster.webp"
-          alt="Puste biuro o świcie: szerokie biurko, monitor i równo ułożony stos dokumentów na tle okna"
+          src="/media/hero/pier-landscape-poster.webp"
+          alt="Biurko z otwartym laptopem i puste krzesło na końcu drewnianego pomostu, za nimi jezioro we mgle o świcie"
           width="1920"
           height="1080"
           fetchpriority="high"
@@ -33,8 +36,12 @@ import Film from './Film.astro';
     </div>
     <div class="hero__shade" aria-hidden="true"></div>
 
+    <div class="hero__console" data-hero-console aria-hidden="true">
+      <Film id="hero" />
+    </div>
+
     <div class="hero__copy" data-hero-copy>
-      <h1 class="display" data-rise>Praca, która <em>domyka się</em> sama</h1>
+      <h1 class="display" data-rise>Praca, która domyka się sama</h1>
       <p class="lede hero__lede" data-rise>
         SKOBEN wprowadza firmy w operacje prowadzone przez agentów AI. Zamówienia, faktury i&nbsp;zgłoszenia
         zamykają się bez przepisywania — z&nbsp;człowiekiem przy wyjątkach.
@@ -51,10 +58,6 @@ import Film from './Film.astro';
 
     <p class="hero__pill" data-hero-pill>Wdrażamy równolegle tylko kilka firm — żeby każdy proces dowieźć do końca.</p>
 
-    <div class="hero__console" data-hero-console aria-hidden="true">
-      <Film id="hero" />
-    </div>
-
     <div class="hero__caption" data-hero-caption>
       <p class="label">Konsola operacyjna · działa na żywo, to nie nagranie</p>
       <a class="link" href="/sandbox/">Przejmij stery w sandboxie</a>
@@ -64,6 +67,11 @@ import Film from './Film.astro';
 
 <script>
   import { mountFilm } from '../scripts/sandbox/film';
+  import track from '../data/hero-track.json';
+
+  type Pt = [number, number];
+  type Quad = [Pt, Pt, Pt, Pt];
+  type Rect = { x: number; y: number; w: number; h: number };
 
   const section = document.querySelector<HTMLElement>('[data-hero]');
   const stage = section?.querySelector<HTMLElement>('.hero__stage');
@@ -75,18 +83,18 @@ import Film from './Film.astro';
   const caption = section?.querySelector<HTMLElement>('[data-hero-caption]');
   const filmEl = section?.querySelector<HTMLElement>('[data-film]');
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (section && stage && scene && video && copy && pill && consoleEl && caption && filmEl) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (section && stage && scene && video && copy && pill && consoleEl && caption && filmEl && !reduce) {
-    section.classList.add('is-live');
-
-    /** Położenie ekranu monitora w ostatniej klatce filmu (ułamki kadru). */
-    const CLIPS = {
-      landscape: { w: 1920, h: 1080, sx: 0.3927, sy: 0.5037, sw: 0.2167, sh: 0.213 },
-      portrait: { w: 1080, h: 1920, sx: 0.305, sy: 0.481, sw: 0.385, sh: 0.117 },
-    };
-    const FILM_RATIO = 1180 / 652;
+    /** Rozmiar projektowy konsoli (16:10, jak ekran laptopa). */
+    const DW = 1180;
+    const DH = 738;
+    /** Wyświetlacz wewnątrz pokrywy laptopa: ułamki szerokości i wysokości śledzonego obrysu. */
+    const BEZEL = { l: 0.026, r: 0.974, t: 0.046, b: 0.902 };
     const HEADER = 72;
+    /** Podział drogi przewijania. */
+    const A_END = 0.62;
+    const B_END = 0.86;
 
     const clamp = (v: number) => Math.min(1, Math.max(0, v));
     const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -94,106 +102,197 @@ import Film from './Film.astro';
 
     let W = 0;
     let H = 0;
-    let portrait = false;
-    // prostokąty w pikselach sceny: ekran monitora (S) i docelowy panel konsoli (C)
-    let S = { x: 0, y: 0, w: 1, h: 1 };
-    let C = { x: 0, y: 0, w: 1, h: 1 };
+    let clip = track.landscape;
+    // kadr → scena (object-fit: cover)
+    let K = 1;
+    let OX = 0;
+    let OY = 0;
+    // docelowy panel konsoli i wycinek konsoli, który ma go wypełnić
+    let C: Rect = { x: 0, y: 0, w: 1, h: 1 };
+    let CROP: Rect = { x: 0, y: 0, w: DW, h: DH };
     let loadedSrc = '';
     let target = 0;
     let shown = 0;
+    let presented = 0;
     let raf = 0;
     let ticking = false;
     let filmStarted = false;
+    let progress = 0;
+    const hasFrameCallback = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+
+    /** Obrys pokrywy laptopa w klatce `f` (ułamki kadru), z interpolacją między próbkami. */
+    const lidAt = (f: number): Quad => {
+      const last = clip.q.length / 8 - 1;
+      const pos = Math.min(last, Math.max(0, f / clip.step));
+      // ostatnia próbka nie leży na siatce co `step` klatek
+      const tail = (clip.frames - 1) / clip.step;
+      const i = Math.min(last - 1, Math.floor(pos));
+      const span = i === last - 1 ? tail - i : 1;
+      const t = clamp((Math.min(pos, tail) - i) / span);
+      const a = i * 8;
+      const b = a + 8;
+      const pt = (k: number): Pt => [
+        OX + lerp(clip.q[a + k]!, clip.q[b + k]!, t) * clip.w * K,
+        OY + lerp(clip.q[a + k + 1]!, clip.q[b + k + 1]!, t) * clip.h * K,
+      ];
+      return [pt(0), pt(2), pt(4), pt(6)];
+    };
+
+    /** Wyświetlacz wewnątrz obrysu pokrywy (interpolacja dwuliniowa narożników). */
+    const displayOf = (q: Quad): Quad => {
+      const at = (u: number, v: number): Pt => {
+        const tx = lerp(q[0][0], q[1][0], u);
+        const ty = lerp(q[0][1], q[1][1], u);
+        const bx = lerp(q[3][0], q[2][0], u);
+        const by = lerp(q[3][1], q[2][1], u);
+        return [lerp(tx, bx, v), lerp(ty, by, v)];
+      };
+      return [at(BEZEL.l, BEZEL.t), at(BEZEL.r, BEZEL.t), at(BEZEL.r, BEZEL.b), at(BEZEL.l, BEZEL.b)];
+    };
+
+    /** Macierz rzutowa: prostokąt `src` (w pikselach projektowych konsoli) → czworokąt `dst` (piksele sceny). */
+    const project = (src: Rect, dst: Quad): string => {
+      const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = dst;
+      const dx1 = x1 - x2;
+      const dx2 = x3 - x2;
+      const sx = x0 - x1 + x2 - x3;
+      const dy1 = y1 - y2;
+      const dy2 = y3 - y2;
+      const sy = y0 - y1 + y2 - y3;
+      const den = dx1 * dy2 - dx2 * dy1;
+      const g = den ? (sx * dy2 - dx2 * sy) / den : 0;
+      const h = den ? (dx1 * sy - sx * dy1) / den : 0;
+      const a = x1 - x0 + g * x1;
+      const b = x3 - x0 + h * x3;
+      const d = y1 - y0 + g * y1;
+      const e = y3 - y0 + h * y3;
+      // złożenie z odwzorowaniem prostokąta źródłowego na kwadrat jednostkowy
+      const A = a / src.w;
+      const B = b / src.h;
+      const Cc = x0 - A * src.x - B * src.y;
+      const D = d / src.w;
+      const E = e / src.h;
+      const F = y0 - D * src.x - E * src.y;
+      const G = g / src.w;
+      const Hh = h / src.h;
+      const I = 1 - G * src.x - Hh * src.y;
+      const m = [A / I, D / I, 0, G / I, B / I, E / I, 0, Hh / I, 0, 0, 1, 0, Cc / I, F / I, 0, 1];
+      return `matrix3d(${m.map((v) => +v.toFixed(7)).join(',')})`;
+    };
+
+    const rectQuad = (r: Rect): Quad => [
+      [r.x, r.y],
+      [r.x + r.w, r.y],
+      [r.x + r.w, r.y + r.h],
+      [r.x, r.y + r.h],
+    ];
+    const mix = (p: Quad, q: Quad, t: number): Quad =>
+      p.map((pt, i) => [lerp(pt[0], q[i]![0], t), lerp(pt[1], q[i]![1], t)]) as Quad;
+    const centre = (q: Quad): Pt => [(q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4, (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4];
+
+    /** Ustawia konsolę i plener dla klatki `f` oraz postępu zbliżenia `b`. */
+    const place = (f: number, b: number) => {
+      const end = displayOf(lidAt(clip.frames - 1));
+      const now = b > 0 ? end : displayOf(lidAt(f));
+      const crop: Rect = {
+        x: lerp(0, CROP.x, b),
+        y: lerp(0, CROP.y, b),
+        w: lerp(DW, CROP.w, b),
+        h: lerp(DH, CROP.h, b),
+      };
+      const quad = b > 0 ? mix(end, rectQuad(C), b) : now;
+      consoleEl.style.transform = project(crop, quad);
+      const scale = (quad[1][0] - quad[0][0]) / crop.w;
+      const radius = (lerp(2, 12, b) / Math.max(scale, 0.01)).toFixed(1);
+      consoleEl.style.clipPath = `inset(${crop.y.toFixed(1)}px ${(DW - crop.x - crop.w).toFixed(1)}px ${(DH - crop.y - crop.h).toFixed(1)}px ${crop.x.toFixed(1)}px round ${radius}px)`;
+      consoleEl.style.setProperty('--ring', String(clamp((b - 0.35) / 0.4)));
+
+      if (b > 0) {
+        // plener podąża za ekranem i rozpływa się w tle strony
+        const s0 = (end[1][0] - end[0][0]) / DW;
+        const z = scale / s0;
+        const [ex, ey] = centre(end);
+        // środek pełnej konsoli (nie wycinka) w bieżącej transformacji
+        const fx = quad[0][0] + (DW / 2 - crop.x) * scale;
+        const fy = quad[0][1] + (DH / 2 - crop.y) * scale;
+        scene.style.transformOrigin = `${ex}px ${ey}px`;
+        scene.style.transform = `translate3d(${(fx - ex).toFixed(1)}px, ${(fy - ey).toFixed(1)}px, 0) scale(${z.toFixed(4)})`;
+        scene.style.opacity = String(1 - clamp((b - 0.12) / 0.5));
+      } else {
+        scene.style.transform = '';
+        scene.style.opacity = '1';
+      }
+    };
 
     const measure = () => {
       W = stage.clientWidth;
       H = stage.clientHeight;
-      portrait = W < 760 || W / H < 0.8;
-      const clip = portrait ? CLIPS.portrait : CLIPS.landscape;
-
-      // kadr wypełnia scenę jak object-fit: cover
-      const k = Math.max(W / clip.w, H / clip.h);
-      const dw = clip.w * k;
-      const dh = clip.h * k;
-      const ox = (W - dw) / 2;
-      const oy = (H - dh) / 2;
-      S = { x: ox + clip.sx * dw, y: oy + clip.sy * dh, w: clip.sw * dw, h: clip.sh * dh };
-
-      // panel konsoli: na desktopie cała konsola, na telefonie czytelny wycinek z kamerą
-      // (tablet w pionie dostaje szerszy wycinek, wyśrodkowany w pionie)
+      const portrait = W < 760 || W / H < 0.8;
       const tablet = portrait && W >= 760;
-      const ratio = !portrait ? FILM_RATIO : tablet ? 1.12 : 0.74;
+      clip = portrait ? track.portrait : track.landscape;
+      K = Math.max(W / clip.w, H / clip.h);
+      OX = (W - clip.w * K) / 2;
+      OY = (H - clip.h * K) / 2;
+
+      // Panel po zbliżeniu: na desktopie cała konsola, w pionie czytelny wycinek (kolejka + sprawa / sama sprawa)
+      CROP = !portrait ? { x: 0, y: 0, w: DW, h: DH } : tablet ? { x: 0, y: 0, w: 826, h: DH } : { x: 257, y: 0, w: 500, h: 676 };
+      const ratio = CROP.w / CROP.h;
       const cw = !portrait
         ? Math.min(1024, W - 64, (H - HEADER - 150) * ratio)
         : tablet
           ? Math.min(W - 64, (H - HEADER - 170) * ratio)
-          : W - 32;
+          : Math.min(W - 32, (H - HEADER - 150) * ratio);
       const top = tablet ? Math.max(HEADER + 28, (H - cw / ratio - 110) / 2) : HEADER + (portrait ? 20 : 28);
       C = { x: (W - cw) / 2, y: top, w: cw, h: cw / ratio };
-      // tryb kadru konsoli ustalamy przed jej uruchomieniem
-      if (!filmStarted) {
-        filmEl.toggleAttribute('data-pan', portrait);
-        if (portrait) filmEl.style.setProperty('--film-aspect', String(ratio));
-        else filmEl.style.removeProperty('--film-aspect');
-      }
-      consoleEl.style.left = `${C.x}px`;
-      consoleEl.style.top = `${C.y}px`;
-      consoleEl.style.width = `${C.w}px`;
       caption.style.top = `${C.y + C.h + (portrait ? 20 : 28)}px`;
-      scene.style.transformOrigin = `${S.x + S.w / 2}px ${S.y + S.h / 2}px`;
 
-      const src = portrait ? '/media/hero/office-portrait-720.mp4' : W >= 1100 ? '/media/hero/office-landscape-1080.mp4' : '/media/hero/office-landscape-720.mp4';
-      if (src !== loadedSrc) {
-        loadedSrc = src;
-        video.preload = 'auto';
-        video.src = src;
-        video.load();
+      if (!reduce) {
+        const src = portrait ? '/media/hero/pier-portrait-720.mp4' : W >= 1100 ? '/media/hero/pier-landscape-1080.mp4' : '/media/hero/pier-landscape-720.mp4';
+        if (src !== loadedSrc) {
+          loadedSrc = src;
+          video.preload = 'auto';
+          video.src = src;
+          video.load();
+        }
       }
+      consoleEl.classList.add('is-placed');
       update();
     };
 
+    const frameNow = () => (hasFrameCallback && section.classList.contains('has-video') ? presented : shown) * clip.fps;
+
     const update = () => {
       ticking = false;
+      if (reduce) {
+        place(0, 0);
+        return;
+      }
       const span = Math.max(1, section.offsetHeight - H);
       const p = clamp(-section.getBoundingClientRect().top / span);
-      const a = clamp(p / 0.5);
-      const b = ease(clamp((p - 0.5) / 0.32));
-      const c = clamp((p - 0.84) / 0.12);
+      progress = p;
+      const a = clamp(p / A_END);
+      const b = ease(clamp((p - A_END) / (B_END - A_END)));
+      const c = clamp((p - 0.88) / 0.09);
 
-      // konsola rusza dopiero przed zbliżeniem — nie obciąża pierwszego ekranu
-      if (!filmStarted && p > 0.25) {
+      // konsola zaczyna pracować, zanim kamera dojedzie do laptopa — nie obciąża pierwszego ekranu
+      if (!filmStarted && p > 0.2) {
         filmStarted = true;
         mountFilm(filmEl, { loop: true }).play('orders');
       }
 
       // A: film
-      const duration = Number.isFinite(video.duration) ? video.duration : 5;
-      target = a * Math.max(0, duration - 0.06);
+      target = (a * (clip.frames - 1)) / clip.fps;
       if (!raf) raf = requestAnimationFrame(seek);
 
       // nagłówek gaśnie w miejscu
-      const fade = clamp((p - 0.05) / 0.1);
+      const fade = clamp((p - 0.03) / 0.08);
       copy.style.opacity = String(1 - fade);
       copy.style.filter = fade > 0 && fade < 1 ? `blur(${(fade * 6).toFixed(1)}px)` : '';
       copy.style.visibility = fade >= 1 ? 'hidden' : 'visible';
-      pill.style.opacity = String(1 - clamp(p / 0.05));
+      pill.style.opacity = String(1 - clamp(p / 0.04));
 
-      // B: panel rośnie z ekranu monitora do rozmiaru docelowego, kadr podąża za nim
-      const k0 = S.w / C.w;
-      const k = lerp(k0, 1, b);
-      const cx = lerp(S.x + S.w / 2, C.x + C.w / 2, b);
-      const cy = lerp(S.y + S.h / 2, C.y + C.h / 2, b);
-      consoleEl.style.transform = `translate3d(${cx - (k * C.w) / 2 - C.x}px, ${cy - (k * C.h) / 2 - C.y}px, 0) scale(${k})`;
-      consoleEl.style.opacity = String(clamp((p - 0.5) / 0.08));
-      // na telefonie panel jest wyższy niż ekran monitora — odsłania się pionowo
-      const inset = Math.max(0, (C.h - S.h / k0) / 2) * (1 - b);
-      consoleEl.style.clipPath = `inset(${inset.toFixed(1)}px 0 round ${(12 / k).toFixed(1)}px)`;
-      consoleEl.style.visibility = p > 0.49 ? 'visible' : 'hidden';
-
-      const z = (k * C.w) / S.w;
-      scene.style.transform = `translate3d(${cx - (S.x + S.w / 2)}px, ${cy - (S.y + S.h / 2)}px, 0) scale(${z})`;
-      scene.style.opacity = String(1 - clamp((b - 0.3) / 0.5));
-      document.documentElement.classList.toggle('over-scene', b < 0.45);
+      place(frameNow(), b);
+      document.documentElement.classList.toggle('over-scene', b < 0.4);
 
       // C: podpis
       caption.style.opacity = String(c);
@@ -212,33 +311,47 @@ import Film from './Film.astro';
       shown += diff * 0.22;
       if (Math.abs(target - shown) < 0.004) shown = target;
       video.currentTime = shown;
+      if (!hasFrameCallback && progress <= A_END) place(shown * clip.fps, 0);
       raf = requestAnimationFrame(seek);
     };
 
-    video.addEventListener('loadeddata', () => {
-      section.classList.add('has-video');
-      update();
-    });
+    // Konsola przesuwa się razem z klatką faktycznie pokazaną przez odtwarzacz —
+    // inaczej „pływałaby” po ekranie laptopa o jedną klatkę.
+    if (hasFrameCallback && !reduce) {
+      const onFrame = (_now: number, meta: { mediaTime: number }) => {
+        presented = meta.mediaTime;
+        if (progress <= A_END) place(presented * clip.fps, 0);
+        video.requestVideoFrameCallback(onFrame);
+      };
+      video.requestVideoFrameCallback(onFrame);
+    }
 
-    // iOS pokazuje klatki przewijanego filmu dopiero po pierwszym odtworzeniu
-    const prime = () => {
-      video.play().then(() => video.pause()).catch(() => {});
-    };
-    window.addEventListener('touchstart', prime, { once: true, passive: true });
+    if (!reduce) {
+      section.classList.add('is-live');
 
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(update);
-        }
-      },
-      { passive: true },
-    );
+      video.addEventListener('loadeddata', () => {
+        section.classList.add('has-video');
+        update();
+      });
+
+      // iOS pokazuje klatki przewijanego filmu dopiero po pierwszym odtworzeniu
+      const prime = () => {
+        video.play().then(() => video.pause()).catch(() => {});
+      };
+      window.addEventListener('touchstart', prime, { once: true, passive: true });
+
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        },
+        { passive: true },
+      );
+    }
     window.addEventListener('resize', measure, { passive: true });
-
-    // konsola: w pionie wycinek z kamerą podążającą za kursorem (ustala measure)
     measure();
   }
 
@@ -263,12 +376,12 @@ import Film from './Film.astro';
     position: relative;
     height: 100svh;
     min-height: 38rem;
-    color: #ededf2;
+    color: #f4f4f8;
   }
 
   /* Z ruchem sekcja jest dłuższa: nadmiar wysokości to droga kamery */
   .hero:global(.is-live) {
-    height: 340svh;
+    height: 400svh;
   }
 
   .hero__stage {
@@ -304,13 +417,13 @@ import Film from './Film.astro';
     opacity: 1;
   }
 
-  /* czytelność nawigacji i nagłówka: przyciemnienie tylko u góry kadru */
+  /* czytelność nawigacji i nagłówka: lekkie przyciemnienie nieba u góry kadru */
   .hero__shade {
     position: absolute;
     inset: 0 0 auto 0;
-    height: 46%;
+    height: 58%;
     z-index: -1;
-    background: linear-gradient(to bottom, rgb(21 21 27 / 0.62), rgb(21 21 27 / 0.28) 55%, transparent);
+    background: linear-gradient(to bottom, rgb(28 28 45 / 0.5), rgb(28 28 45 / 0.26) 52%, transparent);
     pointer-events: none;
   }
 
@@ -320,16 +433,16 @@ import Film from './Film.astro';
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     gap: 1rem;
-    max-width: 44rem;
+    max-width: 56rem;
     margin-inline: auto;
-    padding: calc(var(--header-h) + clamp(2.5rem, 1rem + 7vh, 4.5rem)) var(--gutter) 0;
+    padding: calc(var(--header-h) + clamp(1.5rem, 0.25rem + 5vh, 3.5rem)) var(--gutter) 0;
     text-align: center;
     will-change: opacity, filter;
   }
 
   .hero__lede {
-    max-width: 34rem;
-    color: #d9dae3;
+    max-width: 40rem;
+    color: #eceaf2;
   }
 
   .hero__actions {
@@ -346,15 +459,15 @@ import Film from './Film.astro';
     height: 3.125rem;
     padding: 0.25rem;
     border-radius: var(--radius-pill);
-    background: rgb(175 178 206 / 0.2);
-    border: 1px solid rgb(175 178 206 / 0.36);
+    background: rgb(60 58 84 / 0.34);
+    border: 1px solid rgb(236 234 242 / 0.34);
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     transition: border-color var(--dur-2) var(--ease-out);
   }
 
   .hero__form:focus-within {
-    border-color: rgb(237 237 242 / 0.7);
+    border-color: rgb(244 244 248 / 0.8);
   }
 
   .hero__form input {
@@ -366,11 +479,11 @@ import Film from './Film.astro';
     outline: 0;
     background: transparent;
     font-size: 1rem;
-    color: #ededf2;
+    color: #f4f4f8;
   }
 
   .hero__form input::placeholder {
-    color: #d0d1dc;
+    color: #e3e1ec;
     opacity: 1;
   }
 
@@ -402,18 +515,41 @@ import Film from './Film.astro';
     color: #d9dae3;
   }
 
-  /* panel konsoli: jedyny element strony z cieniem */
+  /* Konsola ma stały rozmiar projektowy; na ekran laptopa i do panelu trafia transformacją rzutową */
   .hero__console {
     position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 1180px;
+    height: 738px;
     transform-origin: 0 0;
-    border-radius: var(--radius);
-    overflow: hidden;
     visibility: hidden;
-    opacity: 0;
-    box-shadow:
-      0 0 0 1px rgb(175 178 206 / 0.24),
-      0 40px 100px -40px rgb(0 0 0 / 0.8);
-    will-change: transform, opacity;
+    background: var(--ink-850);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .hero__console:global(.is-placed) {
+    visibility: visible;
+  }
+
+  /* cienka obwódka panelu pojawia się dopiero, gdy konsola schodzi z ekranu laptopa */
+  .hero__console::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgb(175 178 206 / 0.3);
+    opacity: var(--ring, 0);
+    pointer-events: none;
+  }
+
+  .hero__console :global(.film) {
+    aspect-ratio: 1180 / 738;
+  }
+
+  .hero__console :global(.sbx--film) {
+    --sbx-h: 36.375rem;
   }
 
   .hero__caption {
@@ -430,11 +566,10 @@ import Film from './Film.astro';
     transform: translateX(-50%);
   }
 
-  /* kadr pionowy ma jasne okno tuż pod sufitem — tekst potrzebuje dłuższego przyciemnienia */
   @media (max-width: 759px), (max-aspect-ratio: 4/5) {
     .hero__shade {
-      height: 66%;
-      background: linear-gradient(to bottom, rgb(21 21 27 / 0.82), rgb(21 21 27 / 0.62) 58%, transparent);
+      height: 62%;
+      background: linear-gradient(to bottom, rgb(28 28 45 / 0.56), rgb(28 28 45 / 0.34) 55%, transparent);
     }
   }
 
