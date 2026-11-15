@@ -6,7 +6,7 @@ requested_by: owner
 status: review
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
-sha: b62578f9031272b8a54b0857b14a6eb6a6ea196b (ostatni commit kodu iteracji 3; późniejsze commity zmieniają tylko docs/ i tę kartę)
+sha: 349dc94 (ostatni commit kodu iteracji 3; późniejsze commity zmieniają tylko tę kartę)
 created: 2026-11-14
 ---
 
@@ -211,9 +211,10 @@ Wynik testów iteracji 3 (Linux, Node 22, Chromium 1243; lokalnie i w GitHub Act
   axe-core WCAG 2.1 AA bez naruszeń; testy: film hero przewijany scrollem, konsola wychodząca z ekranu,
   trzy motywy, panel „Produkt”, liczba konsol (1 / 1 / 0), obrazy z wymiarami i lazy, budżet mediów,
   sandbox (desktop + mobile), formularze, menu mobilne, reduced-motion, praca bez JS.
-- GitHub Actions `CI` (ubuntu-latest, build + audyt): sukces na `b62578f` (ostatni commit kodu) —
-  https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43663143537 ; wcześniejsze commity iteracji 3
-  (`cb4b583`, `29b2380`, `61a4bc0`) również zielone. Wynik przebiegu dla ostatecznego czubka gałęzi: w opisie PR #1.
+- GitHub Actions `CI` (ubuntu-latest, build + audyt): sukces na `349dc94` (ostatni commit kodu) —
+  https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43665571198 (przebieg PR) i
+  https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43665567836 (przebieg push); wcześniejsze commity
+  iteracji 3 (`cb4b583`, `29b2380`, `61a4bc0`, `b62578f`) również zielone.
 - Lighthouse mobile (4G symulowane), 7 stron: 100 / 100 / 100 / 100; LCP 0,8–1,8 s; TBT ≤ 10 ms; CLS ≤ 0,001.
 - Płynność scrolla hero w headless (render programowy, bez GPU), 6 s ciągłego przewijania, film 48 kl./s:
   1440 px — mediana klatki 16,7 ms, p95 16,8 ms, 1 klatka > 34 ms, 0 długich zadań; koszt wątku głównego
