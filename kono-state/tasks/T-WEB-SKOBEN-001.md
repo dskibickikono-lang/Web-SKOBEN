@@ -6,7 +6,7 @@ requested_by: owner
 status: review
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
-sha: 349dc94 (ostatni commit kodu iteracji 3; późniejsze commity zmieniają tylko tę kartę)
+sha: 0136069 (ostatni commit kodu iteracji 4; późniejsze commity zmieniają tylko tę kartę)
 created: 2026-11-14
 ---
 
@@ -288,7 +288,10 @@ Wynik testów iteracji 4 (Linux, Node 22, Chromium 1243):
   zbliżenie, reduced-motion), motywów, panelu „Produkt”, sandboxa, formularzy, pracy bez JS; axe WCAG 2.1 AA 0 naruszeń.
 - `npm run check:release`: przechodzi (`confirmedByOwner: true` — potwierdzenie treści z odbioru iteracji 3;
   iteracja 4 nie dodała nowych deklaracji).
-- GitHub Actions `CI`: __CI4__
+- GitHub Actions `CI`: sukces na `0136069` (ostatni commit kodu iteracji 4) —
+  https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43697136837 (PR) i
+  https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43697131852 (push); wcześniejsze commity iteracji 4
+  (`8a45d4d`, `8833aa3`) również zielone.
 - Lighthouse mobile (`/`, `/agenci/`, `/sandbox/`, `/bezpieczenstwo/`): 100 / 100 / 100 / 100; LCP 0,9–1,1 s; TBT ≤ 30 ms; CLS 0.
 - Scroll hero w headless (render programowy, bez GPU): telefon 58 kl./s, desktop 38–42 kl./s, mediana klatki 16,7 ms,
   koszt wątku głównego ok. 1,4 ms na klatkę. **Płynność nowej sceny na laptopie właściciela: do ponownego potwierdzenia.**
