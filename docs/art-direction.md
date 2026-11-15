@@ -1,6 +1,8 @@
-# Kierunek artystyczny SKOBEN — iteracja 3
+# Kierunek artystyczny SKOBEN — iteracje 3 i 4
 
-Stan: 2026-11-15. Dokument zastępuje założenia iteracji 1–2 („zero grafik”, jedna konsola w wielu skalach, brama).
+Stan: 2026-11-15. **Obowiązuje iteracja 4 — sekcja 9 na końcu dokumentu.** Właściciel odrzucił kierunek iteracji 3
+(scena biura, zdjęcia w sekcjach, krój i kolor); sekcje 1–8 opisują iterację 3 i zostają jako zapis procesu.
+Dokument zastępuje założenia iteracji 1–2 („zero grafik”, jedna konsola w wielu skalach, brama).
 Źródła: brief właściciela (karta `kono-state/tasks/T-WEB-SKOBEN-001.md`), studium wzorca
 ([`art-direction/mercury-study.md`](art-direction/mercury-study.md), 91 zrzutów w `art-direction/ref/`),
 kadry wygenerowane na koncie właściciela (`art-direction/candidates/generated/`) i kandydaci ze stocków
@@ -173,4 +175,64 @@ nie płynność na konkretnym sprzęcie):
 - film 24 kl./s → 48 kl./s z interpolacją ruchu (klatki pośrednie sprawdzone 1:1, bez duchów), bez wzrostu wagi;
 - podstrony miały nagłówek z samego tekstu → cztery kadry z tej samej sesji (tacka z dokumentami, korytarz,
   dwa krzesła, drzwi).
+
+## 9. Iteracja 4 — „jak w oryginale”
+
+Decyzje właściciela po obejrzeniu iteracji 3: nie gra **wszystko** (scena hero, sekcje, typografia i kolor, wrażenie
+„makiety”); hero ma być **zrobione jak w oryginale**; wykonać od razu.
+
+### Co się zmieniło
+
+| Obszar | Iteracja 3 | Iteracja 4 |
+|---|---|---|
+| Scena hero | ciemne biuro z monitorem (wnętrze) | jasny plener o świcie: biurko z laptopem na końcu pomostu nad jeziorem we mgle — ten sam gatunek co wzorzec, własny kadr (nie wzgórze, nie zdjęcie wzorca) |
+| Najazd | 5 s, kamera zatrzymuje się daleko; ekran dopowiadany powiększeniem CSS | 10 s: kamera jedzie pomostem, mija krzesło i dochodzi do laptopa, aż ekran wypełnia kadr |
+| Produkt w scenie | konsola pojawia się dopiero po najeździe | żywa konsola leży na ekranie laptopa **od pierwszej klatki**: narożniki ekranu śledzone klatka po klatce, transformacja rzutowa zsynchronizowana z klatką pokazaną przez odtwarzacz |
+| Krój | Wix Madefor Display/Text + kursywa szeryfowa w tytułach | Inter z osią rozmiaru optycznego (odmiana display/text), grubości 360 / 400 / 450 / 480 jak we wzorcu; tytuły bez wyróżnień; etykiety bezszeryfowe |
+| Akcent | wirydian (zieleń) | jeden chłodny błękit `#4a5bdc` — przycisk główny, kropka aktywnej pozycji, fokus; zieleń tylko w statusach interfejsu produktu |
+| Ilustracje sekcji | zdjęcia biur (wygenerowane) | abstrakcyjne, świetliste grafiki w pętli generowane kodem (`Art.astro`): wiązka, orbita, kolejka, etapy, warstwy, przepływ — w kolorach świtu z hero, z ziarnem |
+| Karta zasady | zdjęcie pustego biura | kadr jeziora i nieba z sesji hero |
+| Nagłówki podstron | zdjęcia biur | szeroki pas z grafiką z tej samej rodziny |
+
+### Zestawienia i nagrania (zastępują wersje z iteracji 3)
+
+| Obszar | Plik |
+|---|---|
+| Hero: pierwszy ekran, najazd z konsolą na ekranie laptopa, konsola po najeździe, panel nawigacji (1440 i 390) | [`art-direction/compare/hero.jpg`](art-direction/compare/hero.jpg) |
+| Sekcje funkcji | [`art-direction/compare/features.jpg`](art-direction/compare/features.jpg) |
+| Wiarygodność | [`art-direction/compare/proof.jpg`](art-direction/compare/proof.jpg) |
+| Nagłówki podstron | [`art-direction/compare/subpages.jpg`](art-direction/compare/subpages.jpg) |
+| Nagranie scrolla hero — desktop | [`art-direction/video/skoben-hero-scroll-desktop.mp4`](art-direction/video/skoben-hero-scroll-desktop.mp4) |
+| Nagranie scrolla hero — telefon | [`art-direction/video/skoben-hero-scroll-mobile.mp4`](art-direction/video/skoben-hero-scroll-mobile.mp4) |
+
+### Jak powstało hero
+
+1. Kadry: Ideogram 4.0 — sześć wariantów pleneru (pomost, łąka na wzgórzu, wydma; potem pomost z laptopem ustawionym
+   frontalnie i głębszym niebem). Wybrany pomost: spokojny, dużo nieba na nagłówek, czytelny kierunek ruchu kamery.
+2. Film: Kling 3.0 Pro, obraz → wideo, 10 s, pierwsza klatka = wybrany kadr (poziomy i osobno pionowy).
+3. Śledzenie: `scripts/track-screen.py` znajduje ciemną pokrywę laptopa w każdej klatce (skany krawędzi, odporne
+   dopasowanie prostych, korekta dolnej krawędzi z proporcji sztywnego prostokąta, wygładzenie w czasie).
+4. Strona: film all-intra (każda klatka kluczowa) sterowany przewijaniem; konsola w stałym rozmiarze 1180×738 px
+   rzutowana macierzą na wyświetlacz laptopa; po najeździe czworokąt ekranu przechodzi w prostokąt panelu
+   (na telefonie i tablecie w pionie — w czytelny wycinek konsoli).
+
+### Stan kryteriów odbioru po iteracji 4
+
+| Kryterium | Stan |
+|---|---|
+| Pierwszy ekran jak marka premium, nie dashboard | do oceny właściciela — `compare/hero.jpg` |
+| Scroll hero = płynny najazd; statyczny kadr przy `prefers-reduced-motion` | mechanika i test w audycie: tak. Płynność nowej sceny na laptopie właściciela: **do ponownego potwierdzenia** (iteracja 3 była potwierdzona jako płynna; nowa scena dokłada transformację konsoli co klatkę). Headless bez GPU: telefon 58 kl./s, desktop 38–42 kl./s przy medianie klatki 16,7 ms; koszt wątku głównego 1,4 ms na klatkę |
+| Żaden ekran nie powtarza widoku konsoli | tak — konsola tylko w hero i na `/sandbox/` (audyt liczy) |
+| Co najmniej 2 jasne rozdziały | tak — ciepła i chłodna biel |
+| Jedna rodzina sans w 2 wariantach optycznych, spójna skala | tak — Inter (oś `opsz`), cztery grubości + 600 w logotypie. Szeryfu akcentowego nie ma: wzorzec nie używa go na stronie głównej, a w iteracji 3 czytał się jak ozdobnik |
+| LCP < 2,5 s na 4G, axe bez błędów krytycznych | tak — Lighthouse mobile 100/100/100/100, LCP 0,9–1,1 s; axe 0 naruszeń |
+
+### Co jeszcze jest słabe
+
+- Brak prawdziwych logotypów klientów, cytatów i prasy (właściciel potwierdził zamienniki na tym etapie).
+- Film jest wygenerowany: w ostatnich sekundach na ekranie laptopa pojawiają się odbicia (w tym sylwetka) — konsola
+  jest nieprzezroczysta i je zakrywa, ale przy bardzo wolnym łączu przez chwilę widać sam kadr z ciemnym ekranem.
+- Przycisk i kropka mają błękit bliski wzorcowi — to świadoma decyzja po „zrób jak w oryginale”, do zmiany jednym tokenem.
+- Krój Inter jest powszechny; wybrany, bo jako jedyny z wolnych krojów ma prawdziwe odmiany optyczne i lekkie grubości wzorca.
+- iOS Safari nadal niesprawdzony na fizycznym urządzeniu.
 

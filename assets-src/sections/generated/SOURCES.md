@@ -26,3 +26,9 @@ Style suffix as above with a 35mm lens and "Wide cinematic composition with gene
 | `h02-corridor.png` | Corridor in one-point perspective, repeating glass partitions | `public/media/pages/automatyzacje-*.webp` |
 | `h03-two-chairs.png` | Two chairs facing each other across a small round table, closed notebook | `public/media/pages/wdrozenie-*.webp` |
 | `h04-door.png` | Tall closed walnut door in an empty wall, band of amber light | `public/media/pages/bezpieczenstwo-*.webp` |
+
+## Status (2026-11-15, iteration 4)
+
+None of the stills listed in this file are used on the site any more: section illustrations are now drawn in code
+(`src/components/Art.astro`) and the principle card uses a crop of `assets-src/hero/pier/l04-pier-front-a.png`.
+The raw stills were removed from the working copy; this file stays as the record of prompts and spend.

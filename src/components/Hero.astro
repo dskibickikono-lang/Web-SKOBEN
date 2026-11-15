@@ -117,6 +117,7 @@ import Film from './Film.astro';
     let raf = 0;
     let ticking = false;
     let filmStarted = false;
+    let clipped = false;
     let progress = 0;
     const hasFrameCallback = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
 
@@ -203,9 +204,18 @@ import Film from './Film.astro';
       const quad = b > 0 ? mix(end, rectQuad(C), b) : now;
       consoleEl.style.transform = project(crop, quad);
       const scale = (quad[1][0] - quad[0][0]) / crop.w;
-      const radius = (lerp(2, 12, b) / Math.max(scale, 0.01)).toFixed(1);
-      consoleEl.style.clipPath = `inset(${crop.y.toFixed(1)}px ${(DW - crop.x - crop.w).toFixed(1)}px ${(DH - crop.y - crop.h).toFixed(1)}px ${crop.x.toFixed(1)}px round ${radius}px)`;
-      consoleEl.style.setProperty('--ring', String(clamp((b - 0.35) / 0.4)));
+      // przycięcie i zaokrąglenie tylko w fazie zbliżenia — w trakcie najazdu konsola jest zwykłą warstwą
+      // kompozytora (sama macierz), więc klatka nie wymaga ponownego malowania
+      if (b > 0) {
+        const radius = (lerp(2, 12, b) / Math.max(scale, 0.01)).toFixed(1);
+        consoleEl.style.clipPath = `inset(${crop.y.toFixed(1)}px ${(DW - crop.x - crop.w).toFixed(1)}px ${(DH - crop.y - crop.h).toFixed(1)}px ${crop.x.toFixed(1)}px round ${radius}px)`;
+        consoleEl.style.setProperty('--ring', String(clamp((b - 0.35) / 0.4)));
+        clipped = true;
+      } else if (clipped) {
+        consoleEl.style.clipPath = 'none';
+        consoleEl.style.setProperty('--ring', '0');
+        clipped = false;
+      }
 
       if (b > 0) {
         // plener podąża za ekranem i rozpływa się w tle strony
@@ -528,6 +538,7 @@ import Film from './Film.astro';
     background: var(--ink-850);
     will-change: transform;
     backface-visibility: hidden;
+    contain: layout paint style;
   }
 
   .hero__console:global(.is-placed) {

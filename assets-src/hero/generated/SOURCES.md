@@ -130,3 +130,9 @@ after `tpad=stop_mode=clone:stop_duration=0.05` (keeps the true last frame), the
 
 Interpolated frames were inspected at 1:1 around the monitor, window mullions and chair: no ghosting.
 The scroll step per frame is halved (about 4.5 px of scroll per frame at 1440×900).
+
+## Status (2026-11-15, iteration 4)
+
+The office scene described in this file is no longer used on the site: the owner rejected that direction and the hero
+was rebuilt on the pier scene (`assets-src/hero/pier/SOURCES.md`). The raw stills and clips listed above were removed
+from the working copy; this file stays as the record of prompts and spend.

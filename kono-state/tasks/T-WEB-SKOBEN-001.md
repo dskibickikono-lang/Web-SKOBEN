@@ -3,7 +3,7 @@ id: T-WEB-SKOBEN-001
 title: Strona B2B SKOBEN — agenci AI i automatyzacja workflow
 channel: pm-local
 requested_by: owner
-status: in-progress
+status: review
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
 sha: 349dc94 (ostatni commit kodu iteracji 3; późniejsze commity zmieniają tylko tę kartę)
@@ -262,6 +262,46 @@ Merge PR #1: nadal wyłącznie po stronie właściciela; przy odrzuconym kierunk
 Plan wykonawcy: jasna scena o świcie nad jeziorem z laptopem i żywą konsolą na ekranie przez cały najazd; grotesk
 w lżejszych grubościach bez szeryfowej kursywy w tytułach; chłodna paleta z jednym chłodnym akcentem; w sekcjach
 abstrakcyjne świetliste grafiki w pętli generowane kodem zamiast zdjęć biur. Budżet generacji: do ok. 2,5 USD.
+
+## Iteracja 4 — wykonanie (2026-11-15)
+
+Status: **do odbioru przez właściciela**. Merge i wdrożenie po stronie właściciela.
+
+Zrobione:
+- **Hero jak w oryginale**: plener o świcie (biurko z laptopem na końcu pomostu nad jeziorem — własny kadr), film
+  najazdu 10 s do ekranu laptopa; żywa konsola przypięta do ekranu laptopa przez cały najazd (śledzenie ekranu
+  klatka po klatce: `scripts/track-screen.py` → `src/data/hero-track.json`; transformacja rzutowa), po najeździe
+  konsola rośnie do pełnego panelu (telefon / tablet w pionie: czytelny wycinek).
+- **Typografia**: Inter z osią rozmiaru optycznego, grubości 360 / 400 / 450 / 480; tytuły bez kursywy szeryfowej.
+- **Kolor**: jeden chłodny akcent marki (`#4a5bdc`); zieleń tylko w statusach interfejsu produktu.
+- **Sekcje**: `Art.astro` — sześć abstrakcyjnych, świetlistych grafik w pętli generowanych kodem (kolory świtu z hero)
+  w miejscu zdjęć biur: akordeony, karty „dalej”, nagłówki podstron; karta zasady na kadrze jeziora z sesji hero.
+- Usunięte: scena biura, wszystkie zdjęcia biur, pakiety krojów Wix Madefor i Newsreader.
+
+Dowody (w repozytorium, `docs/art-direction/`): `compare/hero.jpg`, `compare/features.jpg`, `compare/proof.jpg`,
+`compare/subpages.jpg`, `video/skoben-hero-scroll-desktop.mp4`, `video/skoben-hero-scroll-mobile.mp4`;
+opis i stan kryteriów: `docs/art-direction.md`, sekcja 9.
+
+Wynik testów iteracji 4 (Linux, Node 22, Chromium 1243):
+- `npm run build`: 0 błędów, 0 ostrzeżeń; 9 stron.
+- `npm run audit`: bez zastrzeżeń — 9 stron × 3 szerokości; testy konsoli na ekranie laptopa (start, najazd,
+  zbliżenie, reduced-motion), motywów, panelu „Produkt”, sandboxa, formularzy, pracy bez JS; axe WCAG 2.1 AA 0 naruszeń.
+- `npm run check:release`: przechodzi (`confirmedByOwner: true` — potwierdzenie treści z odbioru iteracji 3;
+  iteracja 4 nie dodała nowych deklaracji).
+- GitHub Actions `CI`: __CI4__
+- Lighthouse mobile (`/`, `/agenci/`, `/sandbox/`, `/bezpieczenstwo/`): 100 / 100 / 100 / 100; LCP 0,9–1,1 s; TBT ≤ 30 ms; CLS 0.
+- Scroll hero w headless (render programowy, bez GPU): telefon 58 kl./s, desktop 38–42 kl./s, mediana klatki 16,7 ms,
+  koszt wątku głównego ok. 1,4 ms na klatkę. **Płynność nowej sceny na laptopie właściciela: do ponownego potwierdzenia.**
+- Projekt nie zawiera testów pytest.
+
+Media i koszty iteracji 4 (drugi klucz tymczasowy właściciela, budżet 4,77 USD): 3 kadry Ideogram 4.0 (0,30 USD)
++ 2 filmy Kling 3.0 Pro po 10 s (1,924 USD) = **2,224 USD**; na pierwszym kluczu doszły 3 kadry-kandydaci (0,30 USD),
+razem na pierwszym kluczu 3,755 USD. Łącznie w projekcie: **5,979 USD**. Oba klucze: do usunięcia przez właściciela;
+żadnego nie ma w repozytorium, historii ani buildzie (sprawdzane przed commitami).
+Źródła: `assets-src/hero/pier/SOURCES.md`. Surowe kadry iteracji 3 usunięte z kopii roboczej (nieużywane).
+
+Znane ograniczenia: brak prawdziwych referencji klientów (zamienniki potwierdzone przez właściciela); film jest
+wygenerowany (odbicia na ekranie laptopa zakrywa nieprzezroczysta konsola); iOS Safari niesprawdzony na urządzeniu.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em
