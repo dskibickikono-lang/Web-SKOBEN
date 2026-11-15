@@ -126,7 +126,7 @@ Zrzuty w tej samej pozycji przewijania co referencja, 1440 i 390 px. Lewa kolumn
 
 | Obszar | Zestawienie |
 |---|---|
-| Hero (pierwszy ekran, 1440 i 390) | [`art-direction/compare/hero.jpg`](art-direction/compare/hero.jpg) |
+| Hero (pierwszy ekran, najazd kamery, konsola po najeździe, panel nawigacji; 1440 i 390) | [`art-direction/compare/hero.jpg`](art-direction/compare/hero.jpg) |
 | Sekcje funkcji (lista + fragment produktu, jasne kafle, akordeon + kadr) | [`art-direction/compare/features.jpg`](art-direction/compare/features.jpg) |
 | Wiarygodność (taśma + zasada na kadrze, cytat, liczby, karty „dalej”) | [`art-direction/compare/proof.jpg`](art-direction/compare/proof.jpg) |
 
