@@ -162,7 +162,7 @@ async function auditPage(browser, base, route, vp, problems) {
       headings: [...document.querySelectorAll('h1,h2,h3,h4')].filter(visible).map((h) => Number(h.tagName[1])),
       // obraz bez wymiarów przesuwa układ; poniżej pierwszego ekranu ma się ładować leniwie
       imgNoSize: [...document.querySelectorAll('img')].filter((i) => !i.getAttribute('width') || !i.getAttribute('height')).length,
-      imgEager: [...document.querySelectorAll('img')].filter((i) => !i.closest('[data-hero]') && i.loading !== 'lazy').length,
+      imgEager: [...document.querySelectorAll('img')].filter((i) => !i.closest('[data-hero], .page-hero') && i.loading !== 'lazy').length,
       consoles: document.querySelectorAll('[data-sbx], [data-sbx-film]').length,
       title: document.title,
       description: document.querySelector('meta[name="description"]')?.getAttribute('content') || '',
@@ -182,7 +182,7 @@ async function auditPage(browser, base, route, vp, problems) {
     }
   }
   if (facts.imgNoSize) fail(`${facts.imgNoSize} obrazów bez atrybutów width/height`);
-  if (facts.imgEager) fail(`${facts.imgEager} obrazów poza hero bez loading="lazy"`);
+  if (facts.imgEager) fail(`${facts.imgEager} obrazów poza pierwszym ekranem bez loading="lazy"`);
   // konsola występuje tylko w dwóch miejscach: zbliżenie w hero i pełny sandbox
   const expected = route === '/' || route === '/sandbox/' ? 1 : 0;
   if (facts.consoles !== expected) fail(`liczba konsol na stronie: ${facts.consoles}, oczekiwano ${expected}`);

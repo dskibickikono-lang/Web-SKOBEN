@@ -129,6 +129,7 @@ Zrzuty w tej samej pozycji przewijania co referencja, 1440 i 390 px. Lewa kolumn
 | Hero (pierwszy ekran, najazd kamery, konsola po najeździe, panel nawigacji; 1440 i 390) | [`art-direction/compare/hero.jpg`](art-direction/compare/hero.jpg) |
 | Sekcje funkcji (lista + fragment produktu, jasne kafle, akordeon + kadr) | [`art-direction/compare/features.jpg`](art-direction/compare/features.jpg) |
 | Wiarygodność (taśma + zasada na kadrze, cytat, liczby, karty „dalej”) | [`art-direction/compare/proof.jpg`](art-direction/compare/proof.jpg) |
+| Podstrony — nagłówek z kadrem (bez odpowiednika we wzorcu; 1440 i 390) | [`art-direction/compare/subpages.jpg`](art-direction/compare/subpages.jpg) |
 
 Nagranie przewijania hero (30 kl./s, składane klatka po klatce w headless Chromium — pokazuje przebieg sceny,
 nie płynność na konkretnym sprzęcie):
@@ -141,11 +142,11 @@ nie płynność na konkretnym sprzęcie):
 | Kryterium | Stan | Dowód |
 |---|---|---|
 | Pierwszy ekran jak marka premium, nie dashboard | spełnione w ocenie wykonawcy | `compare/hero.jpg`; konsola pojawia się dopiero po najeździe |
-| Scroll hero = płynny najazd kamery; statyczny kadr przy `prefers-reduced-motion` | mechanika spełniona; 60 kl./s na laptopie do potwierdzenia przez właściciela | pomiar w headless (render programowy, bez GPU): mediana klatki 16,7 ms, 18 z 275 klatek > 20 ms na 1440; na 390 wszystkie 16,7 ms. Test statycznego kadru w `npm run audit` |
+| Scroll hero = płynny najazd kamery; statyczny kadr przy `prefers-reduced-motion` | mechanika spełniona; 60 kl./s na laptopie do potwierdzenia przez właściciela na fizycznym sprzęcie | film 48 kl./s (241 klatek, ok. 4,5 px przewinięcia na klatkę przy 1440×900). Pomiar w headless (render programowy, bez GPU), 6 s ciągłego przewijania: 1440 px — mediana klatki 16,7 ms, p95 16,8 ms, 1 klatka > 34 ms, 0 długich zadań; koszt wątku głównego 0,85 ms na klatkę (skrypt 0,28 + layout 0,22 + style 0,35). Przy procesorze spowolnionym 4×: 3,5 ms na klatkę (budżet 16,7 ms). Test statycznego kadru w `npm run audit` |
 | Żaden ekran nie powtarza widoku konsoli | spełnione | audyt liczy konsole: 1 na `/` (zbliżenie w hero), 1 na `/sandbox/`, 0 gdzie indziej |
 | Co najmniej 2 jasne rozdziały na stronie głównej | spełnione | ciepła biel (kafle kontroli) + chłodna biel (cytat, dwa akordeony z kadrem); audyt sprawdza trzy motywy |
 | Jedna rodzina sans w 2 wariantach + szeryf akcentowy, spójna skala | spełnione | Wix Madefor Display/Text + Newsreader + IBM Plex Mono; audyt: grubości 400/480/500/600, ≤ 14 stopni pisma na stronie |
-| LCP < 2,5 s na 4G | spełnione | Lighthouse mobile: LCP 0,8–1,5 s na 7 stronach, wynik 100/100/100/100, TBT 0 ms |
+| LCP < 2,5 s na 4G | spełnione | Lighthouse mobile: LCP 0,8–1,8 s na 7 stronach, wynik 100/100/100/100, TBT ≤ 10 ms |
 | axe bez błędów krytycznych | spełnione | axe-core WCAG 2.1 AA: 0 naruszeń na 9 stronach × 3 szerokości |
 
 ### Co jeszcze wygląda tanio — uczciwie
@@ -155,9 +156,11 @@ nie płynność na konkretnym sprzęcie):
 - **Kadr pionowy to inne pomieszczenie** niż poziomy (osobna generacja pod telefon) — spójny nastrojem, nie identyczny.
 - **Brak prawdziwych referencji.** Taśma tekstowa, zasady firmy i liczby z deklaracji stoją tam, gdzie wzorzec ma
   logotypy klientów, cytaty i prasę. To najsłabszy punkt względem wzorca i jedyny, którego nie da się poprawić kodem.
-- **Podstrony mają bohatera tekstowego** (bez kadru). Są w systemie strony głównej, ale skromniejsze niż ona.
 - **iOS Safari**: przewijany film jest „budzony” pierwszym dotknięciem; nie było jak sprawdzić tego na fizycznym urządzeniu.
-- Film ma 5 s (121 klatek) — przy bardzo wolnym przewijaniu na dużym ekranie widać pojedyncze klatki.
+- Film ma 241 klatek (48 kl./s, klatki pośrednie interpolowane z 24 kl./s). Przy bardzo wolnym przewijaniu
+  krok wciąż istnieje (ok. 4,5 px na klatkę), ale jest o połowę mniejszy niż w pierwszej wersji.
+- Na wolnym telefonie uruchomienie konsoli w trakcie najazdu daje krótkie zadania > 50 ms (4 przy procesorze
+  spowolnionym 4×) — bez wpływu na medianę klatki, ale to jedyny moment, w którym scena może drgnąć.
 
 ### Co zmieniło się po samoocenie w trakcie
 
@@ -165,5 +168,9 @@ nie płynność na konkretnym sprzęcie):
 - sekcja wiarygodności była samym tekstem → karta z zasadą na kadrze;
 - kafle z własnym tłem brały kolory z motywu strony (słaby kontrast w trakcie przenikania) → własny motyw kafla;
 - konsola w hero pracowała od załadowania strony → startuje przed zbliżeniem (TBT na telefonie 680 ms → 0 ms);
-- nawigacja płaska → panel „Produkt”: trzy kolumny, cienkie linie, pigułka pod wskaźnikiem.
+- nawigacja płaska → panel „Produkt”: trzy kolumny, cienkie linie, pigułka pod wskaźnikiem;
+- tablet w pionie dostawał pomniejszoną konsolę bez podpisu → czytelny wycinek z kamerą i podpisem;
+- film 24 kl./s → 48 kl./s z interpolacją ruchu (klatki pośrednie sprawdzone 1:1, bez duchów), bez wzrostu wagi;
+- podstrony miały nagłówek z samego tekstu → cztery kadry z tej samej sesji (tacka z dokumentami, korytarz,
+  dwa krzesła, drzwi).
 

@@ -114,3 +114,19 @@ libx264, CRF 23, `-g 1` (every frame a keyframe), yuv420p, +faststart, no audio,
 | `scrub/hero-hf-portrait-bluehour-poster-1080x1920.webp` | `video/hf-v02-kling-3-pro-portrait-bluehour.mp4 (first frame)` | 36 kB |
 
 Previews and contact sheets: `docs/art-direction/candidates/generated/`.
+
+## 48 fps scrub encodes (2026-11-15)
+
+The production clips in `public/media/hero/` are motion-interpolated from the two generated videos above
+(no new generation, no cost): ffmpeg `minterpolate=fps=48:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1`
+after `tpad=stop_mode=clone:stop_duration=0.05` (keeps the true last frame), then all-intra H.264
+(`-g 1`), 241 frames each:
+
+| File | Size | CRF |
+|---|---|---|
+| `office-landscape-1080.mp4` (1920×1080) | 4.15 MB | 26 |
+| `office-landscape-720.mp4` (1280×720) | 2.29 MB | 25 |
+| `office-portrait-720.mp4` (720×1280) | 2.58 MB | 25 |
+
+Interpolated frames were inspected at 1:1 around the monitor, window mullions and chair: no ghosting.
+The scroll step per frame is halved (about 4.5 px of scroll per frame at 1440×900).

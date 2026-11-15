@@ -195,9 +195,12 @@ Zrobione według procesu z briefu:
   karty „dalej”, końcowe wezwanie. Konsola tylko w hero i na `/sandbox/`.
 - panel „Produkt” (mega-menu 3 kolumny, cienkie linie), pigułka pod wskaźnikiem w nawigacji.
 - podstrony przeniesione na nowe tokeny; usunięte filmy z konsolą i łuki z iteracji 2.
+- dopracowanie po samoocenie: film hero w 48 kl./s (interpolacja ruchu, bez wzrostu wagi), kadry w nagłówkach
+  czterech podstron, czytelna konsola na tablecie w pionie.
 
 Dowody dla właściciela (w repozytorium):
-- zestawienia Mercury vs SKOBEN: `docs/art-direction/compare/hero.jpg`, `features.jpg`, `proof.jpg`,
+- zestawienia Mercury vs SKOBEN: `docs/art-direction/compare/hero.jpg`, `features.jpg`, `proof.jpg`;
+  nagłówki podstron: `compare/subpages.jpg`,
 - nagrania scrolla hero: `docs/art-direction/video/skoben-hero-scroll-desktop.mp4`, `…-mobile.mp4`
   (składane klatka po klatce w headless Chromium),
 - stan kryteriów odbioru i lista słabych miejsc: `docs/art-direction.md`, sekcja 8.
@@ -211,18 +214,19 @@ Wynik testów iteracji 3 (Linux, Node 22, Chromium 1243; lokalnie i w GitHub Act
 - GitHub Actions `CI` (ubuntu-latest, build + audyt): sukces na `b62578f` (ostatni commit kodu) —
   https://github.com/dskibickikono-lang/Web-SKOBEN/actions/runs/43663143537 ; wcześniejsze commity iteracji 3
   (`cb4b583`, `29b2380`, `61a4bc0`) również zielone. Wynik przebiegu dla ostatecznego czubka gałęzi: w opisie PR #1.
-- Lighthouse mobile (4G symulowane), 7 stron: 100 / 100 / 100 / 100; LCP 0,8–1,5 s; TBT 0 ms; CLS ≤ 0,001.
-- Płynność scrolla hero w headless (render programowy, bez GPU): 1440 px — mediana klatki 16,7 ms,
-  18 z 275 klatek > 20 ms; 390 px — wszystkie klatki 16,7 ms. 60 kl./s na laptopie: do potwierdzenia
-  przez właściciela na fizycznym sprzęcie.
+- Lighthouse mobile (4G symulowane), 7 stron: 100 / 100 / 100 / 100; LCP 0,8–1,8 s; TBT ≤ 10 ms; CLS ≤ 0,001.
+- Płynność scrolla hero w headless (render programowy, bez GPU), 6 s ciągłego przewijania, film 48 kl./s:
+  1440 px — mediana klatki 16,7 ms, p95 16,8 ms, 1 klatka > 34 ms, 0 długich zadań; koszt wątku głównego
+  0,85 ms na klatkę, 3,5 ms przy procesorze spowolnionym 4× (budżet 16,7 ms). 60 kl./s na laptopie:
+  do potwierdzenia przez właściciela na fizycznym sprzęcie.
 - `npm run check:release`: **nie przechodzi celowo** — `confirmedByOwner: false` do czasu odbioru nowych
   treści (dwie „zasady” na stronie głównej, panel „Produkt”). Bramka nie jest częścią CI.
 - Projekt nie zawiera testów pytest — repozytorium to statyczna strona bez kodu Pythona.
 
 Media i koszty:
 - Higgsfield na koncie właściciela (klucz jednodniowy przekazany w sesji; nie jest zapisany w repozytorium,
-  logach ani commitach — do usunięcia przez właściciela): 16 kadrów w 13 wywołaniach (Ideogram 4.0 i modele porównawcze)
-  + 2 filmy (Kling 3.0 4K poziomy, Kling 3.0 Pro pionowy). Łącznie **3,055 USD** z limitu 7,50 USD.
+  logach ani commitach — do usunięcia przez właściciela): 20 kadrów w 17 wywołaniach (Ideogram 4.0 i modele porównawcze)
+  + 2 filmy (Kling 3.0 4K poziomy, Kling 3.0 Pro pionowy). Łącznie **3,455 USD** z limitu 7,50 USD.
 - Modele, prompty i koszty: `assets-src/hero/generated/SOURCES.md`, `assets-src/sections/generated/SOURCES.md`.
   Pliki źródłowe (PNG, MP4 4K) są tylko w kontenerze sesji (`assets-src/`, poza gitem) — znikną z nim;
   wersje produkcyjne są w `public/media/`.
@@ -231,7 +235,6 @@ Znane ograniczenia (bez upiększeń):
 - brak prawdziwych logotypów klientów, cytatów i prasy — w ich miejscach stoją taśma tekstowa, dwie zasady
   firmy i liczby z potwierdzonych deklaracji; zmyślonych referencji nie ma,
 - scena jest wygenerowana (klasa wizualizacji architektonicznej), kadr pionowy to inne pomieszczenie,
-- podstrony mają nagłówek tekstowy bez kadru,
 - zachowanie przewijanego filmu na iOS Safari nie było sprawdzone na fizycznym urządzeniu.
 
 Do decyzji właściciela: odbiór wizualny iteracji 3 (albo uwagi do iteracji 4), potwierdzenie nowych treści

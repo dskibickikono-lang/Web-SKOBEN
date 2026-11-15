@@ -814,6 +814,27 @@ main > :last-child:not(.cta-band) {
   z-index: 1;
 }
 
+.page-hero__media {
+  display: block;
+  margin-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.page-hero__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2048 / 853;
+  object-fit: cover;
+}
+
+@media (max-width: 640px) {
+  .page-hero__media img {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 .page-hero__actions {
   display: flex;
   flex-wrap: wrap;

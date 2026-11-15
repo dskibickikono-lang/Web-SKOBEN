@@ -14,3 +14,15 @@ No people, no hands, no logos, no text, no screens."
 | `d02-chair.png` | 16:9 | One empty chair beside floor-to-ceiling glazing, quiet empty wall on the left | `principle-wide.webp`, `principle-tall.webp` |
 | `d03-desk-edge.png` | 3:2 | Desk edge with a closed linen notebook and a pen, aligned | `card-security.webp` |
 | `d04-room.png` | 16:9 | Empty meeting room, long walnut table, chairs pushed in | `card-rollout.webp` |
+
+## Subpage hero stills (2026-11-15)
+
+Same model and settings (Ideogram 4.0, QUALITY, 16:9, 0.100 USD each; 0.400 USD total; cumulative project spend 3.455 USD).
+Style suffix as above with a 35mm lens and "Wide cinematic composition with generous empty space."
+
+| File | Subject (prompt summary) | Used as |
+|---|---|---|
+| `h01-tray.png` | Walnut letter tray with a neat stack of documents on an otherwise empty desk | `public/media/pages/agenci-*.webp` |
+| `h02-corridor.png` | Corridor in one-point perspective, repeating glass partitions | `public/media/pages/automatyzacje-*.webp` |
+| `h03-two-chairs.png` | Two chairs facing each other across a small round table, closed notebook | `public/media/pages/wdrozenie-*.webp` |
+| `h04-door.png` | Tall closed walnut door in an empty wall, band of amber light | `public/media/pages/bezpieczenstwo-*.webp` |

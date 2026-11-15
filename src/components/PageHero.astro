@@ -4,8 +4,10 @@ interface Props {
   lede: string;
   tone?: 'light' | 'dark';
   eyebrow?: string;
+  /** Kadr pod nagłówkiem: nazwa pary plików w /media/pages/ (…-wide.webp, …-tall.webp) i opis. */
+  image?: { name: string; alt: string };
 }
-const { title, lede, tone = 'light', eyebrow } = Astro.props;
+const { title, lede, tone = 'light', eyebrow, image } = Astro.props;
 ---
 
 <section class="page-hero" data-theme={tone}>
@@ -23,6 +25,23 @@ const { title, lede, tone = 'light', eyebrow } = Astro.props;
       }
     </div>
   </div>
+  {
+    image && (
+      <div class="container">
+        <picture class="page-hero__media" data-rise style="--reveal-i:3">
+          <source media="(max-width: 640px)" srcset={`/media/pages/${image.name}-tall.webp`} width="1024" height="768" />
+          <img
+            src={`/media/pages/${image.name}-wide.webp`}
+            alt={image.alt}
+            width="2048"
+            height="853"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
+      </div>
+    )
+  }
   <slot name="art" />
 </section>
 

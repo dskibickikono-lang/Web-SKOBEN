@@ -96,16 +96,18 @@ formularza kontaktowego przez `sessionStorage` (nie w adresie URL) i jest stamt�
 - `astro check`: 0 błędów, 0 ostrzeżeń, 0 wskazówek.
 - `npm run audit`: 9 stron × 3 szerokości bez zastrzeżeń.
 - Lighthouse (mobile, 7 stron): Performance 100, Accessibility 100, Best Practices 100, SEO 100;
-  LCP 0,8–1,5 s, TBT 0 ms, CLS ≤ 0,001.
-- Waga: JS + CSS łącznie ok. 138 kB bez kompresji dla całego serwisu; kadr hero 20–24 kB (WebP);
-  film hero 2,0 MB (720p), 4,5 MB (1080p, ekrany ≥ 1100 px) albo 2,3 MB (pionowy) — pobierany po kadrze.
+  LCP 0,8–1,8 s, TBT ≤ 10 ms, CLS ≤ 0,001.
+- Waga: JS + CSS łącznie ok. 139 kB bez kompresji dla całego serwisu; kadr hero 20–24 kB (WebP);
+  film hero 2,3 MB (720p), 4,2 MB (1080p, ekrany ≥ 1100 px) albo 2,6 MB (pionowy) — pobierany po kadrze.
+- Scroll hero (headless, render programowy): mediana klatki 16,7 ms, koszt wątku głównego 0,85 ms na klatkę.
 
 ## Media
 
 Kadry i film hero zostały wygenerowane na koncie właściciela (Higgsfield: Ideogram 4.0 — kadry,
 Kling 3.0 — film). Modele, prompty i koszty: `assets-src/**/SOURCES.md`. Pliki źródłowe (PNG, MP4 4K)
 nie są w repozytorium — są w `assets-src/` lokalnie, a w `public/media/` leżą wersje produkcyjne.
-Film jest kodowany jako H.264 z samymi klatkami kluczowymi, żeby przewijanie mogło ustawiać dowolną klatkę.
+Film jest kodowany jako H.264 z samymi klatkami kluczowymi, żeby przewijanie mogło ustawiać dowolną klatkę,
+w 48 kl./s (klatki pośrednie interpolowane — przepis w `assets-src/hero/generated/SOURCES.md`).
 
 ## Typografia
 
