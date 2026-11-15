@@ -3,7 +3,7 @@ id: T-WEB-SKOBEN-001
 title: Strona B2B SKOBEN — agenci AI i automatyzacja workflow
 channel: pm-local
 requested_by: owner
-status: review
+status: in-progress
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
 sha: 349dc94 (ostatni commit kodu iteracji 3; późniejsze commity zmieniają tylko tę kartę)
@@ -220,8 +220,8 @@ Wynik testów iteracji 3 (Linux, Node 22, Chromium 1243; lokalnie i w GitHub Act
   1440 px — mediana klatki 16,7 ms, p95 16,8 ms, 1 klatka > 34 ms, 0 długich zadań; koszt wątku głównego
   0,85 ms na klatkę, 3,5 ms przy procesorze spowolnionym 4× (budżet 16,7 ms). 60 kl./s na laptopie:
   do potwierdzenia przez właściciela na fizycznym sprzęcie.
-- `npm run check:release`: **nie przechodzi celowo** — `confirmedByOwner: false` do czasu odbioru nowych
-  treści (dwie „zasady” na stronie głównej, panel „Produkt”). Bramka nie jest częścią CI.
+- `npm run check:release`: przechodzi od 2026-11-15 (właściciel potwierdził nowe treści; wcześniej celowo
+  nie przechodziła). Bramka nie jest częścią CI.
 - Projekt nie zawiera testów pytest — repozytorium to statyczna strona bez kodu Pythona.
 
 Media i koszty:
@@ -240,6 +240,17 @@ Znane ograniczenia (bez upiększeń):
 
 Do decyzji właściciela: odbiór wizualny iteracji 3 (albo uwagi do iteracji 4), potwierdzenie nowych treści
 (`confirmedByOwner`), merge PR #1, usunięcie klucza Higgsfield.
+
+## Odbiór iteracji 3 przez właściciela (2026-11-15)
+
+Odpowiedzi właściciela na trzy pytania zadane w sesji:
+- **Odbiór wizualny: „Odrzucam kierunek”** — bez opisu, co ma być inaczej. Iteracja 3 nie jest odebrana;
+  przed jakąkolwiek zmianą potrzebne jest doprecyzowanie i plan do akceptacji (reguła „plan → stop”).
+- **Płynność scrolla hero na laptopie właściciela: „Płynnie”** — kryterium 60 kl./s potwierdzone na fizycznym sprzęcie.
+- **Treści: „Potwierdzam, zostaw zamienniki”** — nowe treści iteracji 3 i zamienniki referencji zaakceptowane;
+  `confirmedByOwner: true`, `npm run check:release` przechodzi.
+
+Merge PR #1: nadal wyłącznie po stronie właściciela; przy odrzuconym kierunku nie jest rekomendowany.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em

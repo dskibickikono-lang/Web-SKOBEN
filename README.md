@@ -74,9 +74,9 @@ Wszystko, co zależy od decyzji właściciela, jest w jednym pliku: `src/config/
 - `confirmedByOwner: true` — akceptacja deklaracji w treściach: czasy etapów (`facts` w `site.ts`),
   model rozliczeń („Wdrożenie”), zasady przetwarzania danych („Bezpieczeństwo”) i polityka prywatności.
 
-Stan na 2026-11-15: dane firmy są uzupełnione, deklaracja „Wdrażamy równolegle tylko kilka firm” jest
-potwierdzona. Iteracja 3 dodała nowe treści (dwie „zasady” na stronie głównej, panel „Produkt”) —
-`confirmedByOwner` zostaje `false` do czasu odbioru treści przez właściciela.
+Stan na 2026-11-15: dane firmy są uzupełnione, a właściciel potwierdził treści iteracji 3 (w tym deklarację
+„Wdrażamy równolegle tylko kilka firm”, dwie „zasady” na stronie głównej i zamienniki referencji) —
+`confirmedByOwner: true`, bramka przechodzi. Kierunek wizualny iteracji 3 nie został odebrany (karta zadania).
 Bramka jest krokiem przed wdrożeniem, nie częścią CI.
 
 Build i audyt nie zależą od bramki — strona buduje się i działa także przed jej przejściem.
