@@ -252,6 +252,17 @@ Odpowiedzi właściciela na trzy pytania zadane w sesji:
 
 Merge PR #1: nadal wyłącznie po stronie właściciela; przy odrzuconym kierunku nie jest rekomendowany.
 
+## Brief właściciela na iterację 4 (2026-11-15, odpowiedzi w sesji)
+
+- Co nie gra w iteracji 3: **wszystko z listy** — scena hero, sekcje pod hero, typografia i kolor, ogólne wrażenie „makiety”.
+- Hero: **„Zrób jak w oryginale”** (plenerowa scena z biurkiem i laptopem, najazd kamery na ekran) — własny kadr, bez
+  kopiowania zdjęć, treści i krojów wzorca.
+- Tryb: **„Od razu wykonaj”** (zgoda na wykonanie bez przystanku na plan).
+
+Plan wykonawcy: jasna scena o świcie nad jeziorem z laptopem i żywą konsolą na ekranie przez cały najazd; grotesk
+w lżejszych grubościach bez szeryfowej kursywy w tytułach; chłodna paleta z jednym chłodnym akcentem; w sekcjach
+abstrakcyjne świetliste grafiki w pętli generowane kodem zamiast zdjęć biur. Budżet generacji: do ok. 2,5 USD.
+
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em
 (bez force, bez rebase). PR #1 otwarty do `main`, gotowy do przeglądu. Merge i publikacja po stronie właściciela.
