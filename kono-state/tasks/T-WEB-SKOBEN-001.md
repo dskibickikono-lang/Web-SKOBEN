@@ -3,7 +3,7 @@ id: T-WEB-SKOBEN-001
 title: Strona B2B SKOBEN — agenci AI i automatyzacja workflow
 channel: pm-local
 requested_by: owner
-status: review
+status: accepted
 branch: skibiai/sharp-hamilton-he3v81
 pr: https://github.com/dskibickikono-lang/Web-SKOBEN/pull/1
 sha: 0136069 (ostatni commit kodu iteracji 4; późniejsze commity zmieniają tylko tę kartę)
@@ -305,6 +305,17 @@ razem na pierwszym kluczu 3,755 USD. Łącznie w projekcie: **5,979 USD**. Oba k
 
 Znane ograniczenia: brak prawdziwych referencji klientów (zamienniki potwierdzone przez właściciela); film jest
 wygenerowany (odbicia na ekranie laptopa zakrywa nieprzezroczysta konsola); iOS Safari niesprawdzony na urządzeniu.
+
+## Odbiór iteracji 4 przez właściciela (2026-11-15)
+
+Odpowiedzi właściciela na pytania zadane w sesji:
+- **Odbiór wizualny: „Akcept iteracji 4”.**
+- **Płynność scrolla hero na laptopie właściciela: „Płynnie”** — kryterium 60 kl./s potwierdzone dla nowej sceny.
+- Treści i zamienniki referencji: potwierdzone wcześniej (`confirmedByOwner: true`).
+
+Zadanie odebrane. Pozostaje po stronie właściciela: merge PR #1, decyzja o hostingu i wdrożeniu, usunięcie obu
+tymczasowych kluczy Higgsfield. Otwarte uwagi techniczne (nie blokują odbioru): brak testu na fizycznym iOS Safari,
+brak prawdziwych referencji klientów.
 
 ## Stan PR
 Gałąź `main` założona jednym pustym commitem i dołączona do gałęzi roboczej zwykłym merge'em

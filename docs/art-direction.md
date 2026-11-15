@@ -220,8 +220,8 @@ Decyzje właściciela po obejrzeniu iteracji 3: nie gra **wszystko** (scena hero
 
 | Kryterium | Stan |
 |---|---|
-| Pierwszy ekran jak marka premium, nie dashboard | do oceny właściciela — `compare/hero.jpg` |
-| Scroll hero = płynny najazd; statyczny kadr przy `prefers-reduced-motion` | mechanika i test w audycie: tak. Płynność nowej sceny na laptopie właściciela: **do ponownego potwierdzenia** (iteracja 3 była potwierdzona jako płynna; nowa scena dokłada transformację konsoli co klatkę). Headless bez GPU: telefon 58 kl./s, desktop 38–42 kl./s przy medianie klatki 16,7 ms; koszt wątku głównego 1,4 ms na klatkę |
+| Pierwszy ekran jak marka premium, nie dashboard | **odebrane przez właściciela** (akcept iteracji 4, 2026-11-15) — `compare/hero.jpg` |
+| Scroll hero = płynny najazd; statyczny kadr przy `prefers-reduced-motion` | mechanika i test w audycie: tak. Płynność nowej sceny **potwierdzona przez właściciela na jego laptopie** („Płynnie”, 2026-11-15). Headless bez GPU: telefon 58 kl./s, desktop 38–42 kl./s przy medianie klatki 16,7 ms; koszt wątku głównego 1,4 ms na klatkę |
 | Żaden ekran nie powtarza widoku konsoli | tak — konsola tylko w hero i na `/sandbox/` (audyt liczy) |
 | Co najmniej 2 jasne rozdziały | tak — ciepła i chłodna biel |
 | Jedna rodzina sans w 2 wariantach optycznych, spójna skala | tak — Inter (oś `opsz`), cztery grubości + 600 w logotypie. Szeryfu akcentowego nie ma: wzorzec nie używa go na stronie głównej, a w iteracji 3 czytał się jak ozdobnik |
