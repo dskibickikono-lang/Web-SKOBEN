@@ -1,0 +1,34 @@
+# Generated section stills — sources
+
+Generated with Higgsfield under the owner's account (API `https://api.higgsfield.ai`), 2026-11-15.
+Model: Ideogram 4.0 (endpoint `ideogram/v4.0`), `rendering_speed: QUALITY`, 0.100 USD each (0.400 USD total;
+cumulative spend for the project 3.055 USD). No credentials are stored here.
+
+Shared style suffix: "Deep ink blue-grey shadows, dim warm off-white tones, a touch of soft amber light. Film still,
+editorial architectural photography, 50mm full-frame lens, shallow depth of field, natural film grain, quiet luxury.
+No people, no hands, no logos, no text, no screens."
+
+| File | Aspect | Subject (prompt summary) | Used as |
+|---|---|---|---|
+| `d01-papers.png` | 16:9 | Neat stack of A4 documents on a dark walnut desk, blue hour, low three-quarter angle | `public/media/sections/systems.webp` (4:5 crop) |
+| `d02-chair.png` | 16:9 | One empty chair beside floor-to-ceiling glazing, quiet empty wall on the left | `principle-wide.webp`, `principle-tall.webp` |
+| `d03-desk-edge.png` | 3:2 | Desk edge with a closed linen notebook and a pen, aligned | `card-security.webp` |
+| `d04-room.png` | 16:9 | Empty meeting room, long walnut table, chairs pushed in | `card-rollout.webp` |
+
+## Subpage hero stills (2026-11-15)
+
+Same model and settings (Ideogram 4.0, QUALITY, 16:9, 0.100 USD each; 0.400 USD total; cumulative project spend 3.455 USD).
+Style suffix as above with a 35mm lens and "Wide cinematic composition with generous empty space."
+
+| File | Subject (prompt summary) | Used as |
+|---|---|---|
+| `h01-tray.png` | Walnut letter tray with a neat stack of documents on an otherwise empty desk | `public/media/pages/agenci-*.webp` |
+| `h02-corridor.png` | Corridor in one-point perspective, repeating glass partitions | `public/media/pages/automatyzacje-*.webp` |
+| `h03-two-chairs.png` | Two chairs facing each other across a small round table, closed notebook | `public/media/pages/wdrozenie-*.webp` |
+| `h04-door.png` | Tall closed walnut door in an empty wall, band of amber light | `public/media/pages/bezpieczenstwo-*.webp` |
+
+## Status (2026-11-15, iteration 4)
+
+None of the stills listed in this file are used on the site any more: section illustrations are now drawn in code
+(`src/components/Art.astro`) and the principle card uses a crop of `assets-src/hero/pier/l04-pier-front-a.png`.
+The raw stills were removed from the working copy; this file stays as the record of prompts and spend.

@@ -1,0 +1,216 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../config/site';
+
+const admin = site.legal.entity || site.name;
+const adminDetails = [site.legal.address, site.legal.nip ? `NIP ${site.legal.nip}` : ''].filter(Boolean).join(', ');
+const updated = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }).format(
+  new Date(`${site.privacyUpdated}T12:00:00`),
+);
+const viaEndpoint = site.formEndpoint !== '';
+
+const sections = [
+  { id: 'administrator', title: 'Kto odpowiada za dane' },
+  { id: 'zakres', title: 'Jakie dane i kiedy' },
+  { id: 'cel', title: 'Po co i na jakiej podstawie' },
+  { id: 'okres', title: 'Jak długo' },
+  { id: 'odbiorcy', title: 'Komu je powierzamy' },
+  { id: 'prawa', title: 'Twoje prawa' },
+  { id: 'cookies', title: 'Cookies i analityka' },
+  { id: 'logi', title: 'Logi serwera' },
+];
+---
+
+<Base
+  title="Polityka prywatności"
+  description="Jakie dane przetwarza serwis SKOBEN, kiedy, po co i jak długo. Strona nie używa plików cookie ani narzędzi analitycznych."
+>
+  <PageHero
+    title="Polityka prywatności"
+    lede="Krótko: ta strona nie śledzi, nie zapisuje plików cookie i nie ładuje niczego z zewnątrz. Dane poznajemy dopiero wtedy, gdy do nas napiszesz."
+  />
+
+  <section class="section section--flush-top">
+    <div class="container policy">
+      <nav class="policy__toc" aria-label="Spis treści">
+        <p class="label">Spis treści</p>
+        <ol>
+          {
+            sections.map((s, i) => (
+              <li>
+                <a href={`#${s.id}`}>
+                  <span class="mono">0{i + 1}</span>
+                  {s.title}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="micro">Ostatnia zmiana: {updated}</p>
+      </nav>
+
+      <div class="policy__body">
+        <section id="administrator">
+          <h2 class="h3">Kto odpowiada za dane</h2>
+          <p>
+            Administratorem danych osobowych jest {admin}{adminDetails && <>, {adminDetails}</>}. W sprawach
+            dotyczących danych napisz na
+            <a class="link-inline" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.
+          </p>
+        </section>
+
+        <section id="zakres">
+          <h2 class="h3">Jakie dane i kiedy</h2>
+          <p>Przeglądanie strony nie wymaga podawania żadnych danych. Przetwarzamy je w jednej sytuacji: gdy się z nami kontaktujesz.</p>
+          {
+            viaEndpoint ? (
+              <p>
+                Formularz kontaktowy przesyła do nas to, co w nim wpiszesz: imię i nazwisko, nazwę firmy, adres e-mail,
+                wybrany proces, orientacyjny wolumen i treść wiadomości.
+              </p>
+            ) : (
+              <p>
+                Formularz kontaktowy niczego nie wysyła samodzielnie. Przygotowuje wiadomość w Twoim programie
+                pocztowym — z imieniem i nazwiskiem, nazwą firmy, adresem e-mail, wybranym procesem, orientacyjnym
+                wolumenem i treścią. Dane trafiają do nas dopiero, gdy ją wyślesz.
+              </p>
+            )
+          }
+          <p>
+            Sandbox działa w całości w Twojej przeglądarce. Dane w nim są fikcyjne, a to, co klikasz, nigdzie nie jest
+            przesyłane ani zapisywane.
+          </p>
+        </section>
+
+        <section id="cel">
+          <h2 class="h3">Po co i na jakiej podstawie</h2>
+          <p>
+            Danych z wiadomości używamy wyłącznie po to, żeby odpowiedzieć na zapytanie i przygotować rozmowę. Podstawą
+            jest nasz prawnie uzasadniony interes w prowadzeniu korespondencji (art.&nbsp;6 ust.&nbsp;1 lit.&nbsp;f RODO), a gdy
+            rozmowa zmierza do zawarcia umowy — działania przed jej zawarciem (art.&nbsp;6 ust.&nbsp;1 lit.&nbsp;b RODO).
+          </p>
+          <p>Nie wysyłamy newsletterów i nie wykorzystujemy danych do profilowania ani zautomatyzowanych decyzji.</p>
+        </section>
+
+        <section id="okres">
+          <h2 class="h3">Jak długo</h2>
+          <p>
+            Przez czas prowadzenia rozmów, a po ich zakończeniu — nie dłużej, niż jest to potrzebne do wykazania
+            przebiegu korespondencji i obrony przed ewentualnymi roszczeniami. Jeśli zawrzemy umowę, okres
+            przechowywania wynika z umowy i przepisów podatkowych.
+          </p>
+        </section>
+
+        <section id="odbiorcy">
+          <h2 class="h3">Komu je powierzamy</h2>
+          <p>
+            Dostawcom poczty elektronicznej i hostingu, z których korzystamy — wyłącznie w zakresie potrzebnym do
+            świadczenia tych usług i na podstawie umów powierzenia. Nie sprzedajemy danych i nie udostępniamy ich w
+            celach marketingowych.
+          </p>
+        </section>
+
+        <section id="prawa">
+          <h2 class="h3">Twoje prawa</h2>
+          <p>
+            Możesz żądać dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania
+            i przeniesienia, a także wnieść sprzeciw wobec przetwarzania. Wystarczy wiadomość na
+            <a class="link-inline" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.
+          </p>
+          <p>Masz też prawo wnieść skargę do Prezesa Urzędu Ochrony Danych Osobowych.</p>
+        </section>
+
+        <section id="cookies">
+          <h2 class="h3">Cookies i analityka</h2>
+          <p>
+            Strona nie zapisuje plików cookie, nie korzysta z narzędzi analitycznych ani reklamowych i nie ładuje
+            skryptów, czcionek ani obrazów z zewnętrznych serwerów.
+          </p>
+          <p>
+            Jedyny zapis w przeglądarce jest techniczny: jeśli wpiszesz adres e-mail na stronie głównej, przechowujemy
+            go w pamięci sesji karty, żeby przenieść go do formularza kontaktowego. Znika po zamknięciu karty i nie
+            jest nigdzie wysyłany.
+          </p>
+        </section>
+
+        <section id="logi">
+          <h2 class="h3">Logi serwera</h2>
+          <p>
+            Serwer, na którym działa strona, może zapisywać standardowe logi techniczne — adres IP, czas żądania
+            i adres wywołanej podstrony — w celu zapewnienia bezpieczeństwa i ciągłości działania. Nie łączymy ich
+            z innymi danymi.
+          </p>
+        </section>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .policy {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .policy__toc {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .policy__toc ol {
+    border-top: 1px solid var(--line-2);
+  }
+
+  .policy__toc li a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.875rem;
+    padding-block: 0.625rem;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--text-sm);
+    color: var(--text-2);
+    transition: color var(--dur-1) ease;
+  }
+
+  .policy__toc li a:hover {
+    color: var(--text);
+  }
+
+  .policy__toc .mono {
+    font-size: var(--text-2xs);
+    color: var(--text-3);
+  }
+
+  .policy__body {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .policy__body section {
+    display: grid;
+    gap: 0.875rem;
+    padding-block: 2rem;
+    border-bottom: 1px solid var(--line-2);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  .policy__body p {
+    max-width: 42rem;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 860px) {
+    .policy {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .policy__toc {
+      position: static;
+    }
+  }
+</style>

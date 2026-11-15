@@ -1,0 +1,734 @@
+---
+/**
+ * Strona główna — układ według docs/art-direction.md, §5.
+ * Motywy: atrament (hero, funkcje, taśma) → ciepła biel (kafle kontroli) →
+ * chłodna biel (cytat, wdrożenie, integracje) → atrament (liczby, bezpieczeństwo, dalej, wezwanie).
+ */
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import FeatureSwitcher from '../components/FeatureSwitcher.astro';
+import UiFragments from '../components/UiFragments.astro';
+import Marquee from '../components/Marquee.astro';
+import Vignettes from '../components/Vignettes.astro';
+import SplitFeature from '../components/SplitFeature.astro';
+import Art from '../components/Art.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { facts } from '../config/site';
+
+const work = [
+  {
+    title: 'Zamówienia z e-maili i plików',
+    body: 'Agent czyta zamówienie w dowolnym formacie, sprawdza ceny i stany, zakłada dokument w ERP i odpisuje klientowi. Odchylenia trafiają do handlowca z gotową rekomendacją.',
+  },
+  {
+    title: 'Faktury kosztowe',
+    body: 'Odczyt, dopasowanie do zamówienia i przyjęcia, dekretacja według Twojego planu kont. Księgowość zatwierdza tylko to, co odbiega od reguł.',
+  },
+  {
+    title: 'Zgłoszenia i reklamacje',
+    body: 'Klasyfikacja, komplet danych, odpowiedź albo przekazanie do właściwej osoby — w ramach SLA, które ustalasz Ty.',
+  },
+  {
+    title: 'Reguły i progi',
+    body: 'Limit kwoty, tolerancja ceny, lista kontrahentów wymagających akceptacji. Przesuwasz próg — i od razu widzisz, ile spraw agent domknie sam.',
+  },
+];
+
+const closes = [
+  'Zamówienia z e-maili',
+  'Faktury kosztowe',
+  'KSeF',
+  'Reklamacje',
+  'Komunikaty EDI',
+  'Zgłoszenia serwisowe',
+  'Uzgodnienia płatności',
+  'Zwroty',
+  'Raporty dzienne',
+  'Potwierdzenia dostaw',
+];
+
+const steps = [
+  {
+    title: 'Mapowanie',
+    body: `Rozkładamy jeden proces na kroki, wyjątki i wolumeny. Ustalamy miernik bazowy: ile spraw, ile minut, ile błędów. Zwykle ${facts.mapping}.`,
+  },
+  {
+    title: 'Pilot',
+    body: `Agent pracuje na realnych sprawach — najpierw w cieniu, potem z akceptacją człowieka. Porównujemy wynik z miernikiem. Zwykle ${facts.pilot}.`,
+  },
+  {
+    title: 'Produkcja',
+    body: 'Przekazujemy kolejkę, uprawnienia i instrukcję operacyjną. Zespół zajmuje się wyjątkami, nie przepisywaniem.',
+  },
+  {
+    title: 'Utrzymanie',
+    body: 'Pilnujemy jakości, reagujemy na zmiany w systemach i dokładamy reguły, gdy proces się zmienia.',
+  },
+];
+
+const systems = [
+  {
+    title: 'API',
+    body: 'Pierwszy wybór. Zapis jest transakcyjny, szybki i odporny na zmiany wyglądu ekranów.',
+  },
+  {
+    title: 'Pliki i EDI',
+    body: 'Import i eksport w formatach, które system już obsługuje. Sprawdzone, przewidywalne, łatwe do audytu.',
+  },
+  {
+    title: 'Poczta i dokumenty',
+    body: 'Skrzynki wspólne, załączniki, skany. Agent czyta je tak, jak przychodzą — bez nowych formularzy dla kontrahentów.',
+  },
+  {
+    title: 'Interfejs użytkownika',
+    body: 'Ostateczność. Gdy system nie daje innej drogi, agent pracuje przez ekran — i mówimy wprost, że to rozwiązanie najwolniejsze.',
+  },
+];
+
+const numbers = [
+  { value: '1', label: 'proces na start — nie „transformacja”' },
+  { value: facts.callLength.replace(/\D+/g, ''), label: 'minut pierwszej rozmowy, bez prezentacji' },
+  { value: facts.pilot.replace(/[^\d–]+/g, ''), label: 'tygodni pilota na realnych sprawach' },
+  { value: '100%', label: 'decyzji agenta w dzienniku' },
+];
+
+const guards = [
+  {
+    key: 'access',
+    title: 'Uprawnienia tylko do procesu',
+    body: 'Agent działa na koncie technicznym. Reszty systemu nie widzi i nie może zmienić.',
+  },
+  {
+    key: 'stop',
+    title: 'Jeden wyłącznik',
+    body: 'Zatrzymujesz agenta jednym ruchem. Sprawy wracają do ludzi w tej samej kolejce.',
+  },
+  {
+    key: 'test',
+    title: 'Test przed każdą zmianą',
+    body: 'Nowa reguła przechodzi najpierw przez historyczne sprawy. Widzisz, co zmieniłaby wstecz.',
+  },
+];
+
+const next = [
+  { href: '/agenci/', art: 'queue', kicker: 'Produkt', title: 'Z czego składa się agent i jakie kolejki obsługuje' },
+  { href: '/wdrozenie/', art: 'stages', kicker: 'Współpraca', title: 'Cztery etapy, stały zakres i warunek przejścia dalej' },
+  { href: '/bezpieczenstwo/', art: 'layers', kicker: 'Kontrola', title: 'Cztery warstwy między modelem a Twoim systemem' },
+] as const;
+---
+
+<Base heroTone="dark">
+  <Hero />
+
+  <!-- 2. Funkcje: akordeon + osobne fragmenty interfejsu -->
+  <section class="section" data-theme="dark">
+    <div class="container">
+      <FeatureSwitcher id="work" items={work}>
+        <h2 class="statement" slot="intro" data-reveal>Jedna kolejka pracy.<br />Każda sprawa domknięta.</h2>
+        <a class="link" href="/sandbox/" slot="after">Otwórz sandbox</a>
+        <UiFragments />
+      </FeatureSwitcher>
+    </div>
+  </section>
+
+  <!-- 3. Taśma -->
+  <section class="section proof" data-theme="dark">
+    <div class="container">
+      <h2 class="h2 proof__title" data-reveal>
+        To, co dziś ktoś przepisuje między systemami, agent zamyka sam
+      </h2>
+    </div>
+    <Marquee items={closes} />
+
+    <div class="container">
+      <figure class="principle theme-dark" data-reveal>
+        <picture>
+          <source media="(max-width: 640px)" srcset="/media/sections/principle-tall.webp" width="1152" height="1440" />
+          <img
+            src="/media/sections/principle-wide.webp"
+            alt="Jezioro z zalesionymi wyspami we mgle, nad nim niebo o świcie"
+            width="2048"
+            height="1078"
+            loading="lazy"
+            decoding="async"
+          />
+        </picture>
+        <span class="principle__tag label">Zasada pierwsza</span>
+        <div class="principle__text">
+          <blockquote>
+            Nie sprzedajemy „transformacji AI”. Bierzemy jeden proces i dowozimy go do końca — z miernikiem, który
+            można sprawdzić.
+          </blockquote>
+          <figcaption>
+            <strong>SKOBEN</strong>
+            <span>Tak zaczynamy każde wdrożenie</span>
+          </figcaption>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 4. Kontrola: kafle 2×2 -->
+  <section class="section" data-theme="warm">
+    <div class="container" data-reveal>
+      <div class="rule-head">
+        <h2 class="title">Automatyzacja, którą da się skontrolować.</h2>
+      </div>
+      <Vignettes />
+    </div>
+  </section>
+
+  <!-- 5. Zasada -->
+  <section class="section section--quote" data-theme="light">
+    <div class="container">
+      <figure class="quote" data-reveal>
+        <blockquote>
+          Agent nie dostaje zaufania na kredyt. Dostaje uprawnienia do jednego procesu, progi i dziennik — a Ty
+          wyłącznik.
+        </blockquote>
+        <figcaption>
+          <strong>Zasada druga</strong>
+          <span>SKOBEN</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 6. Wdrożenie -->
+  <section class="section" data-theme="light">
+    <div class="container" data-reveal>
+      <SplitFeature
+        id="steps"
+        title="Od procesu do produkcji w czterech krokach."
+        items={steps}
+        art="beam"
+        link={{ href: '/wdrozenie/', label: 'Zobacz, co dostajesz na każdym etapie' }}
+      />
+    </div>
+  </section>
+
+  <!-- 7. Integracje -->
+  <section class="section" data-theme="light">
+    <div class="container" data-reveal>
+      <SplitFeature
+        id="systems"
+        title="Agent pracuje w Twoich systemach, nie obok nich."
+        items={systems}
+        art="orbit"
+        tone="light"
+        link={{ href: '/automatyzacje/', label: 'Jak automatyzujemy przepływy' }}
+        flip
+      />
+    </div>
+  </section>
+
+  <!-- 8. Liczby -->
+  <section class="section section--numbers" data-theme="dark">
+    <div class="container" data-reveal>
+      <h2 class="h2 numbers__title">Wchodzimy jednym procesem. Zostajemy, gdy liczby się zgadzają.</h2>
+      <dl class="numbers">
+        {
+          numbers.map((n) => (
+            <div>
+              <dt class="number">{n.value}</dt>
+              <dd>{n.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- 9. Bezpieczeństwo -->
+  <section class="section" data-theme="dark">
+    <div class="container" data-reveal>
+      <div class="rule-head">
+        <h2 class="title">Agent ma tyle władzy, ile mu dasz. I ani kroku więcej.</h2>
+      </div>
+      <ul class="guards">
+        {
+          guards.map((g) => (
+            <li>
+              <div class={`guard guard--${g.key}`} aria-hidden="true">
+                {g.key === 'access' && (
+                  <div class="guard__list">
+                    <span class="on">ERP · zamówienia <b>zapis</b></span>
+                    <span class="on">CRM · kontrahenci <b>odczyt</b></span>
+                    <span>ERP · finanse <b>brak</b></span>
+                    <span>Kadry <b>brak</b></span>
+                  </div>
+                )}
+                {g.key === 'stop' && (
+                  <div class="guard__switch">
+                    <i />
+                    <span>Agent zamówień</span>
+                    <b>wstrzymany</b>
+                  </div>
+                )}
+                {g.key === 'test' && (
+                  <div class="guard__test">
+                    <div class="guard__bars">
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <i class:list={{ diff: [5, 13, 20].includes(i) }} />
+                      ))}
+                    </div>
+                    <span>
+                      <b>3</b> decyzje zmieniłyby się wstecz
+                    </span>
+                  </div>
+                )}
+              </div>
+              <h3 class="tile-title">{g.title}</h3>
+              <p class="tile-body">{g.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="more">
+        <a class="link" href="/bezpieczenstwo/">Zobacz model kontroli</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 10. Dalej -->
+  <section class="section" data-theme="dark">
+    <div class="container" data-reveal>
+      <div class="rule-head">
+        <h2 class="title">Zanim porozmawiamy</h2>
+      </div>
+      <ul class="next">
+        {
+          next.map((n) => (
+            <li>
+              <a class="next__card" href={n.href}>
+                <Art kind={n.art} class="next__art" />
+                <span class="label">{n.kicker}</span>
+                <span class="next__title">{n.title}</span>
+                <span class="next__arrow" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  /* Sekcja z tytułem zaczyna się linią; tytuł leży pod nią */
+  .rule-head {
+    padding-top: 1.5rem;
+    margin-bottom: var(--pad-sm);
+    border-top: 1px solid var(--line-2);
+  }
+
+  .rule-head .title {
+    max-width: 36rem;
+  }
+
+  .more {
+    margin-top: var(--pad-sm);
+  }
+
+  /* 3. Taśma */
+  .proof__title {
+    max-width: 42rem;
+    margin: 0 auto var(--pad-sm);
+    text-align: center;
+  }
+
+  /* 3b. Zasada na kadrze */
+  .principle {
+    position: relative;
+    margin-top: var(--pad-md);
+    border-radius: var(--radius-lg, 12px);
+    overflow: hidden;
+    color: var(--text);
+    isolation: isolate;
+  }
+
+  .principle img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2048 / 1078;
+    object-fit: cover;
+  }
+
+  /* cień tylko tam, gdzie stoi tekst — kadr zostaje czytelny */
+  .principle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgb(21 21 27 / 0.72), rgb(21 21 27 / 0.38) 42%, rgb(21 21 27 / 0) 68%);
+    pointer-events: none;
+  }
+
+  .principle__tag {
+    position: absolute;
+    z-index: 2;
+    top: 1.5rem;
+    left: 1.5rem;
+    padding: 0.3125rem 0.5rem;
+    border-radius: 4px;
+    background: rgb(21 21 27 / 0.55);
+    backdrop-filter: blur(8px);
+  }
+
+  .principle__text {
+    position: absolute;
+    z-index: 2;
+    left: 2.5rem;
+    bottom: 2.5rem;
+    display: grid;
+    gap: 1.5rem;
+    max-width: 23rem;
+  }
+
+  .principle blockquote {
+    font-size: var(--text-lede);
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+
+  .principle figcaption {
+    display: grid;
+    gap: 0.125rem;
+    font-size: var(--text-sm);
+  }
+
+  .principle figcaption strong {
+    font-weight: 480;
+  }
+
+  .principle figcaption span {
+    color: var(--text-2);
+  }
+
+  @media (max-width: 640px) {
+    .principle img {
+      aspect-ratio: 4 / 5;
+    }
+
+    .principle::after {
+      background: linear-gradient(180deg, rgb(21 21 27 / 0.74), rgb(21 21 27 / 0.3) 46%, rgb(21 21 27 / 0) 66%);
+    }
+
+    .principle__tag {
+      top: 1rem;
+      left: 1rem;
+    }
+
+    .principle__text {
+      left: 1.25rem;
+      right: 1.25rem;
+      top: 3.75rem;
+      bottom: auto;
+      gap: 1rem;
+    }
+  }
+
+  /* 5. Zasada */
+  .section--quote {
+    padding-top: var(--pad-xl);
+  }
+
+  .quote {
+    display: grid;
+    gap: 2rem;
+    max-width: 42rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .quote blockquote {
+    font-family: var(--font-display);
+    font-size: clamp(1.3125rem, 1.15rem + 0.67vw, 1.75rem);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    color: var(--text-2);
+    text-wrap: balance;
+  }
+
+  .quote figcaption {
+    display: grid;
+    gap: 0.125rem;
+    font-size: var(--text-sm);
+  }
+
+  .quote figcaption strong {
+    font-weight: 480;
+  }
+
+  .quote figcaption span {
+    color: var(--text-2);
+  }
+
+  /* 8. Liczby */
+  .section--numbers {
+    padding-top: var(--pad-xl);
+  }
+
+  .numbers__title {
+    max-width: 44rem;
+    margin: 0 auto var(--pad-md);
+    text-align: center;
+  }
+
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .numbers > div {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-inline: 1.5rem;
+    border-left: 1px solid var(--line-2);
+    text-align: center;
+  }
+
+  .numbers > div:first-child {
+    border-left: 0;
+  }
+
+  .numbers dd {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--text-2);
+    text-wrap: balance;
+  }
+
+  /* 9. Bezpieczeństwo: kafle 4:5 z jednym świecącym elementem */
+  .guards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .guard {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    margin-bottom: 0.75rem;
+    padding: 12%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background:
+      radial-gradient(80% 60% at 50% 110%, rgb(92 112 158 / 0.34), transparent 70%),
+      linear-gradient(180deg, #23232f, #1a1a22);
+    font-size: var(--text-sm);
+    color: #b9bac6;
+  }
+
+  .tile-title {
+    font-size: 1.125rem;
+    font-weight: 480;
+    line-height: 1.35;
+  }
+
+  .tile-body {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .guard__list {
+    display: grid;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .guard__list span {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgb(175 178 206 / 0.14);
+    opacity: 0.5;
+  }
+
+  .guard__list b {
+    font-weight: 400;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .guard__list .on {
+    opacity: 1;
+    color: #ededf2;
+    border-color: rgb(143 214 187 / 0.5);
+    box-shadow: 0 0 40px -8px rgb(143 214 187 / 0.35);
+  }
+
+  .guard__list .on b {
+    color: var(--mint-300);
+  }
+
+  .guard__switch {
+    display: grid;
+    justify-items: center;
+    gap: 0.625rem;
+    text-align: center;
+  }
+
+  .guard__switch i {
+    position: relative;
+    width: 5.5rem;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+    border-radius: 999px;
+    background: #2b2b38;
+    box-shadow: inset 0 0 0 1px rgb(175 178 206 / 0.24);
+  }
+
+  .guard__switch i::after {
+    content: '';
+    position: absolute;
+    top: 0.375rem;
+    left: 0.375rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: #f1dcc0;
+    box-shadow: 0 0 44px 6px rgb(217 187 128 / 0.45);
+  }
+
+  .guard__switch span {
+    color: #ededf2;
+    font-weight: 480;
+  }
+
+  .guard__switch b {
+    font-weight: 400;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--brass-300);
+  }
+
+  .guard__test {
+    display: grid;
+    gap: 1.25rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .guard__bars {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.5rem;
+  }
+
+  .guard__bars i {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: rgb(175 178 206 / 0.16);
+  }
+
+  .guard__bars i.diff {
+    background: #f1dcc0;
+    box-shadow: 0 0 26px 2px rgb(217 187 128 / 0.5);
+  }
+
+  .guard__test b {
+    font-weight: 480;
+    color: #ededf2;
+  }
+
+  /* 10. Dalej: karty w formacie kart prasowych */
+  .next {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .next__card {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 2rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .next__card :global(.next__art) {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    margin-bottom: 0.75rem;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(180deg, #2b2b38, #23232f);
+  }
+
+  .next__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.3125rem, 1.2rem + 0.45vw, 1.75rem);
+    font-weight: 480;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .next__arrow {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-top: 1rem;
+    border-radius: 50%;
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+
+  .next__card:hover .next__arrow {
+    background: color-mix(in srgb, var(--text) 16%, transparent);
+  }
+
+  @media (max-width: 860px) {
+    .numbers {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .numbers > div {
+      padding: 1.5rem 0;
+      border-left: 0;
+      border-top: 1px solid var(--line-2);
+    }
+
+    .guards,
+    .next {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .guard {
+      aspect-ratio: 4 / 3;
+      padding: 8% 12%;
+    }
+
+    .tile-title,
+    .tile-body {
+      font-size: 0.9375rem;
+    }
+
+    .next__card {
+      padding: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,598 @@
+---
+/**
+ * Cztery osobne fragmenty interfejsu do sekcji „Jedna kolejka pracy” — nie konsola.
+ * Każdy leży na kaflu z miękkim światłem i ziarnem; FeatureSwitcher układa kafle w stos.
+ */
+---
+<!-- 1. Zamówienia -->
+<div class="frag theme-dark">
+<div class="mock">
+  <div class="mock__bar">
+    <span class="label">Kolejka · Zamówienia</span>
+    <span class="chip chip--ok">Domknięta</span>
+  </div>
+  <div class="mock__body">
+    <div class="mail">
+      <div class="mail__meta">
+        <span class="avatar">HB</span>
+        <div>
+          <strong>Hurtownia Bałtyk</strong>
+          <span>Zamówienie na przyszły tydzień</span>
+        </div>
+        <span class="mono">08:14</span>
+      </div>
+      <p>
+        Dzień dobry, proszę o <mark>240 szt.</mark> <mark>uszczelki EPDM 40 mm</mark> oraz
+        <mark>60 szt.</mark> <mark>opaski 32–50</mark>. Dostawa do <mark>czwartku</mark>, ceny jak ostatnio.
+      </p>
+    </div>
+    <dl class="rows">
+      <div><dt>USZ-EPDM-40</dt><dd class="mono">240 szt. × 3,18 zł</dd><dd class="ok">cennik</dd></div>
+      <div><dt>OPA-32-50</dt><dd class="mono">60 szt. × 1,92 zł</dd><dd class="ok">cennik</dd></div>
+      <div><dt>Stan magazynu</dt><dd class="mono">1 120 / 410 szt.</dd><dd class="ok">dostępne</dd></div>
+      <div><dt>Termin dostawy</dt><dd class="mono">czw., 14.11</dd><dd class="ok">w trasie</dd></div>
+    </dl>
+  </div>
+  <div class="mock__foot">
+    <span>Zapisano w ERP · <span class="mono">ZS/11/0482</span></span>
+    <span class="mono">38 s</span>
+  </div>
+</div>
+</div>
+<!-- 2. Faktury -->
+<div class="frag theme-dark">
+<div class="mock">
+  <div class="mock__bar">
+    <span class="label">Kolejka · Faktury kosztowe</span>
+    <span class="chip chip--warn">Czeka na Ciebie</span>
+  </div>
+  <div class="mock__body">
+    <div class="match">
+      <div class="match__head">
+        <span></span><span>Zamówienie</span><span>Przyjęcie</span><span>Faktura</span>
+      </div>
+      <div class="match__row">
+        <span>Ilość</span><span class="mono">500</span><span class="mono">500</span><span class="mono">500</span>
+      </div>
+      <div class="match__row is-warn">
+        <span>Cena netto</span><span class="mono">12,40</span><span class="mono">—</span><span class="mono">12,90</span>
+      </div>
+      <div class="match__row">
+        <span>Kontrahent</span><span class="mono">Trans-Mar</span><span class="mono">Trans-Mar</span><span class="mono">Trans-Mar</span>
+      </div>
+      <div class="match__row">
+        <span>Rachunek</span><span class="mono">—</span><span class="mono">—</span><span class="mono">biała lista ✓</span>
+      </div>
+    </div>
+    <div class="reason">
+      <strong>Dlaczego do Ciebie</strong>
+      <p>Cena na fakturze jest o 4,0% wyższa niż w zamówieniu. Tolerancja: 2%. Różnica: <span class="mono">250,00 zł</span>.</p>
+    </div>
+  </div>
+  <div class="mock__foot mock__foot--actions">
+    <span class="fake-btn fake-btn--primary">Zatwierdź</span>
+    <span class="fake-btn">Odeślij do dostawcy</span>
+    <span class="mono">FV 0917/11</span>
+  </div>
+</div>
+</div>
+<!-- 3. Zgłoszenia -->
+<div class="frag theme-dark">
+<div class="mock">
+  <div class="mock__bar">
+    <span class="label">Kolejka · Zgłoszenia</span>
+    <span class="chip">12 dziś</span>
+  </div>
+  <div class="mock__body mock__body--list">
+    <div class="ticket">
+      <div><strong>Uszkodzona paleta w dostawie</strong><span>Reklamacja · komplet zdjęć · uznana wg regulaminu</span></div>
+      <span class="chip chip--ok">Odpowiedź wysłana</span>
+    </div>
+    <div class="ticket">
+      <div><strong>Kiedy dotrze zamówienie 0471?</strong><span>Status przesyłki · dane z systemu przewoźnika</span></div>
+      <span class="chip chip--ok">Odpowiedź wysłana</span>
+    </div>
+    <div class="ticket">
+      <div><strong>Zwrot 3 szt. — zły wymiar</strong><span>Zwrot · brak numeru dokumentu sprzedaży</span></div>
+      <span class="chip">Prośba o dane</span>
+    </div>
+    <div class="ticket">
+      <div><strong>Linia stoi — brak części</strong><span>Awaria · klient z umową serwisową · SLA 2 h</span></div>
+      <span class="chip chip--warn">Przekazane: serwis</span>
+    </div>
+    <div class="ticket">
+      <div><strong>Prośba o duplikat faktury</strong><span>Dokumenty · wysłano z archiwum</span></div>
+      <span class="chip chip--ok">Odpowiedź wysłana</span>
+    </div>
+  </div>
+  <div class="mock__foot">
+    <span>Pierwsza odpowiedź · mediana</span>
+    <span class="mono">2 min 10 s</span>
+  </div>
+</div>
+</div>
+<!-- 4. Reguły -->
+<div class="frag theme-dark">
+<div class="mock">
+  <div class="mock__bar">
+    <span class="label">Reguły · Zamówienia</span>
+    <span class="chip">Wersja 12</span>
+  </div>
+  <div class="mock__body">
+    <div class="rule">
+      <div class="rule__head"><span>Tolerancja ceny</span><strong class="tnum">2%</strong></div>
+      <div class="rule__track"><i style="--p:20%"></i></div>
+      <p>Odchylenie od cennika, które agent akceptuje sam.</p>
+    </div>
+    <div class="rule">
+      <div class="rule__head"><span>Limit wartości zamówienia</span><strong class="tnum">25 000 zł</strong></div>
+      <div class="rule__track"><i style="--p:44%"></i></div>
+      <p>Powyżej tej kwoty decyduje opiekun klienta.</p>
+    </div>
+    <div class="rule rule--switch">
+      <div class="rule__head"><span>Nowi klienci wymagają akceptacji</span><span class="rule__switch"></span></div>
+    </div>
+    <div class="forecast">
+      <div class="forecast__dots"><i></i><i></i><i></i><i></i><i class="h"></i><i class="h"></i></div>
+      <p><strong>4 z 6</strong> spraw agent obsłuży sam. 2 trafią do Ciebie.</p>
+    </div>
+  </div>
+  <div class="mock__foot">
+    <span>Zmiana reguły przechodzi test na historycznych sprawach</span>
+  </div>
+</div>
+</div>
+
+<style>
+  .mock {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-self: center;
+    width: 100%;
+    max-width: 34rem;
+    min-height: 30rem;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-panel);
+    font-size: var(--text-sm);
+    color: var(--text);
+  }
+
+  .mock__bar,
+  .mock__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+  }
+
+  .mock__bar {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mock__foot {
+    border-top: 1px solid var(--line);
+    font-size: var(--text-xs);
+    color: var(--text-2);
+  }
+
+  .mock__foot--actions {
+    justify-content: flex-start;
+  }
+
+  .mock__foot--actions .mono {
+    margin-left: auto;
+    color: var(--text-3);
+  }
+
+  .mock__body {
+    display: grid;
+    align-content: start;
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+
+  .mock__body--list {
+    gap: 0;
+    padding-block: 0.25rem;
+  }
+
+  /* Wiadomość */
+  .mail {
+    display: grid;
+    gap: 0.875rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    background: var(--surface-2);
+  }
+
+  .mail__meta {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mail__meta div {
+    display: grid;
+    line-height: 1.3;
+  }
+
+  .mail__meta strong {
+    font-weight: 480;
+  }
+
+  .mail__meta span {
+    font-size: var(--text-xs);
+    color: var(--text-2);
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--surface-3);
+    font-size: 0.6875rem !important;
+    font-weight: 480;
+    color: var(--text-2) !important;
+  }
+
+  .mail p {
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  .mail mark {
+    padding: 0.05em 0.3em;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+
+  /* Wiersze danych */
+  .rows {
+    display: grid;
+  }
+
+  .rows > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding-block: 0.5625rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rows > div:last-child {
+    border-bottom: 0;
+  }
+
+  .rows dt {
+    color: var(--text-2);
+  }
+
+  .rows dd.mono {
+    font-size: var(--text-xs);
+  }
+
+  .rows .ok {
+    font-size: var(--text-2xs);
+    color: var(--accent);
+  }
+
+  .rows .ok::before {
+    content: '✓ ';
+  }
+
+  .rows--diff > div {
+    grid-template-columns: 5rem minmax(0, 1fr);
+  }
+
+  .rows--diff dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--warn);
+  }
+
+  .rows--diff dd {
+    color: var(--text-2);
+  }
+
+  /* Dopasowanie trójstronne */
+  .match {
+    display: grid;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .match__head,
+  .match__row {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr 1.15fr;
+    gap: 0.5rem;
+    padding: 0.5625rem 0.875rem;
+  }
+
+  .match__head {
+    font-size: var(--text-2xs);
+    color: var(--text-3);
+    background: var(--surface-2);
+  }
+
+  .match__row {
+    border-top: 1px solid var(--line);
+    color: var(--text-2);
+  }
+
+  .match__row .mono {
+    font-size: var(--text-xs);
+    color: var(--text);
+  }
+
+  .match__row.is-warn {
+    background: var(--warn-soft);
+  }
+
+  .match__row.is-warn span:first-child,
+  .match__row.is-warn span:last-child {
+    color: var(--warn);
+  }
+
+  .reason {
+    display: grid;
+    gap: 0.375rem;
+    padding-left: 0.875rem;
+    border-left: 2px solid var(--warn);
+  }
+
+  .reason strong {
+    font-size: var(--text-xs);
+    font-weight: 480;
+    color: var(--warn);
+  }
+
+  .reason p {
+    color: var(--text-2);
+  }
+
+  .fake-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 2rem;
+    padding-inline: 0.875rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--line-2);
+    font-size: var(--text-xs);
+    font-weight: 480;
+    color: var(--text);
+  }
+
+  .fake-btn--primary {
+    background: var(--btn-bg);
+    border-color: transparent;
+    color: var(--btn-fg);
+  }
+
+  /* Zgłoszenia */
+  .ticket {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8125rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ticket:last-child {
+    border-bottom: 0;
+  }
+
+  .ticket div {
+    display: grid;
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  .ticket strong {
+    font-weight: 480;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ticket div span {
+    font-size: var(--text-xs);
+    color: var(--text-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Wykres */
+  .chart {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .chart__head {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .chart__head div {
+    display: grid;
+    gap: 0.125rem;
+  }
+
+  .chart__head span {
+    font-size: var(--text-xs);
+    color: var(--text-3);
+  }
+
+  .chart__head strong {
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+  }
+
+  .chart svg {
+    width: 100%;
+    height: 7rem;
+    color: var(--text);
+  }
+
+  .bar {
+    fill: var(--accent);
+    opacity: 0.85;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .bar--dim {
+    opacity: 0.3;
+  }
+
+  :global(.is-active) .bar {
+    animation: bar-rise 700ms var(--ease-out) backwards;
+    animation-delay: calc(var(--i) * 45ms + 150ms);
+  }
+
+  @keyframes bar-rise {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  .chart__axis {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.6875rem;
+    color: var(--text-3);
+  }
+
+  @media (max-width: 520px) {
+    .rows > div {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .rows > div .ok {
+      display: none;
+    }
+
+    .ticket .chip {
+      display: none;
+    }
+  }
+
+  /* Reguły */
+  .rule {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .rule__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 480;
+  }
+
+  .rule__head strong {
+    font-weight: 480;
+    color: var(--accent);
+  }
+
+  .rule p {
+    font-size: var(--text-xs);
+    color: var(--text-3);
+  }
+
+  .rule__track {
+    position: relative;
+    height: 2px;
+    margin-block: 0.5rem 0.25rem;
+    border-radius: 2px;
+    background: var(--line-2);
+  }
+
+  .rule__track i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--p);
+    background: var(--accent);
+  }
+
+  .rule__track i::after {
+    content: '';
+    position: absolute;
+    right: -7px;
+    top: -6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink-900);
+    border: 1.5px solid var(--accent);
+  }
+
+  .rule__switch {
+    position: relative;
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 999px;
+    background: var(--green-500);
+  }
+
+  .rule__switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .forecast {
+    display: grid;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: var(--text-xs);
+    color: var(--text-2);
+  }
+
+  .forecast strong {
+    color: var(--text);
+    font-weight: 480;
+  }
+
+  .forecast__dots {
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  .forecast__dots i {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .forecast__dots i.h {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--warn);
+  }
+</style>

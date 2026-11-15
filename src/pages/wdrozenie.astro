@@ -1,0 +1,310 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { facts } from '../config/site';
+
+const stages = [
+  {
+    title: 'Mapowanie',
+    time: facts.mapping,
+    lead: 'Jeden proces rozłożony na kroki, wyjątki i liczby.',
+    doing: 'Przechodzimy proces z ludźmi, którzy go dziś wykonują. Przeglądamy próbkę realnych spraw, spisujemy reguły — również te, których nikt nigdy nie zapisał.',
+    get: ['Mapa procesu z wyjątkami', 'Miernik bazowy: wolumen, czas, błędy', 'Zakres pilota i stała wycena'],
+    need: 'Właściciel procesu, 2–3 rozmowy z zespołem, dostęp do próbki spraw.',
+    gate: 'Uzgodniony miernik sukcesu pilota. Jeśli liczby nie uzasadniają wdrożenia, mówimy to na tym etapie.',
+  },
+  {
+    title: 'Pilot',
+    time: facts.pilot,
+    lead: 'Agent na realnych sprawach — najpierw w cieniu.',
+    doing: 'Agent obsługuje bieżące sprawy równolegle z zespołem, bez zapisu do systemów. Porównujemy wyniki, poprawiamy reguły, a potem włączamy zapis z akceptacją człowieka.',
+    get: ['Działający agent w Twoim środowisku', 'Raport: wynik agenta kontra miernik bazowy', 'Lista wyjątków z proponowanymi regułami'],
+    need: 'Konto techniczne w systemach, osoba zatwierdzająca wyjątki, cotygodniowy przegląd.',
+    gate: 'Miernik z mapowania osiągnięty na realnym wolumenie. Jeśli nie — pilot się kończy i nie wchodzi na produkcję.',
+  },
+  {
+    title: 'Produkcja',
+    time: 'po akceptacji pilota',
+    lead: 'Zespół pracuje na wyjątkach, nie na przepisywaniu.',
+    doing: 'Przekazujemy kolejkę, uprawnienia i progi. Szkolimy osoby, które będą zatwierdzać wyjątki i zmieniać reguły. Ustawiamy monitoring i alarmy.',
+    get: ['Instrukcja operacyjna i procedura awaryjna', 'Konsola z kolejką, regułami i dziennikiem', 'Progi i role uzgodnione z właścicielem procesu'],
+    need: 'Decyzja właściciela procesu, wyznaczone osoby do obsługi wyjątków.',
+    gate: 'Dwa tygodnie stabilnej pracy na pełnym wolumenie.',
+  },
+  {
+    title: 'Utrzymanie',
+    time: 'w trybie ciągłym',
+    lead: 'Proces się zmienia. Agent razem z nim.',
+    doing: 'Pilnujemy jakości, reagujemy na zmiany w systemach i u kontrahentów, dokładamy reguły. Każda zmiana przechodzi test na historycznych sprawach, zanim trafi na produkcję.',
+    get: ['Miesięczny przegląd mierników', 'Reakcja na incydenty według uzgodnionego SLA', 'Rozbudowa o kolejne typy spraw'],
+    need: 'Kwartalny przegląd z właścicielem procesu.',
+    gate: 'Brak — umowę utrzymaniową można wypowiedzieć, konfiguracja zostaje u Ciebie.',
+  },
+];
+
+const billing = [
+  {
+    title: 'Mapowanie',
+    model: 'Stała cena',
+    body: 'Znasz kwotę przed startem. Efekt — mapa, miernik i wycena pilota — zostaje u Ciebie niezależnie od dalszych decyzji.',
+  },
+  {
+    title: 'Pilot i wdrożenie',
+    model: 'Stała cena za zakres',
+    body: 'Wyceniamy po mapowaniu, jako jedną kwotę z kryterium sukcesu. Nie rozliczamy godzin i nie dopisujemy „nieprzewidzianych prac”.',
+  },
+  {
+    title: 'Utrzymanie',
+    model: 'Abonament miesięczny',
+    body: 'Opłata za agenta na produkcji: monitoring, zmiany reguł, reakcja na incydenty. Bez opłat za liczbę użytkowników.',
+  },
+];
+
+const roles = [
+  { who: 'Właściciel procesu', time: '2–3 h tygodniowo', body: 'Decyduje o regułach i progach, akceptuje miernik i wynik pilota.' },
+  { who: 'Osoba znająca wyjątki', time: 'kilka rozmów', body: 'Wie, co się dzieje, gdy sprawa „nie pasuje”. Zwykle ktoś z wieloletnim stażem w zespole.' },
+  { who: 'Administrator systemów', time: 'na starcie', body: 'Zakłada konto techniczne i nadaje uprawnienia w ERP, CRM lub poczcie.' },
+];
+---
+
+<Base
+  title="Wdrożenie"
+  description="Jak wdrażamy agentów AI: mapowanie procesu, pilot na realnych sprawach, produkcja i utrzymanie. Stały zakres, warunek przejścia na każdym etapie."
+>
+  <PageHero
+    art="stages"
+    artTone="light"
+    title="Od pierwszej rozmowy do agenta na produkcji. Bez etapu „zobaczymy”."
+    lede="Cztery etapy o stałym zakresie. Każdy kończy się czymś, co zostaje u Ciebie, i warunkiem, który trzeba spełnić, żeby iść dalej."
+  >
+    <a class="btn btn--primary btn--lg" href="/kontakt/">Poproś o dostęp</a>
+  </PageHero>
+
+  <!-- Etapy -->
+  <section class="section section--flush-top">
+    <div class="container">
+      <ol class="stages">
+        {
+          stages.map((s, i) => (
+            <li class="stage" data-reveal>
+              <div class="stage__side">
+                <span class="label">
+                  0{i + 1} · {s.time}
+                </span>
+                <h2 class="h2">{s.title}</h2>
+                <p class="body-2">{s.lead}</p>
+              </div>
+              <div class="stage__main">
+                <p class="stage__doing">{s.doing}</p>
+                <dl class="stage__spec">
+                  <div>
+                    <dt class="label">Co dostajesz</dt>
+                    <dd>
+                      <ul>
+                        {s.get.map((g) => (
+                          <li>{g}</li>
+                        ))}
+                      </ul>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt class="label">Czego potrzebujemy</dt>
+                    <dd>{s.need}</dd>
+                  </div>
+                  <div class="stage__gate">
+                    <dt class="label">Warunek przejścia</dt>
+                    <dd>{s.gate}</dd>
+                  </div>
+                </dl>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Rozliczenie -->
+  <section class="section" data-theme="dark">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Płacisz za zakres, nie za godziny.</h2>
+        <p class="lede" data-reveal style="--reveal-i:1">
+          Wycenę dostajesz po mapowaniu — jako konkretną kwotę z kryterium sukcesu, a nie widełki roboczogodzin.
+        </p>
+      </div>
+      <div class="grid-3">
+        {
+          billing.map((b, i) => (
+            <div class="item-rule" data-reveal style={`--reveal-i:${i}`}>
+              <span class="label">{b.model}</span>
+              <h3 class="h3">{b.title}</h3>
+              <p class="body-2">{b.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Role -->
+  <section class="section section--flush-top">
+    <div class="container roles-wrap">
+      <div class="roles-wrap__head">
+        <h2 class="h2" data-reveal>Kogo potrzebujemy po Twojej stronie.</h2>
+        <p class="body-2" data-reveal style="--reveal-i:1">
+          Trzy role, często łączone przez dwie osoby. Nie potrzebujesz zespołu AI ani własnych programistów.
+        </p>
+      </div>
+      <ul class="roles" data-reveal style="--reveal-i:1">
+        {
+          roles.map((r) => (
+            <li>
+              <div>
+                <h3 class="h3">{r.who}</h3>
+                <span class="chip chip--plain">{r.time}</span>
+              </div>
+              <p class="body-2">{r.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Zacznijmy od mapowania."
+    body={`Pierwsza rozmowa trwa ${facts.callLength}. Po niej wiesz, czy proces się nadaje, ile potrwa mapowanie i co musisz przygotować.`}
+  />
+</Base>
+
+<style>
+  .stages {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(1.5rem, 1rem + 4vw, 5rem);
+    padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .stage__side {
+    display: grid;
+    gap: 0.875rem;
+    align-content: start;
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    align-self: start;
+  }
+
+  .stage__main {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .stage__doing {
+    font-size: var(--text-lede);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .stage__spec {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 2rem;
+  }
+
+  .stage__spec > div {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line-2);
+    color: var(--text-2);
+  }
+
+  .stage__spec ul {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .stage__spec ul li {
+    position: relative;
+    padding-left: 1.125rem;
+  }
+
+  .stage__spec ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .stage__gate {
+    grid-column: 1 / -1;
+    padding: 1.125rem 1.25rem !important;
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent) !important;
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    color: var(--text) !important;
+  }
+
+  .stage__gate .label {
+    color: var(--accent-strong);
+  }
+
+  .roles-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .roles-wrap__head {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .roles {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .roles li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 1rem 2rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .roles li > div {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+    align-content: start;
+  }
+
+  @media (max-width: 860px) {
+    .stage,
+    .roles-wrap {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .stage__side {
+      position: static;
+    }
+
+    .stage__spec,
+    .roles li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

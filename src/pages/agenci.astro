@@ -1,0 +1,405 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const anatomy = [
+  { title: 'Kolejka', body: 'Jedno miejsce, do którego trafia praca: skrzynka, folder, kanał EDI, formularz. Agent nie „szuka zajęcia” — obsługuje to, co przyszło.' },
+  { title: 'Odczyt', body: 'Model językowy czyta treść w dowolnym formacie i wyodrębnia pola. Każde pole ma źródło w dokumencie, które można wskazać palcem.' },
+  { title: 'Reguły', body: 'Twarde progi, listy i warunki ustawione przez Ciebie. To one — nie model — decydują, co wolno zrobić bez pytania.' },
+  { title: 'Decyzja', body: 'Trzy wyjścia: domknąć samodzielnie, przekazać człowiekowi z rekomendacją albo odesłać nadawcy z pytaniem o brakujące dane.' },
+  { title: 'Zapis', body: 'Dokument w ERP, wpis w CRM, odpowiedź do klienta. Agent działa na koncie technicznym z uprawnieniami tylko do tego procesu.' },
+  { title: 'Dziennik', body: 'Co przeczytano, co sprawdzono, co zapisano i dlaczego. Każda sprawa ma pełny ślad — również te, w które nikt nie zaglądał.' },
+];
+
+const agents = [
+  {
+    name: 'Agent zamówień',
+    line: 'Od wiadomości klienta do dokumentu w ERP i potwierdzenia.',
+    spec: [
+      ['Wejście', 'E-mail, PDF, arkusz, EDI, portal B2B'],
+      ['Domyka sam', 'Zamówienia zgodne z cennikiem, stanem i limitem klienta'],
+      ['Pyta człowieka', 'Odchylenie ceny, przekroczony limit, nowy kontrahent'],
+      ['Zapisuje', 'Zamówienie sprzedaży w ERP, potwierdzenie do klienta'],
+      ['Miernik', 'Czas od wpływu do potwierdzenia, odsetek bez dotknięcia'],
+    ],
+  },
+  {
+    name: 'Agent faktur kosztowych',
+    line: 'Dopasowanie do zamówienia i przyjęcia, dekretacja, przekazanie do płatności.',
+    spec: [
+      ['Wejście', 'KSeF, e-mail, skany'],
+      ['Domyka sam', 'Faktury zgodne z zamówieniem i przyjęciem w ramach tolerancji'],
+      ['Pyta człowieka', 'Różnica ceny lub ilości, nowy dostawca, kwota ponad limit'],
+      ['Zapisuje', 'Dokument kosztowy z dekretacją, zlecenie płatności do akceptacji'],
+      ['Miernik', 'Czas obiegu faktury, liczba korekt po zaksięgowaniu'],
+    ],
+  },
+  {
+    name: 'Agent zgłoszeń',
+    line: 'Klasyfikacja, komplet danych, odpowiedź albo przekazanie właściwej osobie.',
+    spec: [
+      ['Wejście', 'Skrzynka wspólna, formularz, helpdesk'],
+      ['Domyka sam', 'Pytania o status, dokumenty, reklamacje w limicie regulaminu'],
+      ['Pyta człowieka', 'Niska pewność klasyfikacji, klient z umową SLA, roszczenie ponad limit'],
+      ['Zapisuje', 'Zgłoszenie w helpdesku, korekta, odpowiedź do klienta'],
+      ['Miernik', 'Czas pierwszej odpowiedzi, odsetek spraw zamkniętych w SLA'],
+    ],
+  },
+  {
+    name: 'Agent uzgodnień i raportów',
+    line: 'Codzienne zestawienie z kilku systemów i lista tego, co się nie zgadza.',
+    spec: [
+      ['Wejście', 'ERP, bank, CRM, arkusze'],
+      ['Domyka sam', 'Dopasowania jednoznaczne: płatność do faktury, wydanie do zamówienia'],
+      ['Pyta człowieka', 'Niezgodności kwot i terminów, pozycje bez pary'],
+      ['Zapisuje', 'Raport dzienny, lista rozbieżności z właścicielem każdej pozycji'],
+      ['Miernik', 'Liczba otwartych rozbieżności, czas ich zamknięcia'],
+    ],
+  },
+];
+
+const compare = {
+  cols: ['Chatbot', 'RPA / makra', 'Agent SKOBEN'],
+  rows: [
+    ['Wejście', 'Pytanie wpisane przez człowieka', 'Sztywny ekran lub plik o stałym układzie', 'Dokument w dowolnym formacie'],
+    ['Zakres', 'Odpowiada i podpowiada', 'Powtarza zapisane kliknięcia', 'Domyka sprawę od wpływu do zapisu'],
+    ['Wyjątki', 'Zostawia użytkownikowi', 'Zatrzymuje się na błędzie', 'Przekazuje człowiekowi z powodem i rekomendacją'],
+    ['Zmiana procesu', 'Nowy prompt, wynik niepewny', 'Przepisanie skryptu', 'Zmiana reguły, test na historycznych sprawach'],
+    ['Ślad', 'Zapis rozmowy', 'Log techniczny', 'Dziennik decyzji gotowy na audyt'],
+  ],
+};
+---
+
+<Base
+  title="Agenci"
+  description="Agent SKOBEN ma jedną kolejkę, jawne reguły i miernik. Zobacz, z czego się składa i jakie procesy obsługuje: zamówienia, faktury, zgłoszenia, uzgodnienia."
+>
+  <PageHero
+    art="queue"
+    title="Agent to pracownik procesu, nie okno czatu."
+    lede="Każdy agent SKOBEN ma jedną kolejkę, jawne uprawnienia i miernik, z którego go rozliczasz. Poniżej cztery, które wdrażamy najczęściej — i schemat, według którego budujemy kolejne."
+  >
+    <a class="btn btn--primary btn--lg" href="/sandbox/">Zobacz agenta w działaniu</a>
+    <a class="btn btn--ghost btn--lg" href="/kontakt/">Poproś o dostęp</a>
+  </PageHero>
+
+  <!-- Anatomia -->
+  <section class="section" data-theme="dark">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Model czyta i proponuje. O tym, co wolno, decydują reguły.</h2>
+        <p class="lede" data-reveal style="--reveal-i:1">
+          To rozdzielenie jest sednem. Dzięki niemu zachowanie agenta da się przewidzieć, zmienić i wytłumaczyć
+          audytorowi.
+        </p>
+      </div>
+
+      <ol class="anatomy">
+        {
+          anatomy.map((a, i) => (
+            <li data-reveal style={`--reveal-i:${i % 3}`}>
+              <span class="anatomy__n mono">0{i + 1}</span>
+              <h3 class="h3">{a.title}</h3>
+              <p class="body-2 small">{a.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Katalog -->
+  <section class="section section--flush-top">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Cztery kolejki, od których zwykle zaczynamy.</h2>
+      </div>
+
+      <div class="catalog">
+        {
+          agents.map((a, i) => (
+            <article class="agent-row" id={['zamowienia', 'faktury', 'zgloszenia', 'uzgodnienia'][i]} data-reveal>
+              <header>
+                <h3 class="statement">{a.name}</h3>
+                <p class="body-2">{a.line}</p>
+              </header>
+              <dl>
+                {a.spec.map(([k, v]) => (
+                  <div>
+                    <dt class="label">{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </article>
+          ))
+        }
+        <article class="agent-row agent-row--open" data-reveal>
+          <header>
+            <h3 class="statement">Twój proces</h3>
+            <p class="body-2">Nie ma go na liście? To nie przeszkoda.</p>
+          </header>
+          <div class="agent-row__open">
+            <p>
+              Jeśli proces ma stałe kroki, mierzalny wolumen i ktoś dziś przepisuje w nim dane między systemami — da
+              się go opisać tym samym schematem: kolejka, odczyt, reguły, decyzja, zapis, dziennik.
+            </p>
+            <a class="link" href="/kontakt/">Opisz nam swój proces</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Porównanie -->
+  <section class="section section--flush-top">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Czym agent różni się od chatbota i od RPA.</h2>
+      </div>
+
+      <div class="compare-wrap" data-reveal role="region" aria-label="Porównanie: chatbot, RPA, agent SKOBEN" tabindex="0">
+        <table class="compare">
+          <thead>
+            <tr>
+              <td></td>
+              {compare.cols.map((c, i) => <th scope="col" class:list={{ 'is-us': i === 2 }}>{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              compare.rows.map(([head, ...cells]) => (
+                <tr>
+                  <th scope="row">{head}</th>
+                  {cells.map((c, i) => <td class:list={{ 'is-us': i === 2 }} data-label={compare.cols[i]}>{c}</td>)}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .anatomy {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line-2);
+    border-left: 1px solid var(--line);
+  }
+
+  .anatomy li {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    transition: background-color var(--dur-2) ease;
+  }
+
+  .anatomy li:hover {
+    background: color-mix(in srgb, var(--text) 3%, transparent);
+  }
+
+  .anatomy__n {
+    font-size: var(--text-xs);
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .catalog {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .agent-row {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(1.5rem, 1rem + 4vw, 5rem);
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .agent-row header {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  .agent-row dl {
+    display: grid;
+  }
+
+  .agent-row dl > div {
+    display: grid;
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: baseline;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .agent-row dl > div:first-child {
+    padding-top: 0.25rem;
+  }
+
+  .agent-row dl > div:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .agent-row__open {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    color: var(--text-2);
+    max-width: 36rem;
+  }
+
+  .compare-wrap {
+    overflow-x: auto;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+  }
+
+  .compare {
+    width: 100%;
+    min-width: 44rem;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: var(--text-sm);
+  }
+
+  .compare thead th {
+    padding: 1rem 1.25rem;
+    font-size: var(--text-body);
+    font-weight: 480;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .compare tbody th {
+    width: 11rem;
+    padding: 1.125rem 1.25rem 1.125rem 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .compare tbody td {
+    padding: 1.125rem 1.25rem;
+    color: var(--text-2);
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .compare .is-us {
+    background: var(--accent-soft);
+    color: var(--text);
+  }
+
+  .compare thead .is-us {
+    border-radius: var(--radius) var(--radius) 0 0;
+    color: var(--accent-strong);
+  }
+
+  .compare tbody tr:last-child .is-us {
+    border-radius: 0 0 var(--radius) var(--radius);
+    border-bottom-color: transparent;
+  }
+
+  /* Na wąskich ekranach tabela staje się listą: wiersz = cecha, pod nią trzy odpowiedzi */
+  @media (max-width: 720px) {
+    .compare-wrap {
+      overflow: visible;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+
+    .compare {
+      min-width: 0;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .compare,
+    .compare tbody,
+    .compare tr,
+    .compare th,
+    .compare td {
+      display: block;
+      width: auto;
+    }
+
+    .compare thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    .compare tbody tr {
+      padding-block: 1.25rem;
+      border-bottom: 1px solid var(--line-2);
+    }
+
+    .compare tbody th {
+      padding: 0 0 0.75rem;
+      border: 0;
+    }
+
+    .compare tbody td {
+      display: grid;
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border: 0;
+    }
+
+    .compare tbody td::before {
+      content: attr(data-label);
+      font-size: var(--text-xs);
+      color: var(--text-3);
+    }
+
+    .compare tbody td.is-us,
+    .compare tbody tr:last-child .is-us {
+      margin-top: 0.375rem;
+      padding: 0.625rem 0.75rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .compare tbody td.is-us::before {
+      color: var(--accent-strong);
+      font-weight: 480;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .anatomy {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .anatomy__n {
+      margin-bottom: 0.25rem;
+    }
+
+    .agent-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .agent-row dl > div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.25rem;
+    }
+  }
+</style>

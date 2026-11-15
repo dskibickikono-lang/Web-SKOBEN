@@ -1,0 +1,298 @@
+---
+/**
+ * Interaktywny przekrój przepływu: wybierz proces, zobacz jego kroki i typ
+ * każdego z nich. Sygnał przechodzi przez kolejne kroki (CSS transform).
+ */
+type Kind = 'trigger' | 'agent' | 'rule' | 'action' | 'human';
+
+const KIND: Record<Kind, string> = {
+  trigger: 'Wyzwalacz',
+  agent: 'Agent',
+  rule: 'Warunek',
+  action: 'Akcja',
+  human: 'Człowiek',
+};
+
+const flows: { id: string; name: string; steps: { kind: Kind; title: string; note: string }[] }[] = [
+  {
+    id: 'order',
+    name: 'Zamówienie → ERP',
+    steps: [
+      { kind: 'trigger', title: 'Nowa wiadomość w skrzynce zamówień', note: 'co 60 s lub webhook' },
+      { kind: 'agent', title: 'Odczyt pozycji, ilości i terminu', note: 'e-mail, PDF, arkusz' },
+      { kind: 'rule', title: 'Cena w tolerancji, stan dostępny, limit klienta', note: '3 reguły' },
+      { kind: 'action', title: 'Zamówienie sprzedaży w ERP', note: 'API' },
+      { kind: 'action', title: 'Potwierdzenie do klienta z terminem', note: 'e-mail' },
+      { kind: 'human', title: 'Odchylenia → opiekun klienta', note: 'z rekomendacją' },
+    ],
+  },
+  {
+    id: 'invoice',
+    name: 'Faktura → płatność',
+    steps: [
+      { kind: 'trigger', title: 'Faktura w KSeF lub na skrzynce', note: 'pobranie cykliczne' },
+      { kind: 'agent', title: 'Odczyt i dopasowanie do zamówienia oraz PZ', note: 'dopasowanie trójstronne' },
+      { kind: 'rule', title: 'Różnica w tolerancji, rachunek na białej liście', note: '4 reguły' },
+      { kind: 'action', title: 'Dekretacja według planu kont i MPK', note: 'system księgowy' },
+      { kind: 'action', title: 'Paczka przelewów do akceptacji', note: 'bank — tylko przygotowanie' },
+      { kind: 'human', title: 'Rozbieżności → księgowość', note: 'z różnicą w zł' },
+    ],
+  },
+  {
+    id: 'ticket',
+    name: 'Zgłoszenie → odpowiedź',
+    steps: [
+      { kind: 'trigger', title: 'Nowe zgłoszenie z formularza lub poczty', note: 'natychmiast' },
+      { kind: 'agent', title: 'Klasyfikacja i sprawdzenie kompletu danych', note: 'kategoria + pewność' },
+      { kind: 'rule', title: 'Pewność ponad próg, kwota w limicie, brak SLA', note: '3 reguły' },
+      { kind: 'action', title: 'Odpowiedź z danymi z ERP i od przewoźnika', note: 'szablon + dane' },
+      { kind: 'action', title: 'Aktualizacja zgłoszenia w helpdesku', note: 'API' },
+      { kind: 'human', title: 'Awarie i spory → serwis lub jakość', note: 'w ramach SLA' },
+    ],
+  },
+];
+---
+
+<div class="pipe" data-pipe>
+  <div class="pipe__tabs" role="tablist" aria-label="Przykładowy przepływ">
+    {
+      flows.map((f, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`pipe-tab-${f.id}`}
+          aria-controls={`pipe-panel-${f.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          {f.name}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    flows.map((f, i) => (
+      <div class="pipe__panel" role="tabpanel" id={`pipe-panel-${f.id}`} aria-labelledby={`pipe-tab-${f.id}`} hidden={i !== 0}>
+        <ol class="pipe__steps">
+          {f.steps.map((s, j) => (
+            <li class={`pipe__step is-${s.kind}`} style={`--j:${j}`}>
+              <span class="pipe__rail" aria-hidden="true">
+                <span class="pipe__node" />
+              </span>
+              <span class="pipe__kind">{KIND[s.kind]}</span>
+              <span class="pipe__title">{s.title}</span>
+              <span class="pipe__note mono">{s.note}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pipe]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[role="tabpanel"]'));
+
+    const select = (index: number, focus = false) => {
+      tabs.forEach((t, i) => {
+        t.setAttribute('aria-selected', String(i === index));
+        t.tabIndex = i === index ? 0 : -1;
+      });
+      panels.forEach((p, i) => (p.hidden = i !== index));
+      if (focus) tabs[index]?.focus();
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          select((i + 1) % tabs.length, true);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          select((i + tabs.length - 1) % tabs.length, true);
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .pipe {
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-panel);
+    overflow: hidden;
+  }
+
+  .pipe__tabs {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pipe__tabs button {
+    flex: none;
+    height: 2.5rem;
+    padding-inline: 1rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: 480;
+    color: var(--text-2);
+    transition:
+      background-color var(--dur-1) ease,
+      color var(--dur-1) ease;
+  }
+
+  .pipe__tabs button:hover {
+    color: var(--text);
+  }
+
+  .pipe__tabs button[aria-selected='true'] {
+    background: color-mix(in srgb, var(--text) 10%, transparent);
+    color: var(--text);
+  }
+
+  .pipe__steps {
+    display: grid;
+    padding: clamp(1rem, 0.5rem + 1.5vw, 1.75rem) clamp(1rem, 0.5rem + 2vw, 2.25rem);
+  }
+
+  .pipe__step {
+    --c: var(--text-3);
+    display: grid;
+    grid-template-columns: 1.5rem 7rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.5rem;
+    animation: pipe-in 480ms var(--ease-out) backwards;
+    animation-delay: calc(var(--j) * 70ms);
+  }
+
+  @keyframes pipe-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 8px, 0);
+    }
+  }
+
+  .pipe__step.is-trigger {
+    --c: var(--text-2);
+  }
+  .pipe__step.is-agent {
+    --c: var(--accent);
+  }
+  .pipe__step.is-rule {
+    --c: var(--accent);
+  }
+  .pipe__step.is-human {
+    --c: var(--warn);
+  }
+
+  .pipe__rail {
+    position: relative;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+  }
+
+  .pipe__rail::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: var(--line-2);
+  }
+
+  .pipe__step:first-child .pipe__rail::before {
+    top: 50%;
+  }
+
+  .pipe__step:last-child .pipe__rail::before {
+    bottom: 50%;
+    background: repeating-linear-gradient(to bottom, var(--warn) 0 3px, transparent 3px 7px);
+  }
+
+  .pipe__node {
+    position: relative;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 0 4px var(--surface);
+  }
+
+  .pipe__step.is-rule .pipe__node {
+    border-radius: 2px;
+    transform: rotate(45deg);
+  }
+
+  /* sygnał przechodzący przez kolejne kroki */
+  .pipe__node::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: inherit;
+    border: 1px solid var(--c);
+    opacity: 0;
+    animation: pipe-ping 6s var(--ease-out) infinite;
+    animation-delay: calc(var(--j) * 0.9s + 0.6s);
+  }
+
+  @keyframes pipe-ping {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.5);
+    }
+    14%,
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+
+  .pipe__kind {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+
+  .pipe__title {
+    font-weight: 480;
+    line-height: 1.35;
+  }
+
+  .pipe__note {
+    font-size: var(--text-2xs);
+    color: var(--text-3);
+    text-align: right;
+  }
+
+  @media (max-width: 720px) {
+    .pipe__step {
+      grid-template-columns: 1.5rem minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      row-gap: 0.125rem;
+      padding-block: 0.625rem;
+    }
+
+    .pipe__rail {
+      grid-row: 1 / span 2;
+    }
+
+    .pipe__note {
+      display: none;
+    }
+  }
+</style>

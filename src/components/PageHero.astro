@@ -1,0 +1,40 @@
+---
+import Art from './Art.astro';
+
+interface Props {
+  title: string;
+  lede: string;
+  tone?: 'light' | 'dark';
+  eyebrow?: string;
+  /** Grafika w szerokim pasie pod nagłówkiem. */
+  art?: 'beam' | 'orbit' | 'queue' | 'stages' | 'layers' | 'flow';
+  artTone?: 'dark' | 'light';
+}
+const { title, lede, tone = 'light', eyebrow, art, artTone = 'dark' } = Astro.props;
+---
+
+<section class="page-hero" data-theme={tone}>
+  <div class="container">
+    <div class="page-hero__inner">
+      {eyebrow && <p class="label" data-rise>{eyebrow}</p>}
+      <h1 class="display" data-rise>{title}</h1>
+      <p class="lede" data-rise style="--reveal-i:1">{lede}</p>
+      {
+        Astro.slots.has('default') && (
+          <div class="page-hero__actions" data-rise style="--reveal-i:2">
+            <slot />
+          </div>
+        )
+      }
+    </div>
+  </div>
+  {
+    art && (
+      <div class="container" data-rise style="--reveal-i:3">
+        <Art kind={art} tone={artTone} class="page-hero__media" />
+      </div>
+    )
+  }
+  <slot name="art" />
+</section>
+

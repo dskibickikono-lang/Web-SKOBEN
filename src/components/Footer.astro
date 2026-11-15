@@ -1,0 +1,160 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../config/site';
+
+const year = new Date().getFullYear();
+const legalBits = [
+  site.legal.entity === site.name ? '' : site.legal.entity,
+  site.legal.nip ? `NIP ${site.legal.nip}` : '',
+  site.legal.address,
+].filter(Boolean);
+
+const columns = [
+  {
+    title: 'Produkt',
+    links: [
+      { href: '/agenci/', label: 'Agenci' },
+      { href: '/automatyzacje/', label: 'Automatyzacje' },
+      { href: '/sandbox/', label: 'Sandbox' },
+    ],
+  },
+  {
+    title: 'Współpraca',
+    links: [
+      { href: '/wdrozenie/', label: 'Wdrożenie' },
+      { href: '/bezpieczenstwo/', label: 'Bezpieczeństwo' },
+      { href: '/kontakt/', label: 'Kontakt' },
+    ],
+  },
+];
+---
+
+<footer class="site-footer theme-dark" data-theme="dark">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <a href="/" aria-label="SKOBEN — strona główna"><Logo /></a>
+        <p class="small">
+          Wdrażamy agentów AI w procesach operacyjnych. Jeden proces, jeden miernik, pełna kontrola.
+        </p>
+      </div>
+
+      {
+        columns.map((col) => (
+          <nav aria-label={col.title}>
+            <h2 class="label">{col.title}</h2>
+            <ul>
+              {col.links.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+
+      <div>
+        <h2 class="label">Kontakt</h2>
+        <ul>
+          <li><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li>
+          <li><a href="/kontakt/">Poproś o dostęp</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="micro">
+        © {year} {site.name}{legalBits.length > 0 && <> · {legalBits.join(' · ')}</>}
+      </p>
+      <p class="micro">
+        Makiety interfejsu i dane w sandboxie są przykładowe.
+        <a class="site-footer__legal" href="/polityka-prywatnosci/">Polityka prywatności</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--ink-950);
+    color: var(--text);
+    padding-block: clamp(3.5rem, 2rem + 5vw, 6rem) 2rem;
+  }
+
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr));
+    gap: 2.5rem;
+    padding-bottom: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  .site-footer__brand {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    max-width: 22rem;
+  }
+
+  .site-footer__brand a {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .site-footer__brand p {
+    color: var(--text-3);
+  }
+
+  .site-footer h2 {
+    margin-bottom: 1rem;
+  }
+
+  .site-footer ul {
+    display: grid;
+    gap: 0.625rem;
+  }
+
+  .site-footer li a {
+    font-size: var(--text-sm);
+    color: var(--text-2);
+    transition: color var(--dur-1) ease;
+  }
+
+  .site-footer li a:hover {
+    color: var(--text);
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .site-footer__legal {
+    margin-left: 0.75rem;
+    color: var(--text-2);
+    text-decoration: underline;
+    text-decoration-color: var(--line-2);
+    text-underline-offset: 3px;
+    transition: color var(--dur-1) ease;
+  }
+
+  .site-footer__legal:hover {
+    color: var(--text);
+  }
+
+  @media (max-width: 860px) {
+    .site-footer__top {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .site-footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

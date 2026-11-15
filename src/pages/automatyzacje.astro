@@ -1,0 +1,231 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import FlowDiagram from '../components/FlowDiagram.astro';
+import Pipeline from '../components/Pipeline.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const connections = [
+  {
+    title: 'API',
+    when: 'Pierwszy wybór',
+    body: 'Jeśli system ma interfejs programistyczny, używamy go. Zapis jest transakcyjny, szybki i odporny na zmiany wyglądu ekranów.',
+  },
+  {
+    title: 'Pliki i EDI',
+    when: 'Gdy API nie ma lub nie obejmuje procesu',
+    body: 'Import i eksport w formatach, które system już obsługuje: CSV, XML, komunikaty EDI. Sprawdzone, przewidywalne, łatwe do audytu.',
+  },
+  {
+    title: 'Poczta i dokumenty',
+    when: 'Tam, gdzie praca przychodzi od ludzi',
+    body: 'Skrzynki wspólne, załączniki, skany. Agent czyta je tak, jak przychodzą — bez zmuszania kontrahentów do nowych formularzy.',
+  },
+  {
+    title: 'Interfejs użytkownika',
+    when: 'Ostateczność',
+    body: 'Gdy system nie daje innej drogi, agent pracuje przez ekran. Mówimy wprost: to rozwiązanie najwolniejsze i najbardziej wrażliwe na aktualizacje.',
+  },
+];
+
+const reliability = [
+  {
+    title: 'Kolejka zamiast „spróbuj jeszcze raz”',
+    body: 'Gdy system docelowy nie odpowiada, sprawa czeka w kolejce i jest ponawiana. Nic nie ginie, nic nie zapisuje się dwa razy.',
+  },
+  {
+    title: 'Jeden wyłącznik',
+    body: 'Agenta można zatrzymać jednym ruchem. Sprawy wracają wtedy do ludzi w tej samej kolejce, z dotychczasowym śladem.',
+  },
+  {
+    title: 'Alarm, zanim zauważy klient',
+    body: 'Monitorujemy odsetek spraw bez dotknięcia, czas obsługi i liczbę wyjątków. Gdy odbiegają od normy, dostajesz sygnał z przyczyną.',
+  },
+];
+---
+
+<Base
+  title="Automatyzacje"
+  description="Automatyzacja przepływów pracy wokół agenta AI: wyzwalacze, integracje z ERP i CRM, kolejki, eskalacje do ludzi i monitoring."
+>
+  <PageHero
+    art="flow"
+    title="Automatyzujemy przepływ, nie pojedyncze kliknięcia."
+    lede="Agent to jedno ogniwo. Wokół niego budujemy resztę — wyzwalacze, integracje, kolejki, eskalacje i monitoring — tak, żeby sprawa przechodziła od wpływu do zapisu bez ręcznego przekazywania."
+  >
+    <a class="btn btn--primary btn--lg" href="/kontakt/">Poproś o dostęp</a>
+    <a class="btn btn--ghost btn--lg" href="/sandbox/">Otwórz sandbox</a>
+  </PageHero>
+
+  <!-- Przekrój -->
+  <section id="szkielet" class="section section--flush-top">
+    <div class="container split">
+      <div class="split__text">
+        <h2 class="statement" data-reveal>Każdy przepływ ma ten sam szkielet.</h2>
+        <p class="body-2" data-reveal style="--reveal-i:1">
+          Wyzwalacz, odczyt, warunki, akcje — i jedna ścieżka dla wszystkiego, co od warunków odbiega. Wybierz proces
+          i zobacz, jak wygląda rozpisany na kroki.
+        </p>
+        <ul class="legend" data-reveal style="--reveal-i:2">
+          <li><i class="k k--agent"></i>Agent czyta i przygotowuje</li>
+          <li><i class="k k--rule"></i>Reguła rozstrzyga</li>
+          <li><i class="k k--human"></i>Człowiek zatwierdza wyjątek</li>
+        </ul>
+      </div>
+      <div data-reveal style="--reveal-i:1">
+        <Pipeline />
+      </div>
+    </div>
+  </section>
+
+  <!-- Diagram -->
+  <section id="wejscia" class="section" data-theme="dark">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Jeden agent, wiele wejść i wyjść.</h2>
+        <p class="lede" data-reveal style="--reveal-i:1">
+          Te same reguły i ten sam dziennik niezależnie od tego, czy sprawa przyszła e-mailem, przez EDI czy
+          z&nbsp;formularza.
+        </p>
+      </div>
+      <div data-reveal style="--reveal-i:2">
+        <FlowDiagram id="auto" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Integracje -->
+  <section id="integracje" class="section section--flush-top">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Łączymy się tak, jak pozwala system.</h2>
+        <p class="lede" data-reveal style="--reveal-i:1">
+          W tej kolejności. Sposób integracji ustalamy przy mapowaniu i wpisujemy do zakresu — bez niespodzianek
+          w&nbsp;trakcie pilota.
+        </p>
+      </div>
+      <ol class="conn">
+        {
+          connections.map((c, i) => (
+            <li data-reveal>
+              <span class="mono conn__n">0{i + 1}</span>
+              <div class="conn__head">
+                <h3 class="h3">{c.title}</h3>
+                <span class="chip chip--plain">{c.when}</span>
+              </div>
+              <p class="body-2">{c.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Niezawodność -->
+  <section id="awarie" class="section section--flush-top">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="h2" data-reveal>Co się dzieje, gdy coś nie działa.</h2>
+      </div>
+      <div class="grid-3">
+        {
+          reliability.map((r, i) => (
+            <div class="item-rule" data-reveal style={`--reveal-i:${i}`}>
+              <h3 class="h3">{r.title}</h3>
+              <p class="body-2">{r.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(2rem, 1rem + 5vw, 6rem);
+    align-items: center;
+  }
+
+  .split__text {
+    display: grid;
+    gap: 1.25rem;
+    align-content: center;
+  }
+
+  .legend {
+    display: grid;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line-2);
+    font-size: var(--text-sm);
+    color: var(--text-2);
+  }
+
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .k {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .k--rule {
+    border-radius: 2px;
+    transform: rotate(45deg);
+  }
+
+  .k--human {
+    background: var(--warn);
+  }
+
+  .conn {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .conn li {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 4fr) minmax(0, 6fr);
+    gap: 1rem clamp(1.5rem, 1rem + 3vw, 4rem);
+    align-items: baseline;
+    padding-block: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .conn__n {
+    font-size: var(--text-xs);
+    color: var(--text-3);
+  }
+
+  .conn__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.875rem;
+  }
+
+  @media (max-width: 900px) {
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .conn li {
+      grid-template-columns: 2rem minmax(0, 1fr);
+    }
+
+    .conn li p {
+      grid-column: 2;
+    }
+  }
+</style>

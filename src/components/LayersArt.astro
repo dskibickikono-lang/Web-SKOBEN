@@ -1,0 +1,109 @@
+---
+/**
+ * Cztery warstwy kontroli jako zagnieżdżone obrysy. Każdy panel podświetla
+ * jedną warstwę — FeatureSwitcher przełącza panele.
+ */
+const layers = [
+  { inset: 40, label: 'uprawnienia' },
+  { inset: 92, label: 'reguły i progi' },
+  { inset: 144, label: 'akceptacja człowieka' },
+  { inset: 196, label: 'dziennik' },
+];
+const W = 480;
+const H = 560;
+---
+
+{
+  layers.map((_, active) => (
+    <div class="layers">
+      <svg viewBox={`0 0 ${W} ${H}`} fill="none" role="presentation">
+        {layers.map((l, i) => (
+          <g class:list={['layer', { 'is-on': i === active, 'is-inner': i > active }]}>
+            <rect x={l.inset} y={l.inset + 20} width={W - l.inset * 2} height={H - l.inset * 2 - 40} rx={Math.max(10, 34 - i * 6)} />
+            <text x={l.inset + 16} y={l.inset + 46}>
+              0{i + 1} · {l.label}
+            </text>
+          </g>
+        ))}
+        <g class="core" transform={`translate(${W / 2 - 14} ${H / 2 - 12})`}>
+          <path d="M5 21.5V10.5a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v11M1 21.5h26" />
+          <circle cx="14" cy="14" r="1.8" />
+        </g>
+      </svg>
+    </div>
+  ))
+}
+
+<style>
+  .layers {
+    align-self: center;
+    width: 100%;
+    max-width: 30rem;
+    aspect-ratio: 480 / 560;
+    border-radius: var(--radius);
+    background: radial-gradient(120% 90% at 50% 52%, var(--bone-0) 0%, var(--bone-100) 62%, #ebe8e0 100%);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .layer rect {
+    stroke: var(--text);
+    stroke-opacity: 0.22;
+    stroke-width: 1;
+    transition:
+      stroke var(--dur-3) ease,
+      stroke-opacity var(--dur-3) ease,
+      fill var(--dur-3) ease;
+  }
+
+  .layer text {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    fill: var(--text-3);
+    opacity: 0.75;
+  }
+
+  .layer.is-on rect {
+    stroke: var(--blue-600);
+    stroke-opacity: 1;
+    stroke-width: 1.5;
+    fill: color-mix(in srgb, #e4e8ff 55%, transparent);
+    stroke-dasharray: 8 6;
+    animation: layer-march 14s linear infinite;
+  }
+
+  .layer.is-on text {
+    fill: var(--blue-700);
+    opacity: 1;
+  }
+
+  /* warstwy wewnątrz aktywnej przykrywają jej wypełnienie tłem */
+  .layer.is-inner rect {
+    fill: var(--bone-0);
+    fill-opacity: 0.72;
+  }
+
+  @keyframes layer-march {
+    to {
+      stroke-dashoffset: -280;
+    }
+  }
+
+  .core path,
+  .core circle {
+    stroke: var(--text);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .core circle {
+    fill: var(--text);
+    stroke: none;
+  }
+</style>

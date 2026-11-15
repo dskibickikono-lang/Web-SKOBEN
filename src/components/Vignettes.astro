@@ -1,0 +1,726 @@
+---
+/**
+ * Cztery kafle-winiety: krótkie, zapętlone „filmy CSS” pokazujące po jednym
+ * geście produktu. Wyłącznie transform i opacity — kompozytor GPU, bez JS.
+ */
+const tiles = [
+  {
+    key: 'read',
+    title: 'Agent czyta to, co przychodzi',
+    body: 'E-mail, PDF, EDI. Wyodrębnia pola i przy każdym wskazuje, skąd w dokumencie pochodzi.',
+  },
+  {
+    key: 'approve',
+    title: 'Człowiek zatwierdza wyjątki',
+    body: 'Sprawy zgodne z regułami domykają się same. Reszta trafia do właściwej osoby — z powodem i rekomendacją.',
+  },
+  {
+    key: 'rules',
+    title: 'Progi ustawiasz Ty',
+    body: 'Limit kwoty, tolerancja ceny, lista kontrahentów. Zmiana reguły nie wymaga programisty ani nowego wdrożenia.',
+  },
+  {
+    key: 'log',
+    title: 'Każda decyzja ma ślad',
+    body: 'Co agent przeczytał, co sprawdził, co zapisał i dlaczego. Dziennik da się przeszukać i pokazać audytorowi.',
+  },
+];
+---
+
+<ul class="vg">
+  {
+    tiles.map((t) => (
+      <li class="vg__item">
+        <div class={`vg__tile vg__tile--${t.key} theme-warm`} data-vg-tile>
+          <div class="vg__scene" aria-hidden="true">
+          {t.key === 'read' && (
+            <>
+              <div class="doc">
+                <b>Zamówienie</b>
+                <i style="--w:72%" />
+                <i style="--w:54%" />
+                <i style="--w:80%" />
+                <i style="--w:38%" />
+                <i style="--w:66%" />
+                <i style="--w:48%" />
+              </div>
+              <span class="pill" style="--x:6%;--y:30%;--d:0s">Hurtownia Bałtyk</span>
+              <span class="pill" style="--x:60%;--y:20%;--d:0.7s">ZS/11/0482</span>
+              <span class="pill" style="--x:54%;--y:66%;--d:1.4s">878,40 zł</span>
+            </>
+          )}
+          {t.key === 'approve' && (
+            <div class="stack theme-dark">
+              <span class="stack__back stack__back--2" />
+              <span class="stack__back stack__back--1" />
+              <div class="stack__card">
+                <div class="stack__row">
+                  <span class="mono">ZAM-2292</span>
+                  <span class="swap">
+                    <span class="chip chip--warn">Czeka na Ciebie</span>
+                    <span class="chip chip--ok">Domknięta</span>
+                  </span>
+                </div>
+                <strong>Instal-Tech</strong>
+                <small>Cena 4,1% poniżej cennika</small>
+                <span class="stack__btn">Zatwierdź</span>
+              </div>
+            </div>
+          )}
+          {t.key === 'rules' && (
+            <div class="form">
+              <div class="form__row">
+                <span>Tolerancja ceny</span>
+                <span class="form__val" />
+              </div>
+              <div class="form__track">
+                <span class="form__fill" />
+                <span class="form__knob" />
+              </div>
+              <div class="form__row form__row--line">
+                <span>Nowi klienci do akceptacji</span>
+                <span class="form__switch" />
+              </div>
+              <div class="form__row">
+                <span>Limit wartości</span>
+                <span class="form__field">25 000 zł</span>
+              </div>
+            </div>
+          )}
+          {t.key === 'log' && (
+            <>
+              <div class="streak" />
+              <div class="lines">
+                <i style="--w:58%;--d:0s" />
+                <i style="--w:74%;--d:0.5s" />
+                <i style="--w:46%;--d:1s" />
+              </div>
+              <span class="status">
+                <span class="status__dots" />
+                Zapis w ERP
+                <span class="status__n" />
+              </span>
+            </>
+          )}
+          </div>
+          <button class="vg__pause" type="button" aria-label={`Wstrzymaj animację: ${t.title}`} aria-pressed="false" data-vg-pause>
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path class="i-pause" d="M4.5 3h2.5v10H4.5zM9 3h2.5v10H9z" fill="currentColor" />
+              <path class="i-play" d="M5 2.8l8 5.2-8 5.2z" fill="currentColor" />
+            </svg>
+          </button>
+        </div>
+        <h3 class="vg__title">{t.title}</h3>
+        <p class="vg__body">{t.body}</p>
+      </li>
+    ))
+  }
+</ul>
+
+<script>
+  // Pętle w kaflach grają tylko w kadrze i dają się zatrzymać.
+  document.querySelectorAll<HTMLElement>('[data-vg-tile]').forEach((tile) => {
+    const button = tile.querySelector<HTMLButtonElement>('[data-vg-pause]');
+    let userPaused = false;
+    const apply = (visible: boolean) => tile.classList.toggle('is-paused', userPaused || !visible);
+    new IntersectionObserver(([e]) => apply(e?.isIntersecting ?? false), { threshold: 0.2 }).observe(tile);
+    button?.addEventListener('click', () => {
+      userPaused = !userPaused;
+      button.setAttribute('aria-pressed', String(userPaused));
+      apply(true);
+    });
+  });
+</script>
+
+<style>
+  .vg {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 2rem;
+  }
+
+  .vg__item {
+    display: grid;
+    align-content: start;
+  }
+
+  /* płaski kafel: jeden promień, bez ramki i cienia; podpis pod spodem */
+  .vg__tile {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    margin-bottom: 0.75rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface-2);
+    color: #24231f;
+  }
+
+  .vg__scene {
+    position: absolute;
+    inset: 0;
+    font-size: clamp(0.75rem, 0.5rem + 0.9vw, 0.9375rem);
+    line-height: 1.3;
+  }
+
+  .vg__tile:global(.is-paused) .vg__scene :global(*),
+  .vg__tile:global(.is-paused) .vg__scene :global(*)::before,
+  .vg__tile:global(.is-paused) .vg__scene :global(*)::after {
+    animation-play-state: paused !important;
+  }
+
+  .vg__pause {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgb(112 105 80 / 0.1);
+    border: 1px solid rgb(112 105 80 / 0.24);
+    color: #24231f;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+
+  .vg__pause:hover {
+    background: rgb(112 105 80 / 0.2);
+  }
+
+  .vg__pause .i-play,
+  .vg__pause[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+
+  .vg__pause[aria-pressed='true'] .i-play {
+    display: block;
+  }
+
+  .vg__title {
+    font-size: 1.125rem;
+    font-weight: 480;
+    line-height: 1.35;
+  }
+
+  .vg__body {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  /* --- 1. Odczyt: dokument i unoszące się etykiety ------------------------- */
+  .doc {
+    position: absolute;
+    left: 24%;
+    right: 24%;
+    top: 14%;
+    bottom: -8%;
+    display: grid;
+    align-content: start;
+    gap: 0.55rem;
+    padding: 1.25rem 0.9rem 1rem;
+    border-radius: 8px 8px 0 0;
+    background: #fff;
+    box-shadow: 0 18px 40px -18px rgb(19 24 22 / 0.28);
+    filter: blur(0.4px);
+  }
+
+  .doc b {
+    margin-bottom: 0.25rem;
+    font-size: 0.9375rem;
+    font-weight: 480;
+    color: #69726d;
+  }
+
+  .doc i {
+    width: var(--w);
+    height: 5px;
+    border-radius: 3px;
+    background: #e4e2dc;
+  }
+
+  .pill {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 1.75rem;
+    padding-inline: 0.7rem;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow:
+      0 1px 0 rgb(19 24 22 / 0.04),
+      0 10px 24px -8px rgb(19 24 22 / 0.22);
+    font-size: 0.6875rem;
+    font-weight: 480;
+    white-space: nowrap;
+    animation: pill 7s var(--ease-out) infinite backwards;
+    animation-delay: var(--d);
+  }
+
+  .pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    background: var(--green-500);
+    transform: rotate(45deg);
+  }
+
+  @keyframes pill {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 12px, 0) scale(0.94);
+    }
+    10% {
+      opacity: 1;
+      transform: none;
+    }
+    78% {
+      opacity: 1;
+      transform: translate3d(0, -5px, 0);
+    }
+    90%,
+    100% {
+      opacity: 0;
+      transform: translate3d(0, -12px, 0);
+    }
+  }
+
+  /* --- 2. Wyjątek: stos kart ------------------------------------------------ */
+  .stack {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .stack__card,
+  .stack__back {
+    grid-area: 1 / 1;
+    width: 68%;
+    aspect-ratio: 1.62;
+    border-radius: 10px;
+    background: linear-gradient(160deg, #1b2622, #0f1513);
+  }
+
+  .stack__back--1 {
+    transform: translate3d(0, -9%, 0) scale(0.92);
+    opacity: 0.55;
+    filter: blur(1.5px);
+    animation: stack-a 6s var(--ease-in-out) infinite alternate;
+  }
+
+  .stack__back--2 {
+    transform: translate3d(0, -17%, 0) scale(0.84);
+    opacity: 0.28;
+    filter: blur(3px);
+    animation: stack-b 6s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes stack-a {
+    to {
+      transform: translate3d(0, -11%, 0) scale(0.93);
+    }
+  }
+
+  @keyframes stack-b {
+    to {
+      transform: translate3d(0, -21%, 0) scale(0.86);
+    }
+  }
+
+  .stack__card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.15rem;
+    padding: 0.8rem 0.9rem;
+    color: #ecebe6;
+    box-shadow: 0 22px 44px -18px rgb(19 24 22 / 0.6);
+  }
+
+  .stack__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.45rem;
+    font-size: 0.625rem;
+    color: #86918b;
+  }
+
+  .stack__card strong {
+    font-size: 0.875rem;
+    font-weight: 480;
+  }
+
+  .stack__card small {
+    font-size: 0.6875rem;
+    color: #b1b9b3;
+  }
+
+  .stack .chip {
+    height: 1.25rem;
+    font-size: 0.625rem;
+  }
+
+  .swap {
+    display: grid;
+    justify-items: end;
+  }
+
+  .swap > * {
+    grid-area: 1 / 1;
+  }
+
+  .swap > :first-child {
+    animation: swap-out 6s linear infinite;
+  }
+
+  .swap > :last-child {
+    animation: swap-in 6s linear infinite;
+  }
+
+  @keyframes swap-out {
+    0%,
+    52% {
+      opacity: 1;
+    }
+    58%,
+    94% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes swap-in {
+    0%,
+    52% {
+      opacity: 0;
+    }
+    58%,
+    94% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .stack__btn {
+    position: absolute;
+    right: 0.9rem;
+    bottom: 0.8rem;
+    display: grid;
+    place-items: center;
+    height: 1.5rem;
+    padding-inline: 0.75rem;
+    border-radius: 999px;
+    background: #ecebe6;
+    color: #0f1513;
+    font-size: 0.6875rem;
+    font-weight: 480;
+    animation: press 6s var(--ease-out) infinite;
+  }
+
+  @keyframes press {
+    0%,
+    44% {
+      transform: none;
+      opacity: 1;
+    }
+    49% {
+      transform: scale(0.92);
+      opacity: 1;
+    }
+    56%,
+    94% {
+      transform: none;
+      opacity: 0;
+    }
+  }
+
+  /* --- 3. Reguły: fragment formularza -------------------------------------- */
+  .form {
+    position: absolute;
+    left: 14%;
+    right: -6%;
+    top: 20%;
+    bottom: -10%;
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    padding: 1rem 1.6rem 1rem 1rem;
+    border-radius: 10px 0 0 0;
+    background: #fff;
+    box-shadow: 0 18px 40px -18px rgb(19 24 22 / 0.25);
+  }
+
+  .form__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-2);
+  }
+
+  .form__row--line {
+    margin-top: 0.3rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #ebe9e3;
+  }
+
+  .form__val::before {
+    content: '2%';
+    font-weight: 480;
+    color: var(--green-600);
+    animation: val 6s steps(1) infinite;
+  }
+
+  @keyframes val {
+    40% {
+      content: '3%';
+    }
+    48% {
+      content: '4%';
+    }
+    56%,
+    100% {
+      content: '5%';
+    }
+  }
+
+  .form__track {
+    position: relative;
+    height: 2px;
+    margin-block: 0.25rem 0.1rem;
+    border-radius: 2px;
+    background: #e4e2dc;
+  }
+
+  .form__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--green-600);
+    transform-origin: 0 50%;
+    transform: scaleX(0.2);
+    animation: fill 6s var(--ease-in-out) infinite;
+  }
+
+  .form__knob {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 0;
+    transform: translate3d(20%, 0, 0);
+    animation: knob 6s var(--ease-in-out) infinite;
+  }
+
+  .form__knob::after {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1.5px solid var(--green-600);
+    box-shadow: 0 2px 6px rgb(19 24 22 / 0.2);
+  }
+
+  @keyframes fill {
+    0%,
+    30% {
+      transform: scaleX(0.2);
+    }
+    58%,
+    100% {
+      transform: scaleX(0.5);
+    }
+  }
+
+  @keyframes knob {
+    0%,
+    30% {
+      transform: translate3d(20%, 0, 0);
+    }
+    58%,
+    100% {
+      transform: translate3d(50%, 0, 0);
+    }
+  }
+
+  .form__switch {
+    position: relative;
+    flex: none;
+    width: 1.75rem;
+    height: 1rem;
+    border-radius: 999px;
+    background: var(--green-500);
+    animation: switch-bg 6s steps(1) infinite;
+  }
+
+  .form__switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: #fff;
+    transform: translateX(0.75rem);
+    animation: switch 6s var(--ease-out) infinite;
+  }
+
+  @keyframes switch {
+    0%,
+    68% {
+      transform: translateX(0.75rem);
+    }
+    74%,
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes switch-bg {
+    71% {
+      background: #cfccc3;
+    }
+  }
+
+  .form__field {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #e4e2dc;
+    font-weight: 480;
+    color: var(--text);
+  }
+
+  /* --- 4. Dziennik: status zapisu i smuga ruchu ---------------------------- */
+  .streak {
+    position: absolute;
+    left: -20%;
+    right: -20%;
+    top: 40%;
+    height: 34%;
+    background: linear-gradient(to right, transparent, rgb(42 117 97 / 0.22) 45%, rgb(217 187 128 / 0.3) 70%, transparent);
+    filter: blur(14px);
+    animation: streak 5s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes streak {
+    from {
+      transform: translate3d(-12%, 0, 0);
+    }
+    to {
+      transform: translate3d(12%, 0, 0);
+    }
+  }
+
+  .lines {
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    top: 16%;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .lines i {
+    width: var(--w);
+    height: 6px;
+    border-radius: 3px;
+    background: #d9d6ce;
+    transform-origin: 0 50%;
+    animation: line 5s var(--ease-out) infinite backwards;
+    animation-delay: var(--d);
+  }
+
+  @keyframes line {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    14%,
+    84% {
+      transform: none;
+      opacity: 1;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .status {
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: 22%;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: 2.5rem;
+    padding-inline: 0.9rem;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 14px 30px -12px rgb(19 24 22 / 0.24);
+    font-size: 0.8125rem;
+    font-weight: 480;
+  }
+
+  .status__dots {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px dotted var(--green-600);
+    animation: spin 2.4s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .status__n {
+    margin-left: auto;
+    color: var(--text-3);
+    font-weight: 400;
+  }
+
+  .status__n::before {
+    content: '1/3';
+    animation: count 5s steps(1) infinite;
+  }
+
+  @keyframes count {
+    33% {
+      content: '2/3';
+    }
+    66% {
+      content: '3/3';
+    }
+  }
+
+  @media (max-width: 760px) {
+    .vg {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+    }
+
+    .vg__title,
+    .vg__body {
+      font-size: 0.9375rem;
+    }
+  }
+</style>

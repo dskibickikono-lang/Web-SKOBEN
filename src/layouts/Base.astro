@@ -1,0 +1,129 @@
+---
+import '@fontsource-variable/inter/opsz.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '../styles/global.css';
+import fontSans from '@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url';
+import fontSansExt from '@fontsource-variable/inter/files/inter-latin-ext-opsz-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Motyw pierwszej sekcji strony — startowy motyw całej strony i nawigacji. */
+  heroTone?: 'dark' | 'light' | 'warm';
+  noindex?: boolean;
+  /** Ukrywa stopkę (np. pełnoekranowy sandbox). */
+  bare?: boolean;
+}
+
+const { title, description = site.description, heroTone = 'light', noindex = false, bare = false } = Astro.props;
+const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
+const themeColor = heroTone === 'dark' ? '#1c1c23' : heroTone === 'warm' ? '#f6f4ef' : '#fbfcfd';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: site.url,
+  description: site.description,
+  email: site.contactEmail,
+};
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content={themeColor} />
+    <meta name="format-detection" content="telephone=no" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={fontSans} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontSansExt} as="font" type="font/woff2" crossorigin />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body data-theme={heroTone}>
+    <a class="skip-link" href="#tresc">Przejdź do treści</a>
+    <Header />
+    <main id="tresc">
+      <slot />
+    </main>
+    {!bare && <Footer />}
+
+    <script>
+      import '../scripts/reveal';
+
+      // Motyw całej strony: przełącza się, gdy środek okna wchodzi w kolejną sekcję.
+      // Sekcja bez atrybutu data-theme jest jasna.
+      const zones = Array.from(document.querySelectorAll<HTMLElement>('main > *, body > footer'));
+      if (zones.length > 0) {
+        let ticking = false;
+        const pick = () => {
+          ticking = false;
+          const probe = window.innerHeight * 0.5;
+          const zone = zones.find((el) => {
+            const r = el.getBoundingClientRect();
+            return r.top <= probe && r.bottom > probe;
+          });
+          const theme = zone?.dataset.theme ?? (zone ? 'light' : document.body.dataset.theme);
+          if (theme && document.body.dataset.theme !== theme) document.body.dataset.theme = theme;
+        };
+        pick();
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(pick);
+            }
+          },
+          { passive: true },
+        );
+        window.addEventListener('resize', pick, { passive: true });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-pill);
+    background: var(--ink-900);
+    color: #ecebe6;
+    font-size: var(--text-sm);
+    font-weight: 480;
+    transform: translateY(-200%);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .skip-link:focus-visible {
+    transform: none;
+    outline-color: var(--mint-300);
+  }
+</style>
